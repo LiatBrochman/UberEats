@@ -31,7 +31,7 @@ const DishDetailsScreen = () => {
                 <AntDesign name="pluscircleo" size={60} color={"black"} onPress={onPlus}/>
             </View>
             <View style={styles.button}>
-                <Text style={styles.buttonText}>Add {quantity} to basket (${getTotal()})</Text>
+                <Text style={styles.buttonText}>Add {quantity} to basket &#8226; (${getTotal()})</Text>
             </View>
         </View>
     )
