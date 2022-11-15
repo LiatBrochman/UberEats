@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet, FlatList} from 'react-native';
+import {FlatList, StyleSheet, Text, View} from 'react-native';
 import restaurants from '../../../assets/data/restaurants.json';
 import BasketDishItem from '../../components/BasketDishItem'
 

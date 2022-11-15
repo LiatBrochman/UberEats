@@ -1,4 +1,4 @@
-import {Image, StyleSheet, Text, View ,Pressable } from "react-native";
+import {Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 
 const RestaurantItem = ({restaurant}) => {
