@@ -1,5 +1,6 @@
 import {StyleSheet, Text, View} from "react-native";
 import restaurants from "../../../assets/data/restaurants.json";
+
 const restaurant = restaurants[0];
 const BasketDishItem = ({basketDish}) => {
     return (

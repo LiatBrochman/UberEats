@@ -1,8 +1,8 @@
-import {Text, View, Image} from 'react-native';
+import {Image, Text, View} from 'react-native';
 import restaurants from '../../../assets/data/restaurants.json'
-const restaurant = restaurants[0]
 import styles from './styles'
 
+const restaurant = restaurants[0]
 
 
 const RestaurantHeader = ({restaurant}) => {

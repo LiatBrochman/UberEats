@@ -1,6 +1,7 @@
-import { Text, View, FlatList, StyleSheet } from 'react-native';
+import {FlatList, StyleSheet, View} from 'react-native';
 import OrderListItem from '../../components/OrderListItem'
 import orders from '../../../assets/data/orders.json'
+
 const OrderScreen = () => {
     return (
     <View style={styles.container}>
