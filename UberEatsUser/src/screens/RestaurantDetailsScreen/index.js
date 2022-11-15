@@ -1,10 +1,10 @@
-import { View, FlatList } from 'react-native';
+import {FlatList, View} from 'react-native';
 import restaurants from '../../../assets/data/restaurants.json'
 import {Ionicons} from "@expo/vector-icons"
 import DishListItem from '../../components/DishListItem'
 import Header from './Header'
 import styles from './styles'
-import { useRoute, useNavigation } from "@react-navigation/native";
+import {useNavigation, useRoute} from "@react-navigation/native";
 
 const restaurant = restaurants[0]
 

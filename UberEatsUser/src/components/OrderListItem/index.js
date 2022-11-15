@@ -1,4 +1,4 @@
-import {Image, Text, View, StyleSheet, Pressable} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 
 const OrderListItem = ({order}) => {
