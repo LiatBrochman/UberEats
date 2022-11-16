@@ -1,17 +1,15 @@
-import {StatusBar} from 'expo-status-bar';
-import {FlatList, StyleSheet, View} from 'react-native';
-import orders from './assets/data/orders.json';
-import OrderItem from "./src/components/OrderItem";
+import { StatusBar } from "expo-status-bar";
+import { View, StyleSheet } from 'react-native';
+import orders from "./assets/data/orders.json";
 
-const order = orders[0]
+import OrderScreen from "./src/screens/OrderScreen";
+import { FlatList } from 'react-native-gesture-handler'
+
 
 export default function App() {
     return (
         <View style={styles.container}>
-            <FlatList
-            data={orders}
-            renderItem={({item}) => <OrderItem order={item}/>}
-            />
+            <OrderScreen />
             <StatusBar style="auto"/>
         </View>
     );
@@ -22,6 +20,5 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         justifyContent: 'center',
-        paddingTop: 40
     },
 });
