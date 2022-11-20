@@ -1,9 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { View, StyleSheet } from 'react-native';
-import orders from "./assets/data/orders.json";
-
 import OrderScreen from "./src/screens/OrderScreen";
-import { FlatList } from 'react-native-gesture-handler'
+
 
 
 export default function App() {
