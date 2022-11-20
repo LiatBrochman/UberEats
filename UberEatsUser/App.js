@@ -1,9 +1,14 @@
 import {StatusBar} from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
 import RootNavigator from "./src/navigation";
 
+import { NavigationContainer } from '@react-navigation/native';
+import {Amplify, Analytics} from 'aws-amplify'
+import { withAuthenticator } from "aws-amplify-react-native";
+import config from './src/aws-exports'
 
-export default function App() {
+Amplify.configure({...config, Analytics: {disabled:true,},})
+
+function App() {
     return (
 <NavigationContainer>
             <RootNavigator/>
@@ -11,5 +16,7 @@ export default function App() {
 </NavigationContainer>
     );
 }
+
+export default withAuthenticator(App);
 
 
