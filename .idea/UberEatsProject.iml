@@ -5,6 +5,12 @@
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/UberEatsCourier/.expo" />
+      <excludeFolder url="file://$MODULE_DIR$/UberEatsUser/amplify/backend/api/UberEats/build" />
+      <excludeFolder url="file://$MODULE_DIR$/UberEatsUser/amplify/backend/auth/UberEats/build" />
+      <excludeFolder url="file://$MODULE_DIR$/UberEatsUser/amplify/backend/awscloudformation/build" />
+      <excludeFolder url="file://$MODULE_DIR$/UberEatsUser/amplify/#current-cloud-backend" />
+      <excludeFolder url="file://$MODULE_DIR$/UberEatsUser/.expo" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

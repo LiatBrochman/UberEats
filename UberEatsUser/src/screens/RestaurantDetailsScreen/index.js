@@ -1,5 +1,5 @@
 import {useState, useEffect} from "react";
-import {FlatList, View, ActivityIndicator} from 'react-native';
+import {FlatList, View, ActivityIndicator, Pressable, Text} from 'react-native';
 import {Ionicons} from "@expo/vector-icons"
 import DishListItem from '../../components/DishListItem'
 import Header from './Header'
@@ -7,6 +7,7 @@ import styles from './styles'
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {DataStore} from "aws-amplify";
 import {Restaurant, Dish} from '../../models'
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const RestaurantDetailsPage = () => {
     const [restaurant, setRestaurant] = useState(null);
@@ -17,20 +18,29 @@ const RestaurantDetailsPage = () => {
 
     const id = route.params?.id;
 
+    const {setRestaurant: setBasketRestaurant, basket, basketDishes} = useBasketContext();
+
     useEffect(() => {
         if(!id){
             return;
         }
-        DataStore.query(Restaurant, id).then(setRestaurant)
-        DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes)
+        setBasketRestaurant(null);
+
+        DataStore.query(Restaurant, id).then(setRestaurant);
+
+        DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes);
 
     }, [id]);
+
+    useEffect(() => {
+        setBasketRestaurant(restaurant)
+    }, [restaurant]);
+
 
     if (!restaurant) {
         return (<ActivityIndicator size={"large"} color={"grey"}/>)
     }
 
-    console.log(restaurant)
 
 
     return (
@@ -43,6 +53,12 @@ const RestaurantDetailsPage = () => {
             />
             <Ionicons onPress={() => navigation.goBack()} name="arrow-back-circle" size={45} color="white"
                       style={styles.iconContainer}/>
+
+            { basket &&
+            <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
+                <Text style={styles.buttonText}>Open basket({basketDishes.length})</Text>
+            </Pressable>
+            }
         </View>
     );
 };
