@@ -1,22 +1,16 @@
-import { StatusBar } from "expo-status-bar";
-import { View, StyleSheet } from 'react-native';
-import OrderScreen from "./src/screens/OrderScreen";
+import {StatusBar} from "expo-status-bar";
+import {View, StyleSheet} from 'react-native';
+import {NavigationContainer} from '@react-navigation/native'
+import Navigation from './src/navigation'
 
 
 
 export default function App() {
     return (
-        <View style={styles.container}>
-            <OrderScreen />
-            <StatusBar style="auto"/>
-        </View>
+        <NavigationContainer>
+                <Navigation/>
+                <StatusBar style="auto"/>
+        </NavigationContainer>
     );
-}
+};
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-    },
-});
