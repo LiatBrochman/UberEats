@@ -2,12 +2,21 @@ import { ModelInit, MutableModel } from "@aws-amplify/datastore";
 // @ts-ignore
 import { LazyLoading, LazyLoadingDisabled, AsyncCollection, AsyncItem } from "@aws-amplify/datastore";
 
+export enum TransportaionModes {
+  DRIVING = "DRIVING",
+  BICYCLING = "BICYCLING"
+}
+
 export enum OrderStatus {
   NEW = "NEW",
   COOKING = "COOKING",
   READY_FOR_PICKUP = "READY_FOR_PICKUP",
   PICKED_UP = "PICKED_UP",
   COMPLETED = "COMPLETED"
+}
+
+type CourierMetaData = {
+  readOnlyFields: 'createdAt' | 'updatedAt';
 }
 
 type BasketMetaData = {
@@ -36,6 +45,34 @@ type RestaurantMetaData = {
 
 type UserMetaData = {
   readOnlyFields: 'createdAt' | 'updatedAt';
+}
+
+type EagerCourier = {
+  readonly id: string;
+  readonly name: string;
+  readonly sub: string;
+  readonly lat?: string | null;
+  readonly lng?: string | null;
+  readonly transportionMode: TransportaionModes | keyof typeof TransportaionModes;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyCourier = {
+  readonly id: string;
+  readonly name: string;
+  readonly sub: string;
+  readonly lat?: string | null;
+  readonly lng?: string | null;
+  readonly transportionMode: TransportaionModes | keyof typeof TransportaionModes;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type Courier = LazyLoading extends LazyLoadingDisabled ? EagerCourier : LazyCourier
+
+export declare const Courier: (new (init: ModelInit<Courier, CourierMetaData>) => Courier) & {
+  copyOf(source: Courier, mutator: (draft: MutableModel<Courier, CourierMetaData>) => MutableModel<Courier, CourierMetaData> | void): Courier;
 }
 
 type EagerBasket = {
@@ -149,9 +186,11 @@ type EagerOrder = {
   readonly total: number;
   readonly status: OrderStatus | keyof typeof OrderStatus;
   readonly OrderDishes?: (OrderDish | null)[] | null;
+  readonly Courier?: Courier | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly orderRestaurantId?: string | null;
+  readonly orderCourierId?: string | null;
 }
 
 type LazyOrder = {
@@ -161,9 +200,11 @@ type LazyOrder = {
   readonly total: number;
   readonly status: OrderStatus | keyof typeof OrderStatus;
   readonly OrderDishes: AsyncCollection<OrderDish>;
+  readonly Courier: AsyncItem<Courier | undefined>;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
   readonly orderRestaurantId?: string | null;
+  readonly orderCourierId?: string | null;
 }
 
 export declare type Order = LazyLoading extends LazyLoadingDisabled ? EagerOrder : LazyOrder
