@@ -12,7 +12,6 @@ const Basket = () => {
     const onCreateOrder = async () => {
         await createOrder();
         navigation.goBack();
-
     }
 
     return (

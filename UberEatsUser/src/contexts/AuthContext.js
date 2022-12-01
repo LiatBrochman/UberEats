@@ -10,11 +10,31 @@ const AuthContextProvider = ({children}) => {
     const sub = authUser?.attributes?.sub;
 
     useEffect(() => {
-        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+        console.log("\n\nsub:", sub)
+    }, [sub])
+    useEffect(() => {
+        console.log("\n\ndbUser:", dbUser)
+    }, [dbUser])
+    useEffect(() => {
+        console.log("\n\nauthUser:", authUser)
+    }, [authUser])
+
+
+    useEffect(() => {
+        // console.log("\n\nauthUser before:", authUser)
+        Auth.currentAuthenticatedUser({bypassCache: true}).then(usr => {
+            // console.log('\n\nuser', usr)
+            return setAuthUser(usr)
+        })
+        // console.log("\n\nauthUser after:", authUser)
     }, [])
 
     useEffect(() => {
+        // console.log("\n\ndbUser before:", dbUser)
+
         DataStore.query(User, (user) => user.sub.eq(sub)).then((users) => setDbUser(users[0]))
+        // console.log("\n\ndbUser after:", dbUser)
+
     }, [sub]);
 
 

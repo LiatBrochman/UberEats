@@ -49,7 +49,7 @@ const RestaurantDetailsPage = () => {
                 ListHeaderComponent={() => <Header restaurant={restaurant}/>}
                 data={dishes}
                 renderItem={({item}) => <DishListItem dish={item}/>}
-                KeyExtractor={(item) => item.name}
+                keyExtractor={(item) => item.name}
             />
             <Ionicons onPress={() => navigation.goBack()} name="arrow-back-circle" size={45} color="white"
                       style={styles.iconContainer}/>
