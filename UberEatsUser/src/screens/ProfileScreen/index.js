@@ -1,5 +1,5 @@
-import {View, Text, TextInput, StyleSheet, Button, Alert} from "react-native";
-import React, {useEffect, useState} from "react";
+import { Text, TextInput, StyleSheet, Button, Alert} from "react-native";
+import React, { useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Auth, DataStore} from "aws-amplify";
 import {User} from '../../models'
@@ -19,7 +19,6 @@ const Profile = () => {
     const navigation = useNavigation()
 
     const onSave = async () => {
-        console.log("dbUser:",dbUser)
         if (dbUser) {
             await updateUser();
         } else {

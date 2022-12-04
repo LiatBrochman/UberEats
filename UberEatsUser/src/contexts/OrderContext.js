@@ -13,13 +13,13 @@ const AuthContextProvider = ({children}) => {
     const [orders, setOrders] = useState([]);
 
     useEffect(()=>{
-       DataStore.query(Order, (o) => o.userID.eq(dbUser.id)).then(setOrders);
+       DataStore.query(Order, order => order.userID.eq(dbUser?.id)).then(setOrders);
     })
 
     const createOrder = async () => {
         //create the order
         const newOrder = await DataStore.save(new Order({
-            userID: dbUser.id,
+            userID: dbUser?.id,
             Restaurant: restaurant,
             status: 'NEW',
             total: totalPrice,

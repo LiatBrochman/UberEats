@@ -8,33 +8,23 @@ const AuthContextProvider = ({children}) => {
     const [authUser, setAuthUser] = useState(null);
     const [dbUser, setDbUser] = useState(null)
     const sub = authUser?.attributes?.sub;
-
     useEffect(() => {
-        console.log("\n\nsub:", sub)
+        console.log("\n\nauthContext. sub: 6,11$", sub)
     }, [sub])
     useEffect(() => {
-        console.log("\n\ndbUser:", dbUser)
+        console.log("\n\nauthContext. dbUser: 7,10,14$", dbUser)
     }, [dbUser])
     useEffect(() => {
-        console.log("\n\nauthUser:", authUser)
+        console.log("\n\nauthContext. authUser: 8,12$", authUser)
     }, [authUser])
 
 
     useEffect(() => {
-        // console.log("\n\nauthUser before:", authUser)
-        Auth.currentAuthenticatedUser({bypassCache: true}).then(usr => {
-            // console.log('\n\nuser', usr)
-            return setAuthUser(usr)
-        })
-        // console.log("\n\nauthUser after:", authUser)
+        Auth.currentAuthenticatedUser({bypassCache: true}).then(usr => setAuthUser(usr))
     }, [])
 
     useEffect(() => {
-        // console.log("\n\ndbUser before:", dbUser)
-
-        DataStore.query(User, (user) => user.sub.eq(sub)).then((users) => setDbUser(users[0]))
-        // console.log("\n\ndbUser after:", dbUser)
-
+        DataStore.query(User, user => user.sub.eq(sub)).then((users) => setDbUser(users[0]))
     }, [sub]);
 
 

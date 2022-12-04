@@ -1,9 +1,6 @@
 import {Image, StyleSheet, Text, View} from "react-native";
-import restaurants from "../../../assets/data/restaurants.json";
 
-const restaurant = restaurants[0];
 const BasketDishItem = ({basketDish}) => {
-    // console.log(basketDish.Dish);
     return (
         <View style={styles.row}>
             <View style={styles.quantityContainer}>
