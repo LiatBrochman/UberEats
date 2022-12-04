@@ -40,17 +40,17 @@ const BasketContextProvider = ({children}) => {
 
 
 
-    useEffect(() => {
-        // console.log("\n\ntotal price before:",totalPrice)
-        setTotalPrice(basketDishes.reduce(
-            (sum, basketDishes) => {
-                // console.log("\n\ncalculating total price")
-                // console.log('sum:', sum, '\ndish :',  basketDishes?.Dish)
-                return sum + basketDishes?.quantity * basketDishes?.Dish.price
-            }
-            , restaurant?.deliveryFee || 0))
-            // console.log("\n\ntotalPrice after:",totalPrice)
-    }, [basketDishes]);
+    // useEffect(() => {
+    //     // console.log("\n\ntotal price before:",totalPrice)
+    //     setTotalPrice(basketDishes.reduce(
+    //         (sum, basketDishes) => {
+    //             // console.log("\n\ncalculating total price")
+    //             // console.log('sum:', sum, '\ndish :',  basketDishes?.Dish)
+    //             return sum + basketDishes?.quantity * basketDishes?.Dish.price
+    //         }
+    //         , restaurant?.deliveryFee || 0))
+    //         // console.log("\n\ntotalPrice after:",totalPrice)
+    // }, [basketDishes]);
 
 
     useEffect(() => {
@@ -94,11 +94,7 @@ const BasketContextProvider = ({children}) => {
     };
 
     const createNewBasket = async () => {
-        const newBasket = await DataStore.save(
-            new Basket({userID: dbUser.id, restaurantID: restaurant.id})
-        );
-        // console.log("\n\nnew basket:",newBasket)
-
+        const newBasket = await DataStore.save(new Basket({userID: dbUser?.id, restaurantID: restaurant?.id}));
         setBasket(newBasket);
         return newBasket;
     };
