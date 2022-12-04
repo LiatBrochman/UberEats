@@ -54,14 +54,16 @@ const BasketContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        // console.log("\n\nbasket before:",basket)
-        DataStore.query(Basket, (b) =>
-            // b.and(b => [
-                b.restaurantID.eq(restaurant.id).userID.eq(dbUser.id)
-        ).then((baskets) => setBasket(baskets[0]));
+
+        DataStore.query(Basket, basket =>
+            basket.and(basket => [
+                basket.restaurantID.eq(restaurant?.id),
+                basket.userID.eq(dbUser?.id)
+            ])
+        ).then(baskets => setBasket(baskets[0]))
+
             // console.log("\n\nbasket:",baskets[0])
             // console.log("\n\nbasket dish:",baskets[0]?.basketDish)
-            // .then(()=>console.log("\n\nbasket after:",basket))
 
     }, [dbUser, restaurant]);
 
