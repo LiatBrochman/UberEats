@@ -29,7 +29,7 @@ const Tab = createBottomTabNavigator()
 
 const HomeTabs = () => {
     return (
-        <Tab.Navigator screenOptions={{headerShown:false}} barStyle={{backgroundColor: 'white'}}>
+        <Tab.Navigator screenOptions={{headerShown:false}} barStyle={{backgroundColor: "white"}}>
             <Tab.Screen
                 name="Home"
                 component={HomeStackNavigator}
@@ -45,7 +45,7 @@ const HomeTabs = () => {
                         (<MaterialIcons name="list-alt" size={24} color={color}/>),
                 }}/>
             <Tab.Screen
-                name="profile"
+                name="Profile"
                 component={ProfileScreen}
                 options={{
                     tabBarIcon: ({color}) =>

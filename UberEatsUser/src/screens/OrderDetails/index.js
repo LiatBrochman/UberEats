@@ -7,7 +7,6 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import {useEffect, useState} from "react";
 import {useRoute} from "@react-navigation/native";
 
-const order = orders[0]
 const OrderDetailsHeader = ({order}) => {
 
     return (
