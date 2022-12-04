@@ -1,12 +1,18 @@
 import {useState, useEffect} from "react";
-import {FlatList, View, ActivityIndicator, Pressable, Text} from 'react-native';
-import {Ionicons} from "@expo/vector-icons"
-import DishListItem from '../../components/DishListItem'
-import Header from './Header'
-import styles from './styles'
-import {useNavigation, useRoute} from "@react-navigation/native";
+import {
+    View,
+    FlatList,
+    ActivityIndicator,
+    Pressable,
+    Text,
+} from "react-native";
+import {Ionicons} from "@expo/vector-icons";
+import DishListItem from "../../components/DishListItem";
+import Header from "./Header";
+import styles from "./styles";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import {DataStore} from "aws-amplify";
-import {Restaurant, Dish} from '../../models'
+import { Restaurant, Dish } from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
 
 const RestaurantDetailsPage = () => {
@@ -18,27 +24,34 @@ const RestaurantDetailsPage = () => {
 
     const id = route.params?.id;
 
-    const {setRestaurant: setBasketRestaurant, basket, basketDishes} = useBasketContext();
+    const {
+        setRestaurant: setBasketRestaurant,
+        basket,
+        basketDishes,
+    } = useBasketContext();
 
     useEffect(() => {
         if(!id){
             return;
         }
         setBasketRestaurant(null);
-
+        // fetch the restaurant with the id
         DataStore.query(Restaurant, id).then(setRestaurant);
 
-        DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes);
+        DataStore.query(Dish, (dish) => dish.restaurantID.eq(id)).then(
+            setDishes
+        );
 
     }, [id]);
 
     useEffect(() => {
-        setBasketRestaurant(restaurant)
+        setBasketRestaurant(restaurant);
     }, [restaurant]);
 
 
     if (!restaurant) {
-        return (<ActivityIndicator size={"large"} color={"grey"}/>)
+        return <ActivityIndicator size={"large"} color="gray" />;
+
     }
 
 
@@ -54,11 +67,11 @@ const RestaurantDetailsPage = () => {
             <Ionicons onPress={() => navigation.goBack()} name="arrow-back-circle" size={45} color="white"
                       style={styles.iconContainer}/>
 
-            { basket &&
+            { basket && (
             <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
                 <Text style={styles.buttonText}>Open basket({basketDishes.length})</Text>
             </Pressable>
-            }
+            )}
         </View>
     );
 };

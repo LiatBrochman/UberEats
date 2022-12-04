@@ -1,9 +1,9 @@
-import {FlatList, StyleSheet, View} from 'react-native';
-import OrderListItem from '../../components/OrderListItem'
+import { View, Text, FlatList } from "react-native";
+import OrderListItem from "../../components/OrderListItem";
 import {useOrderContext} from "../../contexts/OrderContext";
 
 const OrderScreen = () => {
-    const { orders } = useOrderContext()
+    const { orders } = useOrderContext();
 
     return (
     <View style={styles.container}>
@@ -22,4 +22,4 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "100%",
     },
-})
+});

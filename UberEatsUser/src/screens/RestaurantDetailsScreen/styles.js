@@ -5,29 +5,28 @@ export default StyleSheet.create({
         flex: 1,
     },
     iconContainer: {
-        position: 'absolute',
-        top: 30,
+        position: "absolute",
+        top: 40,
         left: 10,
     },
 
     image: {
-        width: '100%',
+        width: "100%",
         aspectRatio: 5 / 3,
     },
     title: {
-        fontSize: 30,
+        fontSize: 35,
         fontWeight: "600",
         marginVertical: 10,
     },
     menuTitle:{
-        marginVertical: 20,
+        marginTop: 20,
         fontSize: 18,
         letterSpacing: 0.7,
     },
     subtitle: {
-        color: '#525252',
         fontSize: 15,
-
+        color: "#525252",
     },
     container: {
         margin: 10,
@@ -41,8 +40,8 @@ export default StyleSheet.create({
     },
     buttonText: {
         color: "white",
-        fontWeight: "bold",
-        fontSize: 20,
+        fontWeight: "600",
+        fontSize: 18,
     },
 
-})
+});
