@@ -57,7 +57,7 @@ const RestaurantDetailsPage = () => {
 
 
     return (
-        <View style={styles.page}>
+         <View style={styles.page}>
             <FlatList
                 ListHeaderComponent={() => <Header restaurant={restaurant}/>}
                 data={dishes}
@@ -69,7 +69,7 @@ const RestaurantDetailsPage = () => {
 
             { basket && (
             <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
-                <Text style={styles.buttonText}>Open basket({basketDishes.length})</Text>
+                <Text style={styles.buttonText}>Open basket({basketDishes?.length || 0})</Text>
             </Pressable>
             )}
         </View>

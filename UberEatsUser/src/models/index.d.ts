@@ -2,7 +2,7 @@ import { ModelInit, MutableModel } from "@aws-amplify/datastore";
 // @ts-ignore
 import { LazyLoading, LazyLoadingDisabled, AsyncCollection, AsyncItem } from "@aws-amplify/datastore";
 
-export enum TransportaionModes {
+export enum TransportationModes {
   DRIVING = "DRIVING",
   BICYCLING = "BICYCLING"
 }
@@ -51,9 +51,9 @@ type EagerCourier = {
   readonly id: string;
   readonly name: string;
   readonly sub: string;
-  readonly lat?: string | null;
-  readonly lng?: string | null;
-  readonly transportionMode: TransportaionModes | keyof typeof TransportaionModes;
+  readonly lat?: number | null;
+  readonly lng?: number | null;
+  readonly transportationMode: TransportationModes | keyof typeof TransportationModes;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -62,9 +62,9 @@ type LazyCourier = {
   readonly id: string;
   readonly name: string;
   readonly sub: string;
-  readonly lat?: string | null;
-  readonly lng?: string | null;
-  readonly transportionMode: TransportaionModes | keyof typeof TransportaionModes;
+  readonly lat?: number | null;
+  readonly lng?: number | null;
+  readonly transportationMode: TransportationModes | keyof typeof TransportationModes;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
