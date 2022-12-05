@@ -1,6 +1,6 @@
 import {createContext, useState, useEffect, useContext} from "react";
 import {DataStore} from "aws-amplify";
-import {Basket, BasketDish} from "../models";
+import {Basket, BasketDish, Dish} from "../models";
 import {useAuthContext} from "./AuthContext";
 
 const BasketContext = createContext({});
@@ -22,10 +22,15 @@ const BasketContextProvider = ({children}) => {
     const getTotalPrice = async ({basketDishes,restaurant})=>{
         console.log("\n\n\n4.getTotalPrice")
         basketDishes.reduce(
-            (sum, basketDish) => {
-                console.log("\n\n\n######## basket dish is:",basketDish)
-                console.log("\n\n\n@@@@@@@@ DISH :",basketDish.Dish)
-                return sum + basketDish.quantity * basketDish.Dish['_z'].price
+           async (sum, basketDish) => {
+
+               let [dish] =  await DataStore.query(Dish, d=> d.id.eq(basketDish.basketDishDishId))
+               console.log("\n\n\n@@@@@@@@ DISH:",dish)
+                // console.log("\n\n\n######## basket dish is:",basketDish)
+                // // console.log("\n\n\n@@@@@@@@ DISH :",basketDish.Dish)
+                // console.log("\n\n\n@@@@@@@@ DISH query :", await DataStore.query(Dish, d=> d.id.eq(basketDish.basketDishDishId)))
+
+                return sum + basketDish.quantity * dish.price
             }
             , restaurant?.deliveryFee)
     }

@@ -100,7 +100,6 @@ const Profile = () => {
                     DataStore.delete(Basket, Predicates.ALL),
                     DataStore.delete(Dish, Predicates.ALL),
                 ])
-
                 clearBasketContext()
 
             }} title="clean all baskets + dishes + basketDishes"/>
