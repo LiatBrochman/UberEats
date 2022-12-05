@@ -36,6 +36,13 @@ const BasketContextProvider = ({children}) => {
     const [basketDishes, setBasketDishes] = useState();
     const [totalPrice, setTotalPrice] = useState();
 
+    const clearBasketContext=()=>{
+        setRestaurant(null)
+        setBasket(null)
+        setBasketDishes(null)
+        setTotalPrice(0)
+    }
+
     // useEffect(()=>{
     //     setRestaurant((async()=> await getRestaurantFromDB())())
     // },[]);
@@ -98,6 +105,7 @@ const BasketContextProvider = ({children}) => {
     return (<BasketContext.Provider
             value={{
                 addDishToBasket,
+                clearBasketContext,
 
                 restaurant,
                 setRestaurant,
