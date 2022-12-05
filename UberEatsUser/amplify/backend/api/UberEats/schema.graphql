@@ -1,4 +1,4 @@
-enum TransportaionModes {
+enum TransportationModes {
   DRIVING
   BICYCLING
 }
@@ -7,9 +7,9 @@ type Courier @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
   sub: String!
-  lat: String
-  lng: String
-  transportionMode: TransportaionModes!
+  lat: Float
+  lng: Float
+  transportationMode: TransportationModes!
 }
 
 type Basket @model @auth(rules: [{allow: public}]) {

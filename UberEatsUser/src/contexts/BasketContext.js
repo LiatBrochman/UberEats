@@ -1,84 +1,114 @@
 import {createContext, useState, useEffect, useContext} from "react";
 import {DataStore} from "aws-amplify";
-import {Basket, BasketDish} from "../models";
+import {Basket, BasketDish, Restaurant} from "../models";
 import {useAuthContext} from "./AuthContext";
+import {useRoute} from "@react-navigation/native";
 
 const BasketContext = createContext({});
 
 const BasketContextProvider = ({children}) => {
+
+    const getRestaurantFromDB = async() => {
+        console.log("\n\n\n1.getRestaurantFromDB")
+        const id = route.params?.id
+        console.log("\n\n\n~~~~~~~~~~~~my res id",id)
+        return await DataStore.query(Restaurant, id)
+    }
+    const getBasketFromDB = async({dbUser,restaurant}) => {
+        console.log("\n\n\n2.getBasketFromDB")
+        const res= await DataStore.query(Basket, b =>
+            b.and(b => [
+                b.restaurantID.eq(restaurant?.id),
+                b.userID.eq(dbUser?.id)
+            ]))
+        console.log("\n\n\nbasket RES=",res)
+        return res[0]
+    }
+    const getBasketDishesFromDB = async({basket}) => {
+        console.log("\n\n\n3.getBasketDishesFromDB")
+        const res=  await DataStore.query(BasketDish,bd => bd.basketID.eq(basket.id))
+        console.log("\n\n\nbasketDishes RES=",res)
+        return res
+    }
+    const getTotalPrice = async ({basketDishes,restaurant})=>{
+        console.log("\n\n\n4.getTotalPrice")
+        basketDishes.reduce(
+            (sum, basketDish) => {
+                console.log("\n\n\n@@@@@@@@ DISH :",basketDish.Dish)
+                return sum + basketDish.quantity * basketDish.Dish['_z'].price
+            }
+            , restaurant?.deliveryFee)
+    }
+
     const {dbUser} = useAuthContext();
+    const [restaurant, setRestaurant] = useState();
+    const [basket, setBasket] = useState();
+    const [basketDishes, setBasketDishes] = useState();
+    const [totalPrice, setTotalPrice] = useState();
 
-    const [restaurant, setRestaurant] = useState(null);
-    const [basket, setBasket] = useState(null);
-    const [basketDishes, setBasketDishes] = useState([]);
-    // const [totalPrice, setTotalPrice] = useState(0)
-
-    const totalPrice = basketDishes.reduce(
-        (sum, basketDish) => sum + basketDish.quantity * basketDish.Dish.price,
-        restaurant?.deliveryFee
-    );
-
-    // useEffect(() => {
-    //     console.log(`\n\ndbUser:`, dbUser)
-    // }, [dbUser])
-    //
-    // useEffect(() => {
-    //     console.log(`\n\nrestaurant:`, restaurant)
-    // }, [restaurant])
-    //
-    // useEffect(() => {
-    //     console.log(`\n\nbasket:`, basket)
-    // }, [basket])
-    //
-    // useEffect(() => {
-    //     console.log(`\n\nbasketDishes:`, basketDishes)
-    // }, [basketDishes])
-    //
-    // useEffect(() => {
-    //     console.log(`\n\ntotalPrice:`, totalPrice)
-    // }, [totalPrice])
-
-
-
-    // useEffect(() => {
-    //     // console.log("\n\ntotal price before:",totalPrice)
-    //     setTotalPrice(basketDishes.reduce(
-    //         (sum, basketDishes) => {
-    //             // console.log("\n\ncalculating total price")
-    //             // console.log('sum:', sum, '\ndish :',  basketDishes?.Dish)
-    //             return sum + basketDishes?.quantity * basketDishes?.Dish.price
-    //         }
-    //         , restaurant?.deliveryFee || 0))
-    //         // console.log("\n\ntotalPrice after:",totalPrice)
-    // }, [basketDishes]);
-
-
+    // useEffect(()=>{
+    //     setRestaurant((async()=> await getRestaurantFromDB())())
+    // },[]);
     useEffect(() => {
 
-        DataStore.query(Basket, basket =>
-            basket.and(basket => [
-                basket.restaurantID.eq(restaurant?.id),
-                basket.userID.eq(dbUser?.id)
-            ])
-        ).then(baskets => setBasket(baskets[0]))
+        if(restaurant && !basket) {
 
-            // console.log("\n\nbasket:",baskets[0])
-            // console.log("\n\nbasket dish:",baskets[0]?.basketDish)
 
-    }, [dbUser, restaurant]);
+            (async () => {
 
-    useEffect(() => {
-        // basket && console.log("\n\nbasketDish before:",basketDishes)
-        if (basket) {
-            DataStore.query(BasketDish, (bd) => bd.basketID.eq(basket.id)).then(
-                setBasketDishes
-            );
+                const data = await getBasketFromDB({dbUser, restaurant})
+                console.log("\n\n\n~~~~~~~~~~~~~~~basket=", data)
+                if (data) {
+
+                    console.log("\n\n\nSetting Basket to::",data)
+                    setBasket(data)
+                }
+
+            })()
         }
-                // .then(r=>console.log("\n\nres=",r))
-            // .then(()=>console.log("\n\nbasketDish after:",basketDishes))
+        // restaurant && !basket && console.log("\n\n\n~~~~~~~~~~~~~~~restaurant=",restaurant)
+        // restaurant && !basket && setBasket((async ()=> {
+        //     const result = await getBasketFromDB(dbUser,restaurant)
+        //     if(result['z']) return result
+        // })())
+    }, [restaurant]);
 
+    useEffect(() => {
 
+        if(basket && !basketDishes){
+
+            (async ()=>{
+                const data = await getBasketDishesFromDB({basket})
+                console.log("\n\n\n~~~~~~~~~~~~~~~basket dish=",data)
+
+                if(data){
+                    console.log("Setting BasketDish to::",data)
+                    setBasketDishes(data)
+                }
+            })()
+
+        }
+
+        // basket && !basketDishes && console.log("\n\n\n~~~~~~~~~~~~~~~basket=",basket)
+        // basket && !basketDishes && setBasketDishes((async ()=> {
+        //      const result = await getBasketDishesFromDB(basket)
+        //     if(result['z']) return result
+        // }))
     }, [basket]);
+
+    useEffect(() => {
+
+        const data = (async ()=> await getTotalPrice({basketDishes,restaurant}))()
+        // console.log("\n\n\n~~~~~~~~~~~~~~~basketDishes=",basketDishes)
+        if(data){
+            console.log("Setting Total Price to::",data)
+            setTotalPrice(data)
+        }
+        // basketDishes && restaurant && setTotalPrice((async ()=> {
+        //      const result = await getTotalPrice(basketDishes,restaurant)
+        //     if(result) return result
+        // }))
+    },[basketDishes]);
 
 
     const addDishToBasket = async (dish, quantity) => {
@@ -86,11 +116,11 @@ const BasketContextProvider = ({children}) => {
         let theBasket = basket || (await createNewBasket());
 
         // create a BasketDish item and save to Datastore
-        const newDish = await DataStore.save(new BasketDish({quantity, Dish: dish, basketID: theBasket.id})
+        const newBasketDish = await DataStore.save(new BasketDish({quantity, Dish: dish, basketID: theBasket.id})
         );
 
         // console.log("\n\nnew dish:",newDish)
-        setBasketDishes([...basketDishes, newDish]);
+        setBasketDishes([...basketDishes, newBasketDish]);
     };
 
     const createNewBasket = async () => {
@@ -100,17 +130,17 @@ const BasketContextProvider = ({children}) => {
     };
 
     return (<BasketContext.Provider
-        value={{
-        addDishToBasket,
-        setRestaurant,
-        restaurant,
-        basket,
-        basketDishes,
-        totalPrice,
-    }}
-    >
-        {children}
-    </BasketContext.Provider>
+            value={{
+                addDishToBasket,
+                setRestaurant,
+                restaurant,
+                basket,
+                basketDishes,
+                totalPrice,
+            }}
+        >
+            {children}
+        </BasketContext.Provider>
     );
 };
 

@@ -27,22 +27,22 @@ export const schema = {
                 "lat": {
                     "name": "lat",
                     "isArray": false,
-                    "type": "String",
+                    "type": "Float",
                     "isRequired": false,
                     "attributes": []
                 },
                 "lng": {
                     "name": "lng",
                     "isArray": false,
-                    "type": "String",
+                    "type": "Float",
                     "isRequired": false,
                     "attributes": []
                 },
-                "transportionMode": {
-                    "name": "transportionMode",
+                "transportationMode": {
+                    "name": "transportationMode",
                     "isArray": false,
                     "type": {
-                        "enum": "TransportaionModes"
+                        "enum": "TransportationModes"
                     },
                     "isRequired": true,
                     "attributes": []
@@ -875,8 +875,8 @@ export const schema = {
         }
     },
     "enums": {
-        "TransportaionModes": {
-            "name": "TransportaionModes",
+        "TransportationModes": {
+            "name": "TransportationModes",
             "values": [
                 "DRIVING",
                 "BICYCLING"
@@ -895,5 +895,5 @@ export const schema = {
     },
     "nonModels": {},
     "codegenVersion": "3.3.2",
-    "version": "a9eafabb50e356deb218014e39c91894"
+    "version": "44ce77c8ce48c1929156e08b26ca496c"
 };

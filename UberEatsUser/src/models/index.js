@@ -2,7 +2,7 @@
 import { initSchema } from '@aws-amplify/datastore';
 import { schema } from './schema';
 
-const TransportaionModes = {
+const TransportationModes = {
   "DRIVING": "DRIVING",
   "BICYCLING": "BICYCLING"
 };
@@ -26,6 +26,6 @@ export {
   Order,
   Restaurant,
   User,
-  TransportaionModes,
+  TransportationModes,
   OrderStatus
 };
