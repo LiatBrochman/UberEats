@@ -120,6 +120,17 @@ const Profile = () => {
                 console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
             }} title="add dish"/>
 
+            <Button onPress={async () => {
+
+                const res = await DataStore.save(
+                    new Basket({
+                        userID: dbUser.id,
+                        restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"
+                        })
+                )
+                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
+            }} title="add empty basket"/>
+
         </SafeAreaView>
     );
 };
