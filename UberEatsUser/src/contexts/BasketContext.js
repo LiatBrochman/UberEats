@@ -7,30 +7,39 @@ const BasketContext = createContext({});
 
 const BasketContextProvider = ({children}) => {
 
-    const getBasketFromDB = async({dbUser,restaurant}) => {
-        const res= await DataStore.query(Basket, b =>
+    const getBasketFromDB = async ({dbUser, restaurant}) => {
+        const res = await DataStore.query(Basket, b =>
             b.and(b => [
                 b.restaurantID.eq(restaurant?.id),
                 b.userID.eq(dbUser?.id)
             ]))
         return res[0]
     }
-    const getBasketDishesFromDB = async({basket}) => {
-        const res=  await DataStore.query(BasketDish,bd => bd.basketID.eq(basket.id))
+    const getBasketDishesFromDB = async ({basket}) => {
+        const res = await DataStore.query(BasketDish, bd => bd.basketID.eq(basket.id))
         return res
     }
-    const getTotalPrice = async ({basketDishes,restaurant})=>{
-        console.log("\n\n\n4.getTotalPrice")
-        basketDishes.reduce(
-           async (sum, basketDish) => {
+    const getTotalPrice = async ({basketDishes, restaurant}) => {
 
-               let [dish] =  await DataStore.query(Dish, d=> d.id.eq(basketDish.basketDishDishId))
-               console.log("\n\n\n@@@@@@@@ DISH:",dish)
-                // console.log("\n\n\n######## basket dish is:",basketDish)
-                // // console.log("\n\n\n@@@@@@@@ DISH :",basketDish.Dish)
-                // console.log("\n\n\n@@@@@@@@ DISH query :", await DataStore.query(Dish, d=> d.id.eq(basketDish.basketDishDishId)))
+        if (!basketDishes) return 0
 
-                return sum + basketDish.quantity * dish.price
+        return basketDishes.reduce(
+            async (sum, basketDish) => {
+
+                return await DataStore.query(Dish, d => d.id.eq(basketDish.basketDishDishId))
+                    .then(([dish])=>{
+                    console.log("dish price=", Number(dish.price))
+                    console.log("basketDish.quantity=", Number(basketDish.quantity))
+                    console.log("sum=", sum)
+                    if(sum.hasOwnProperty('_z')) sum=sum['_z']
+                    console.log(sum)
+                    // console.log("\n\n\n######## basket dish is:",basketDish)
+                    // // console.log("\n\n\n@@@@@@@@ DISH :",basketDish.Dish)
+                    // console.log("\n\n\n@@@@@@@@ DISH query :", await DataStore.query(Dish, d=> d.id.eq(basketDish.basketDishDishId)))
+                    const res = sum + basketDish.quantity * dish.price
+                    console.log("calc",res)
+                    return res
+                })
             }
             , restaurant?.deliveryFee)
     }
@@ -41,7 +50,7 @@ const BasketContextProvider = ({children}) => {
     const [basketDishes, setBasketDishes] = useState();
     const [totalPrice, setTotalPrice] = useState();
 
-    const clearBasketContext=()=>{
+    const clearBasketContext = () => {
         setRestaurant(null)
         setBasket(null)
         setBasketDishes(null)
@@ -53,7 +62,7 @@ const BasketContextProvider = ({children}) => {
     // },[]);
     useEffect(() => {
 
-        if(restaurant && !basket) {
+        if (restaurant && !basket) {
             (async () => {
                 const data = await getBasketFromDB({dbUser, restaurant})
                 if (data) {
@@ -65,10 +74,10 @@ const BasketContextProvider = ({children}) => {
 
     useEffect(() => {
 
-        if(basket && !basketDishes){
-            (async ()=>{
+        if (basket && !basketDishes) {
+            (async () => {
                 const data = await getBasketDishesFromDB({basket})
-                if(data){
+                if (data) {
                     setBasketDishes(data)
                 }
             })()
@@ -78,15 +87,22 @@ const BasketContextProvider = ({children}) => {
     }, [basket]);
 
     useEffect(() => {
-
-        if(basketDishes){
-            const data = (async ()=> await getTotalPrice({basketDishes,restaurant}))()
-            if(data){
-                setTotalPrice(data)
+        (async () =>{
+            if (basketDishes) {
+                const data =  await getTotalPrice({basketDishes, restaurant})
+                if (data) {
+                    console.log("\n\n\nsetting total price: " + data)
+                    try{
+                        console.log(data.toFixed(2))
+                    }catch (e) {
+                        console.error(e)
+                    }
+                    setTotalPrice(data)
+                }
             }
-        }
+        })()
 
-    },[basketDishes]);
+    }, [basketDishes]);
 
 
     const addDishToBasket = async (dish, quantity) => {

@@ -130,6 +130,8 @@ const Profile = () => {
                 console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
             }} title="add empty basket"/>
 
+            <Button onPress={async () => await Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>
+
         </SafeAreaView>
     );
 };
@@ -148,5 +150,4 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
 });
-
 export default Profile;
