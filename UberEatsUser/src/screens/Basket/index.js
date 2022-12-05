@@ -22,7 +22,7 @@ const Basket = () => {
             <FlatList data={basketDishes} renderItem={({item}) => <BasketDishItem basketDish={item}/>}/>
             <View style={styles.separator}/>
             <Pressable onPress={onCreateOrder} style={styles.button}>
-                <Text style={styles.buttonText}>Create order &#8226; $ {totalPrice.toFixed(2)}</Text>
+                <Text style={styles.buttonText}>Create order &#8226; $ {"totalPrice && totalPrice.toFixed(2)"}</Text>
             </Pressable>
         </View>
     );

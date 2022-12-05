@@ -5,6 +5,7 @@ import {Auth, DataStore, Predicates} from "aws-amplify";
 import {BasketDish, Basket, Dish, User} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
+import {setBasket, setBasketDishes, setRestaurant, setTotalPrice} from "../../contexts/BasketContext";
 
 const Profile = () => {
     const {dbUser} = useAuthContext();
@@ -91,22 +92,49 @@ const Profile = () => {
                 style={{textAlign: "center", color: 'red', margin: 10}}>
                 Sign out
             </Text>
-            <Button onPress={() => {
-                (async () => {
-                    await Promise.allSettled([
-                        await DataStore.delete(Basket, Predicates.ALL),
-                        await DataStore.delete(BasketDish, Predicates.ALL),
-                        await DataStore.delete(Dish, Predicates.ALL),
-                        await DataStore.save(new Dish({
+
+            <Button onPress={async () => {
+                //1.clean data from context:
+                const {
+                    setRestaurant,
+                    setBasket,
+                    setBasketDishes,
+                    setTotalPrice
+                } = require("../../contexts/BasketContext")
+                setRestaurant(null)
+                setBasket(null)
+                setTotalPrice(0)
+                setBasketDishes(null)
+
+                //2.clean DataStore (local storage)
+                await DataStore.clear()
+
+
+            }} title="clean all local data"/>
+
+            <Button onPress={async () => {
+                const res = await Promise.allSettled([
+                    DataStore.delete(BasketDish, Predicates.ALL),
+                    DataStore.delete(Basket, Predicates.ALL),
+                    DataStore.delete(Dish, Predicates.ALL),
+                ])
+                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ removed from db:", res)
+            }} title="clean DB"/>
+
+            <Button onPress={async () => {
+
+                const res = await DataStore.save(
+                    new Dish({
                             name: "Pancake",
                             image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2580&q=80",
                             description: "...",
-                            price: 10.0,
+                            price: Number(10.0),
                             restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"
-                        }))
-                    ])
-                })()
-            }} title="clean"/>
+                        }
+                    )
+                )
+                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
+            }} title="add dish"/>
         </SafeAreaView>
     );
 };
