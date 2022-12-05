@@ -1,15 +1,15 @@
 import {View, Text, TextInput, StyleSheet, Button, Alert} from "react-native";
 import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Auth, DataStore, Predicates} from "aws-amplify";
+import {Amplify, Auth, DataStore, Predicates} from "aws-amplify";
 import {BasketDish, Basket, Dish, User} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
-import {setBasket, setBasketDishes, setRestaurant, setTotalPrice} from "../../contexts/BasketContext";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const Profile = () => {
     const {dbUser} = useAuthContext();
-
+    const {clearBasketContext} = useBasketContext();
     const [name, setName] = useState(dbUser?.name || "");
     const [address, setAddress] = useState(dbUser?.address || "");
     const [lat, setLat] = useState(dbUser?.lat + "" || "0");
@@ -93,33 +93,17 @@ const Profile = () => {
                 Sign out
             </Text>
 
-            <Button onPress={async () => {
-                //1.clean data from context:
-                const {
-                    setRestaurant,
-                    setBasket,
-                    setBasketDishes,
-                    setTotalPrice
-                } = require("../../contexts/BasketContext")
-                setRestaurant(null)
-                setBasket(null)
-                setTotalPrice(0)
-                setBasketDishes(null)
-
-                //2.clean DataStore (local storage)
-                await DataStore.clear()
-
-
-            }} title="clean all local data"/>
 
             <Button onPress={async () => {
-                const res = await Promise.allSettled([
+                await Promise.allSettled([
                     DataStore.delete(BasketDish, Predicates.ALL),
                     DataStore.delete(Basket, Predicates.ALL),
                     DataStore.delete(Dish, Predicates.ALL),
                 ])
-                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ removed from db:", res)
-            }} title="clean DB"/>
+
+                clearBasketContext()
+
+            }} title="clean all baskets + dishes + basketDishes"/>
 
             <Button onPress={async () => {
 
@@ -135,6 +119,7 @@ const Profile = () => {
                 )
                 console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
             }} title="add dish"/>
+
         </SafeAreaView>
     );
 };
