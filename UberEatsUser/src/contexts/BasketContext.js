@@ -98,11 +98,18 @@ const BasketContextProvider = ({children}) => {
     return (<BasketContext.Provider
             value={{
                 addDishToBasket,
-                setRestaurant,
+
                 restaurant,
+                setRestaurant,
+
                 basket,
+                setBasket,
+
                 basketDishes,
-                totalPrice,
+                setBasketDishes,
+
+                setTotalPrice,
+                totalPrice
             }}
         >
             {children}

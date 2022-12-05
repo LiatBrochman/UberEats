@@ -8,7 +8,7 @@ const BasketDishItem = ({basketDish}) => {
             <View style={styles.quantityContainer}>
                 <Text>{basketDish.quantity}</Text>
             </View>
-            {console.log("##################",basketDish.Dish)}
+            {/*{console.log("##################",basketDish.Dish)}*/}
             <Text style={styles.basketDishName}>{basketDish.Dish['_z']?.name}</Text>
             <Text style={styles.basketDishPrice}>$ {basketDish.Dish['_z']?.price}</Text>
             {/*<Image source={{uri: basketDish.Dish['_z'].image}} style={styles.image}/>*/}
