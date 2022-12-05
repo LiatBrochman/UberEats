@@ -1,10 +1,10 @@
 import {View, Text, TextInput, StyleSheet, Button, Alert} from "react-native";
 import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Auth, DataStore} from "aws-amplify";
-import {User} from '../../models'
+import {Auth, DataStore, Predicates} from "aws-amplify";
+import {BasketDish, Basket, Dish, User} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 
 const Profile = () => {
     const {dbUser} = useAuthContext();
@@ -19,13 +19,13 @@ const Profile = () => {
     const navigation = useNavigation()
 
     const onSave = async () => {
-        console.log("dbUser:",dbUser)
+        console.log("dbUser:", dbUser)
         if (dbUser) {
             await updateUser();
         } else {
             await createUser();
         }
-       navigation.goBack()
+        navigation.goBack()
     };
 
     const updateUser = async () => {
@@ -44,9 +44,9 @@ const Profile = () => {
         try {
             const user = await DataStore.save(
                 new User({
-                    sub:sub,
-                    name:name,
-                    address:address,
+                    sub: sub,
+                    name: name,
+                    address: address,
                     lat: parseFloat(lat),
                     lng: parseFloat(lng),
                 })
@@ -91,7 +91,22 @@ const Profile = () => {
                 style={{textAlign: "center", color: 'red', margin: 10}}>
                 Sign out
             </Text>
-
+            <Button onPress={() => {
+                (async () => {
+                    await Promise.allSettled([
+                        await DataStore.delete(Basket, Predicates.ALL),
+                        await DataStore.delete(BasketDish, Predicates.ALL),
+                        await DataStore.delete(Dish, Predicates.ALL),
+                        await DataStore.save(new Dish({
+                            name: "Pancake",
+                            image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2580&q=80",
+                            description: "...",
+                            price: 10.0,
+                            restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"
+                        }))
+                    ])
+                })()
+            }} title="clean"/>
         </SafeAreaView>
     );
 };
