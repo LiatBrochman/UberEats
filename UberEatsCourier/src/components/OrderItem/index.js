@@ -31,8 +31,8 @@ const OrderItem = ({order}) => {
                 <Text style={{ color: "grey" }}>{order.Restaurant.address}</Text>
 
                 <Text style={{ marginTop: 10 }}>Delivery Details:</Text>
-                <Text style={{ color: "grey" }}>{order.User.name}</Text>
-                <Text style={{ color: "grey" }}>{order.User.address}</Text>
+                <Text style={{ color: "grey" }}>{order.User?.name}</Text>
+                <Text style={{ color: "grey" }}>{order.User?.address}</Text>
             </View>
                 <View
                     style={{
@@ -58,10 +58,10 @@ const OrderItem = ({order}) => {
 
 export default OrderItem;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        justifyContent: "center",
-    },
-});
+// const styles = StyleSheet.create({
+//     container: {
+//         flex: 1,
+//         backgroundColor: "#fff",
+//         justifyContent: "center",
+//     },
+// });

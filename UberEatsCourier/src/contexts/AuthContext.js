@@ -13,8 +13,14 @@ const AuthContextProvider = ({children}) => {
         Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
     }, []);
 
+
     useEffect(() => {
-        DataStore.query(Courier, (courier) => courier.sub.eq(sub)).then((couriers) => setDbCourier(couriers[0]))
+        if (sub) {
+            DataStore.query(Courier, (courier) => courier.sub.eq(sub))
+                .then((couriers) => {
+                    setDbCourier(couriers[0])
+                })
+        }
     }, [sub]);
 
     console.log(dbCourier)
