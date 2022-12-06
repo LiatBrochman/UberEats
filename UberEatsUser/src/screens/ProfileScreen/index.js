@@ -1,14 +1,15 @@
 import {View, Text, TextInput, StyleSheet, Button, Alert} from "react-native";
 import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Auth, DataStore} from "aws-amplify";
-import {User} from '../../models'
+import {Amplify, Auth, DataStore, Predicates} from "aws-amplify";
+import {BasketDish, Basket, Dish, User} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const Profile = () => {
     const {dbUser} = useAuthContext();
-
+    const {clearBasketContext} = useBasketContext();
     const [name, setName] = useState(dbUser?.name || "");
     const [address, setAddress] = useState(dbUser?.address || "");
     const [lat, setLat] = useState(dbUser?.lat + "" || "0");
@@ -19,13 +20,13 @@ const Profile = () => {
     const navigation = useNavigation()
 
     const onSave = async () => {
-        console.log("dbUser:",dbUser)
+        console.log("dbUser:", dbUser)
         if (dbUser) {
             await updateUser();
         } else {
             await createUser();
         }
-       navigation.goBack()
+        navigation.goBack()
     };
 
     const updateUser = async () => {
@@ -44,9 +45,9 @@ const Profile = () => {
         try {
             const user = await DataStore.save(
                 new User({
-                    sub:sub,
-                    name:name,
-                    address:address,
+                    sub: sub,
+                    name: name,
+                    address: address,
                     lat: parseFloat(lat),
                     lng: parseFloat(lng),
                 })
@@ -92,6 +93,45 @@ const Profile = () => {
                 Sign out
             </Text>
 
+
+            <Button onPress={async () => {
+                await Promise.allSettled([
+                    DataStore.delete(BasketDish, Predicates.ALL),
+                    DataStore.delete(Basket, Predicates.ALL),
+                    DataStore.delete(Dish, Predicates.ALL),
+                ])
+                clearBasketContext()
+
+            }} title="clean all baskets + dishes + basketDishes"/>
+
+            <Button onPress={async () => {
+
+                const res = await DataStore.save(
+                    new Dish({
+                            name: "Pancake",
+                            image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2580&q=80",
+                            description: "...",
+                            price: Number(10.0),
+                            restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"
+                        }
+                    )
+                )
+                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
+            }} title="add dish"/>
+
+            <Button onPress={async () => {
+
+                const res = await DataStore.save(
+                    new Basket({
+                        userID: dbUser.id,
+                        restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"
+                        })
+                )
+                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
+            }} title="add empty basket"/>
+
+            <Button onPress={async () => await Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>
+
         </SafeAreaView>
     );
 };
@@ -110,5 +150,4 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
 });
-
 export default Profile;
