@@ -8,7 +8,7 @@ import styles from "./styles";
 import MapView, {Marker} from "react-native-maps";
 import * as Location from "expo-location";
 import {Entypo, MaterialIcons, Ionicons} from "@expo/vector-icons";
-import MapViewDirective from "react-native-maps-directions";
+// import MapViewDirective from "react-native-maps-directions";
 import MapViewDirections from "react-native-maps-directions";
 import {useNavigation} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
@@ -53,7 +53,7 @@ const OrdersDelivery = () => {
             });
         })();
 
-        const foregroundSubscription = Location.watchPositionAsync(
+        return Location.watchPositionAsync(
             {
                 accuracy: Location.Accuracy.High,
                 distanceInterval: 100
@@ -64,7 +64,7 @@ const OrdersDelivery = () => {
                 })
             }
         )
-        return foregroundSubscription;
+
     }, []);
 
     // console.warn(driverLocation)

@@ -1,16 +1,17 @@
 import {StyleSheet, Text, View} from "react-native";
-import restaurants from "../../../assets/data/restaurants.json";
 
-const restaurant = restaurants[0];
+
+
 const BasketDishItem = ({basketDish}) => {
-    console.log(basketDish.Dish);
     return (
         <View style={styles.row}>
             <View style={styles.quantityContainer}>
                 <Text>{basketDish.quantity}</Text>
             </View>
-            <Text style={styles.basketDishName}>{basketDish.Dish.name}</Text>
-            <Text style={styles.basketDishPrice}>$ {basketDish.Dish.price}</Text>
+            {/*{console.log("##################",basketDish.Dish)}*/}
+            <Text style={styles.basketDishName}>{basketDish.Dish['_z']?.name}</Text>
+            <Text style={styles.basketDishPrice}>$ {basketDish.Dish['_z']?.price}</Text>
+            {/*<Image source={{uri: basketDish.Dish['_z'].image}} style={styles.image}/>*/}
         </View>
     )
 }
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
     quantityContainer: {
         backgroundColor: 'lightgray',
         paddingHorizontal: 5,
-        marginVertical: 2,
+        paddingVertical: 2,
         marginRight: 10,
         borderRadius: 3,
     },
@@ -37,4 +38,8 @@ const styles = StyleSheet.create({
     basketDishPrice: {
         marginLeft: "auto"
     },
+    image: {
+        width: '100%',
+        aspectRatio: 5 / 3,
+    }
 })
