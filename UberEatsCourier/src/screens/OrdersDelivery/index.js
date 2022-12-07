@@ -1,6 +1,6 @@
 import {useMemo, useRef, useEffect, useState} from "react";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheet, {BottomSheetFlatList} from "@gorhom/bottom-sheet";
 import {ActivityIndicator, Text, useWindowDimensions, View, Pressable} from "react-native";
 import {FontAwesome5, Fontisto} from '@expo/vector-icons';
 import styles from "./styles";
@@ -11,8 +11,8 @@ import {Entypo, MaterialIcons, Ionicons} from "@expo/vector-icons";
 import MapViewDirections from "react-native-maps-directions";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
-import { DataStore } from 'aws-amplify';
-import {Order, Restaurant, User} from '../../models';
+import {DataStore} from 'aws-amplify';
+import {Dish, Order, OrderDish, Restaurant, User} from '../../models';
 
 
 const ORDER_STATUSES = {
@@ -25,6 +25,8 @@ const OrdersDelivery = () => {
     const [order, setOrder] = useState(null);
     const [user, setUser] = useState(null);
     const [restaurant, setRestaurant] = useState(null);
+    const [orderDishes, setOrderDishes] = useState([]);
+    const [dishes, setDishes] = useState([]);
 
     const [driverLocation, setDriverLocation] = useState(null)
     const [totalMinutes, setTotalMinutes] = useState(0)
@@ -44,22 +46,34 @@ const OrdersDelivery = () => {
 
     useEffect(() => {
         if (id) {
-            DataStore.query(Order,id).then(setOrder)
+            DataStore.query(Order, id).then(setOrder)
         }
-    },[id])
+    }, [id])
 
     useEffect(() => {
         if (order) {
-            DataStore.query(User,order.userID).then(setUser)
+            DataStore.query(User, order.userID).then(setUser)
             DataStore.query(Restaurant, order.orderRestaurantId).then(setRestaurant)
+            DataStore.query(OrderDish, od => od.orderID.eq(order.id)).then(setOrderDishes)
         }
-    },[order])
+    }, [order])
 
 
     useEffect(() => {
+        if (orderDishes) {
+            (()=>{
+                orderDishes.forEach( async orderDish=>{
+                    const [dish] = await DataStore.query(Dish,dish=> dish.id.eq(orderDish.orderDishDishId))
+                    setDishes(old=>[...old,dish])
+                })
+            })()
+        }
+    }, [orderDishes])
+
+    useEffect(() => {
         (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (!status === "granted") {
+            let {status} = await Location.requestForegroundPermissionsAsync();
+            if (status !== "granted") {
                 console.log("Nonono");
                 return;
             }
@@ -71,7 +85,8 @@ const OrdersDelivery = () => {
             });
         })();
 
-        const foregroundSubscription = Location.watchPositionAsync(
+        // const foregroundSubscription =
+            Location.watchPositionAsync(
             {
                 accuracy: Location.Accuracy.High,
                 distanceInterval: 100,
@@ -83,7 +98,8 @@ const OrdersDelivery = () => {
                 });
             }
         );
-        return foregroundSubscription;
+
+        // return foregroundSubscription;
     }, []);
 
 
@@ -137,8 +153,6 @@ const OrdersDelivery = () => {
     const deliveryLocation = {latitude: user?.lat, longitude: user?.lng}
 
     if (!order || !user || !driverLocation || !restaurant) {
-        console.log("#### from here!!!")
-        console.log("\n\n",order,'\n\n',user,'\n\n',driverLocation,'\n\n',restaurant)
         return <ActivityIndicator size={"large"} color="gray"/>;
     }
 
@@ -216,11 +230,11 @@ const OrdersDelivery = () => {
                     </View>
 
                     <View style={styles.orderDetailsContainer}>
-                        <Text style={styles.orderItemText}>Onion Rings x1</Text>
-                        <Text style={styles.orderItemText}>Big Mac x3</Text>
-                        <Text style={styles.orderItemText}>Big Mac x3</Text>
-                        <Text style={styles.orderItemText}>Big Tasty x2</Text>
-                        <Text style={styles.orderItemText}>Coca-Cola x1</Text>
+                        {orderDishes.map(orderDish => {
+                            const dish = dishes.find(d => d.id === orderDish.orderDishDishId)
+                            return <Text style={styles.orderItemText}
+                                         key={orderDish.id}>{dish?.name} x{orderDish.quantity}</Text>
+                        })}
                     </View>
                 </View>
                 <Pressable style={{...styles.buttonContainer, backgroundColor: isButtonDisabled() ? 'grey' : '#3FC060'}}
