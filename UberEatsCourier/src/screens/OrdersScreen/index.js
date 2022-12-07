@@ -2,7 +2,6 @@ import {useRef, useMemo, useState, useEffect} from "react";
 import {Text, View, useWindowDimensions} from 'react-native';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
 import {GestureHandlerRootView, FlatList} from 'react-native-gesture-handler'
-import orders from "../../../assets/data/orders.json"
 import OrderItem from '../../components/OrderItem';
 import MapView, {Marker} from "react-native-maps";
 import {Entypo} from "@expo/vector-icons";
