@@ -7,12 +7,13 @@ import styles from "./styles";
 import MapView, {Marker} from "react-native-maps";
 import * as Location from "expo-location";
 import {Entypo, MaterialIcons, Ionicons} from "@expo/vector-icons";
-// import MapViewDirective from "react-native-maps-directions";
+ import MapViewDirective from "react-native-maps-directions";
 import MapViewDirections from "react-native-maps-directions";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
 import {DataStore} from 'aws-amplify';
 import {Dish, Order, OrderDish, Restaurant, User} from '../../models';
+import {useOrderContext} from "../../contexts/OrderContext";
 
 
 const ORDER_STATUSES = {
@@ -22,6 +23,7 @@ const ORDER_STATUSES = {
 }
 
 const OrdersDelivery = () => {
+    // const {  } = useActiveOrder();
     const [order, setOrder] = useState(null);
     const [user, setUser] = useState(null);
     const [restaurant, setRestaurant] = useState(null);
@@ -32,8 +34,10 @@ const OrdersDelivery = () => {
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)
     const [deliveryStatus, setDeliveryStatus] = useState(ORDER_STATUSES.READY_FOR_PICKUP)
+
     const [isDriverClose, setIsDriverClose] = useState(false)
 
+    const {acceptOrder} = useOrderContext();
 
     const bottomSheetRef = useRef(null);
     const mapRef = useRef(null)
@@ -71,6 +75,7 @@ const OrdersDelivery = () => {
     }, [orderDishes])
 
     useEffect(() => {
+
         (async () => {
             let {status} = await Location.requestForegroundPermissionsAsync();
             if (status !== "granted") {
@@ -85,7 +90,7 @@ const OrdersDelivery = () => {
             });
         })();
 
-        // const foregroundSubscription =
+         const foregroundSubscription =
             Location.watchPositionAsync(
             {
                 accuracy: Location.Accuracy.High,
@@ -99,7 +104,7 @@ const OrdersDelivery = () => {
             }
         );
 
-        // return foregroundSubscription;
+        return foregroundSubscription;
     }, []);
 
 
@@ -113,6 +118,7 @@ const OrdersDelivery = () => {
                 longitudeDelta: 0.01
             });
             setDeliveryStatus(ORDER_STATUSES.ACCEPTED);
+            acceptOrder(order);
         }
         if (deliveryStatus === ORDER_STATUSES.ACCEPTED) {
             bottomSheetRef.current?.collapse();
@@ -120,7 +126,8 @@ const OrdersDelivery = () => {
         }
         if (deliveryStatus === ORDER_STATUSES.PICKED_UP) {
             bottomSheetRef.current?.collapse();
-            navigation.goBack()
+            // navigation.navigate("OrdersScreen")
+           navigation.goBack()
             console.warn('Delivery Finished')
         }
     };
@@ -153,6 +160,7 @@ const OrdersDelivery = () => {
     const deliveryLocation = {latitude: user?.lat, longitude: user?.lng}
 
     if (!order || !user || !driverLocation || !restaurant) {
+        console.log("\n\n..........yeah ..... were stuck here......")
         return <ActivityIndicator size={"large"} color="gray"/>;
     }
 

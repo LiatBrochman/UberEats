@@ -23,8 +23,10 @@ const OrdersScreen = () => {
         DataStore.query(Restaurant).then(setRestaurants)
     }, [])
 
+         // orders[0] && restaurants[0] && <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
     return (
-        orders[0] && restaurants[0] && <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
+        restaurants[0] && <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
+            {console.log("\n\n.............second touch")}
             <MapView
                 style={{height, width}}
                 showsUserLocation
