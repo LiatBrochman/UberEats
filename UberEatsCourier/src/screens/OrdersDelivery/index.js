@@ -23,11 +23,11 @@ const ORDER_STATUSES = {
 }
 
 const OrdersDelivery = () => {
-    // const {  } = useActiveOrder();
-    const [order, setOrder] = useState(null);
-    const [user, setUser] = useState(null);
-    const [restaurant, setRestaurant] = useState(null);
-    const [orderDishes, setOrderDishes] = useState([]);
+    const {order, user, orderDishes, restaurant, acceptOrder , fetchOrder, fetchUser} = useOrderContext();
+    // const [order, setOrder] = useState(null);
+    // const [user, setUser] = useState(null);
+    // const [restaurant, setRestaurant] = useState(null);
+    // const [orderDishes, setOrderDishes] = useState([]);
     const [dishes, setDishes] = useState([]);
 
     const [driverLocation, setDriverLocation] = useState(null)
@@ -37,7 +37,7 @@ const OrdersDelivery = () => {
 
     const [isDriverClose, setIsDriverClose] = useState(false)
 
-    const {acceptOrder} = useOrderContext();
+
 
     const bottomSheetRef = useRef(null);
     const mapRef = useRef(null)
@@ -46,20 +46,22 @@ const OrdersDelivery = () => {
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const navigation = useNavigation();
     const route = useRoute();
-    const id = route.params?.id;
+   const id = route.params?.id;
 
     useEffect(() => {
-        if (id) {
-            DataStore.query(Order, id).then(setOrder)
-        }
+        // if (id) {
+        //     DataStore.query(Order, id).then(setOrder)
+        // }
+        fetchOrder(id);
     }, [id])
-
+    //
     useEffect(() => {
-        if (order) {
-            DataStore.query(User, order.userID).then(setUser)
-            DataStore.query(Restaurant, order.orderRestaurantId).then(setRestaurant)
-            DataStore.query(OrderDish, od => od.orderID.eq(order.id)).then(setOrderDishes)
-        }
+    //     if (order) {
+    //         DataStore.query(User, order.userID).then(setUser)
+    //         DataStore.query(Restaurant, order.orderRestaurantId).then(setRestaurant)
+    //         DataStore.query(OrderDish, od => od.orderID.eq(order.id)).then(setOrderDishes)
+    //     }
+        fetchUser(order)
     }, [order])
 
 
@@ -104,7 +106,7 @@ const OrdersDelivery = () => {
             }
         );
 
-        return foregroundSubscription;
+        // return foregroundSubscription;
     }, []);
 
 
@@ -159,8 +161,7 @@ const OrdersDelivery = () => {
     const restaurantLocation = {latitude: restaurant?.lat, longitude: restaurant?.lng}
     const deliveryLocation = {latitude: user?.lat, longitude: user?.lng}
 
-    if (!order || !user || !driverLocation || !restaurant) {
-        console.log("\n\n..........yeah ..... were stuck here......")
+    if (!order || !driverLocation || !restaurant || !user || !orderDishes) {
         return <ActivityIndicator size={"large"} color="gray"/>;
     }
 
@@ -192,9 +193,9 @@ const OrdersDelivery = () => {
                     }}
                 />
                 <Marker
-                    coordinate={{latitude: restaurant.lat, longitude: restaurant.lng}}
-                    title={restaurant.name}
-                    description={restaurant.address}
+                    coordinate={{latitude: restaurant?.lat, longitude: restaurant?.lng}}
+                    title={restaurant?.name}
+                    description={restaurant?.address}
                 >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <Entypo name="shop" size={30} color="white"/>
@@ -202,8 +203,8 @@ const OrdersDelivery = () => {
                 </Marker>
                 <Marker
                     coordinate={deliveryLocation}
-                    title={user.name}
-                    description={user.address}
+                    title={user?.name}
+                    description={user?.address}
                 >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <MaterialIcons name="restaurant" size={30} color="white"/>
@@ -227,19 +228,19 @@ const OrdersDelivery = () => {
                     <Text style={styles.routeDetailsText}>{totalKm.toFixed(2)} km</Text>
                 </View>
                 <View style={styles.deliveryDetailsContainer}>
-                    <Text style={styles.restaurantName}>{restaurant.name}</Text>
+                    <Text style={styles.restaurantName}>{restaurant?.name}</Text>
                     <View style={styles.addressContainer}>
                         <Fontisto name="shopping-store" size={22} color="grey"/>
-                        <Text style={styles.addressText}>{restaurant.address}</Text>
+                        <Text style={styles.addressText}>{restaurant?.address}</Text>
                     </View>
                     <View style={styles.addressContainer}>
                         <FontAwesome5 name="map-marker-alt" size={30} color="grey"/>
-                        <Text style={styles.addressText}>{user.address}</Text>
+                        <Text style={styles.addressText}>{user?.address}</Text>
                     </View>
 
                     <View style={styles.orderDetailsContainer}>
-                        {orderDishes.map(orderDish => {
-                            const dish = dishes.find(d => d.id === orderDish.orderDishDishId)
+                        {orderDishes?.map(orderDish => {
+                            const dish = dishes?.find(d => d.id === orderDish.orderDishDishId)
                             return <Text style={styles.orderItemText}
                                          key={orderDish.id}>{dish?.name} x{orderDish.quantity}</Text>
                         })}
