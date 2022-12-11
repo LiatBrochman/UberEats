@@ -31,8 +31,8 @@ enum OrderStatus {
 type OrderDish @model @auth(rules: [{allow: public}]) {
   id: ID!
   quantity: Int!
-  Dish: Dish @hasOne
   orderID: ID! @index(name: "byOrder")
+  dishID: ID! @index(name: "byDish")
 }
 
 type Order @model @auth(rules: [{allow: public}]) {
@@ -48,8 +48,8 @@ type Order @model @auth(rules: [{allow: public}]) {
 type BasketDish @model @auth(rules: [{allow: public}]) {
   id: ID!
   quantity: Int!
-  Dish: Dish @hasOne
   basketID: ID! @index(name: "byBasket")
+  dishID: ID! @index(name: "byDish")
 }
 
 type User @model @auth(rules: [{allow: public}]) {
@@ -70,6 +70,8 @@ type Dish @model @auth(rules: [{allow: public}]) {
   description: String
   price: Float!
   restaurantID: ID! @index(name: "byRestaurant")
+  BasketDish: [BasketDish] @hasMany(indexName: "byDish", fields: ["id"])
+  OrderDishes: [OrderDish] @hasMany(indexName: "byDish", fields: ["id"])
 }
 
 type Restaurant @model @auth(rules: [{allow: public}]) {
