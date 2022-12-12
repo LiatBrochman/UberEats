@@ -13,38 +13,40 @@ import { Dish } from "../../models";
 import { useBasketContext } from "../../contexts/BasketContext";
 
 const DishDetailsScreen = () => {
-    const [dish, setDish] = useState(null);
-    const [quantity, setQuantity] = useState(1);
-
+    const [dish, setDish] = useState();
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
 
-    const { addDishToBasket } = useBasketContext();
+    const { addDishToBasket ,getDish } = useBasketContext();
 
     useEffect(() => {
         if (id) {
-            DataStore.query(Dish, id).then(setDish);
+            getDish(id).then(dish=>{
+                setDish({...dish,quantity:1})
+            });
         }
     }, [id]);
 
     const onAddToBasket = async () => {
-        await addDishToBasket(dish, quantity);
+        await addDishToBasket(dish);
         navigation.goBack();
     };
 
     const onMinus = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1);
+        if (dish?.quantity > 1) {
+            setDish(d=>d?.quantity-=1)
+            // setQuantity(quantity - 1);
         }
     };
 
     const onPlus = () => {
-        setQuantity(quantity + 1);
+        setDish(d=>d?.quantity+=1)
+        // setQuantity(quantity + 1);
     };
 
     const getTotal = () => {
-        return (dish.price * quantity).toFixed(2);
+        return (dish?.price * dish?.quantity).toFixed(2);
     };
 
     if (!dish) {
@@ -53,8 +55,8 @@ const DishDetailsScreen = () => {
 
     return (
         <View style={styles.page}>
-            <Text style={styles.name}>{dish.name}</Text>
-            <Text style={styles.description}>{dish.description}</Text>
+            <Text style={styles.name}>{dish?.name}</Text>
+            <Text style={styles.description}>{dish?.description}</Text>
             <View style={styles.separator} />
 
             <View style={styles.row}>
@@ -64,7 +66,7 @@ const DishDetailsScreen = () => {
                     color={"black"}
                     onPress={onMinus}
                 />
-                <Text style={styles.quantity}>{quantity}</Text>
+                <Text style={styles.quantity}>{dish?.quantity}</Text>
                 <AntDesign
                     name="pluscircleo"
                     size={60}
@@ -75,7 +77,7 @@ const DishDetailsScreen = () => {
 
             <Pressable onPress={onAddToBasket} style={styles.button}>
                 <Text style={styles.buttonText}>
-                    Add {quantity} to basket &#8226; ${getTotal()}
+                    Add {dish?.quantity} to basket &#8226; ${getTotal()}
                 </Text>
             </Pressable>
         </View>

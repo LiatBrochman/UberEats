@@ -5,7 +5,7 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import { useNavigation } from "@react-navigation/native";
 
 const Basket = () => {
-    const {restaurant, basketDishes, totalPrice} = useBasketContext();
+    const {restaurant, dishes, totalPrice} = useBasketContext();
     const {createOrder} = useOrderContext();
     const navigation = useNavigation();
 
@@ -19,12 +19,12 @@ const Basket = () => {
             <Text style={styles.name}>{restaurant?.name}</Text>
 
             <Text style={styles.title}>Your items</Text>
-            <FlatList data={basketDishes} renderItem={({item}) => <BasketDishItem basketDish={item}/>}/>
+            <FlatList data={dishes} renderItem={({item}) => <BasketDishItem dish={item}/>}/>
             <Text>Delivery Fee : $ {restaurant.deliveryFee.toFixed(2)}</Text>
 
             <View style={styles.separator}/>
             <Pressable onPress={onCreateOrder} style={styles.button}>
-                <Text style={styles.buttonText}>Create order &#8226; $ {typeof totalPrice == 'number' && totalPrice.toFixed(2)}</Text>
+                <Text style={styles.buttonText}>Create order &#8226; $ {typeof totalPrice === "number" && totalPrice.toFixed(2)}</Text>
             </Pressable>
         </View>
     );
