@@ -12,18 +12,18 @@ import MapViewDirections from "react-native-maps-directions";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
 import {DataStore} from 'aws-amplify';
-import {Dish, Order, OrderDish, Restaurant, User} from '../../models';
+import {Dish, Order, OrderDish, OrderStatus as ORDER_STATUSES, Restaurant, User} from '../../models';
 import {useOrderContext} from "../../contexts/OrderContext";
 
 
-const ORDER_STATUSES = {
-    READY_FOR_PICKUP: "READY_FOR_PICKUP",
-    ACCEPTED: "ACCEPTED",
-    PICKED_UP: "PICKED_UP",
-}
+// const ORDER_STATUSES = {
+//     READY_FOR_PICKUP: "READY_FOR_PICKUP",
+//     ACCEPTED: "ACCEPTED",
+//     PICKED_UP: "PICKED_UP",
+// }
 
 const OrdersDelivery = () => {
-    const {order, user, orderDishes, restaurant, acceptOrder , fetchOrder, fetchUser} = useOrderContext();
+    const {order, user, orderDishes, restaurant, acceptOrder , fetchOrder, fetchUser, completeOrder, pickupOrder} = useOrderContext();
     // const [order, setOrder] = useState(null);
     // const [user, setUser] = useState(null);
     // const [restaurant, setRestaurant] = useState(null);
@@ -33,7 +33,7 @@ const OrdersDelivery = () => {
     const [driverLocation, setDriverLocation] = useState(null)
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)
-    const [deliveryStatus, setDeliveryStatus] = useState(ORDER_STATUSES.READY_FOR_PICKUP)
+    // const [deliveryStatus, setDeliveryStatus] = useState(ORDER_STATUSES.READY_FOR_PICKUP)
 
     const [isDriverClose, setIsDriverClose] = useState(false)
 
@@ -110,8 +110,8 @@ const OrdersDelivery = () => {
     }, []);
 
 
-    const onButtonPressed = () => {
-        if (deliveryStatus === ORDER_STATUSES.READY_FOR_PICKUP) {
+    const onButtonPressed = async () => {
+            if (order.status === "READY_FOR_PICKUP") {
             bottomSheetRef.current?.collapse();
             mapRef.current.animateToRegion({
                 latitude: driverLocation.latitude,
@@ -119,41 +119,41 @@ const OrdersDelivery = () => {
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01
             });
-            setDeliveryStatus(ORDER_STATUSES.ACCEPTED);
-            acceptOrder(order);
+            acceptOrder();
         }
-        if (deliveryStatus === ORDER_STATUSES.ACCEPTED) {
+            if (order.status ==="ACCEPTED") {
             bottomSheetRef.current?.collapse();
-            setDeliveryStatus(ORDER_STATUSES.PICKED_UP)
+            pickupOrder();
+
         }
-        if (deliveryStatus === ORDER_STATUSES.PICKED_UP) {
+            if (order.status === "PICKED_UP") {
+                await completeOrder();
             bottomSheetRef.current?.collapse();
-            // navigation.navigate("OrdersScreen")
            navigation.goBack()
-            console.warn('Delivery Finished')
+
         }
     };
 
     const renderButtonTitle = () => {
-        if (deliveryStatus === ORDER_STATUSES.READY_FOR_PICKUP) {
+        if (order.status === "READY_FOR_PICKUP") {
             return 'Accept Order'
         }
-        if (deliveryStatus === ORDER_STATUSES.ACCEPTED) {
+        if (order.status === "ACCEPTED") {
             return 'Pick-Up Order'
         }
-        if (deliveryStatus === ORDER_STATUSES.PICKED_UP) {
+        if (order.status === "PICKED_UP") {
             return 'Complete Delivery'
         }
     }
 
     const isButtonDisabled = () => {
-        if (deliveryStatus === ORDER_STATUSES.READY_FOR_PICKUP) {
+        if (order.status === "READY_FOR_PICKUP") {
             return false;
         }
-        if (deliveryStatus === ORDER_STATUSES.ACCEPTED && isDriverClose) {
+        if (order.status === "ACCEPTED" && isDriverClose) {
             return false;
         }
-        if (deliveryStatus === ORDER_STATUSES.PICKED_UP && isDriverClose) {
+        if (order.status === "PICKED_UP" && isDriverClose) {
             return false;
         }
         return true;
@@ -181,9 +181,9 @@ const OrdersDelivery = () => {
             >
                 <MapViewDirections
                     origin={driverLocation}
-                    destination={deliveryStatus === ORDER_STATUSES.ACCEPTED ? restaurantLocation : deliveryLocation}
+                    destination={order.status === "ACCEPTED" ? restaurantLocation : deliveryLocation}
                     strokeWidth={10}
-                    waypoints={deliveryStatus === ORDER_STATUSES.READY_FOR_PICKUP ? [restaurantLocation] : []}
+                    waypoints={order.status === "READY_FOR_PICKUP" ? [restaurantLocation] : []}
                     strokeColor="#3FC060"
                     apikey={GOOGLE_API_KEY}
                     onReady={(result) => {
@@ -211,7 +211,7 @@ const OrdersDelivery = () => {
                     </View>
                 </Marker>
             </MapView>
-            {deliveryStatus === ORDER_STATUSES.READY_FOR_PICKUP && (
+            {order.status === "READY_FOR_PICKUP" && (
                 <Ionicons
                     onPress={() => navigation.goBack()}
                     name="arrow-back-circle"
