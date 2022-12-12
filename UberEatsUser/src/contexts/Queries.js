@@ -5,7 +5,7 @@ const getBasketFromDB = async ({dbCustomer, restaurant}) => {
     const [res] = await DataStore.query(Basket, b =>
         b.and(b => [
             b.restaurantID.eq(restaurant?.id),
-            b.CustomerID.eq(dbCustomer?.id)
+            b.customerID.eq(dbCustomer?.id)
         ]))
     return res
 }
