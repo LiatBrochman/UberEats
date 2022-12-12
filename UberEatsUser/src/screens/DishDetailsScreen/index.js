@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import {
     View,
     Text,
@@ -6,24 +6,24 @@ import {
     Pressable,
     ActivityIndicator,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { DataStore } from "aws-amplify";
-import { Dish } from "../../models";
-import { useBasketContext } from "../../contexts/BasketContext";
+import {AntDesign} from "@expo/vector-icons";
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {DataStore} from "aws-amplify";
+import {Dish} from "../../models";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishDetailsScreen = () => {
-    const [dish, setDish] = useState();
+    const [dish, setDish] = useState(null);
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
 
-    const { addDishToBasket ,getDish } = useBasketContext();
+    const {addDishToBasket, getDish} = useBasketContext();
 
     useEffect(() => {
         if (id) {
-            getDish(id).then(dish=>{
-                setDish({...dish,quantity:1})
+            getDish(id).then(dish => {
+                setDish({...dish, quantity: 1})
             });
         }
     }, [id]);
@@ -35,13 +35,19 @@ const DishDetailsScreen = () => {
 
     const onMinus = () => {
         if (dish?.quantity > 1) {
-            setDish(d=>d?.quantity-=1)
+            setDish(d => {
+                if (d?.quantity)
+                    d.quantity -= 1
+            })
             // setQuantity(quantity - 1);
         }
     };
 
     const onPlus = () => {
-        setDish(d=>d?.quantity+=1)
+        setDish(d => {
+            if (d?.quantity)
+                d.quantity += 1
+        })
         // setQuantity(quantity + 1);
     };
 
@@ -50,14 +56,14 @@ const DishDetailsScreen = () => {
     };
 
     if (!dish) {
-        return <ActivityIndicator size="large" color="gray" />;
+        return <ActivityIndicator size="large" color="gray"/>;
     }
 
     return (
         <View style={styles.page}>
             <Text style={styles.name}>{dish?.name}</Text>
             <Text style={styles.description}>{dish?.description}</Text>
-            <View style={styles.separator} />
+            <View style={styles.separator}/>
 
             <View style={styles.row}>
                 <AntDesign

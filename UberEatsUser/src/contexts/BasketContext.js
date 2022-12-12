@@ -11,7 +11,7 @@ const BasketContextProvider = ({children}) => {
         const [res] = await DataStore.query(Basket, b =>
             b.and(b => [
                 b.restaurantID.eq(restaurant?.id),
-                b.CustomerID.eq(dbCustomer?.id)
+                b.customerID.eq(dbCustomer?.id)
             ]))
         return res
     }
@@ -148,7 +148,7 @@ const BasketContextProvider = ({children}) => {
 
     const createNewBasket = async () => {
         const newBasket = await DataStore.save(new Basket({
-            CustomerID: dbCustomer?.id,
+            customerID: dbCustomer?.id,
             restaurantID: restaurant?.id,
             isDeleted: false
         }))

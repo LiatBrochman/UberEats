@@ -14,7 +14,7 @@ const OrderContextProvider = ({children}) => {
 
     useEffect(() => {
         dbCustomer &&
-        DataStore.query(Order, o => o.CustomerID.eq(dbCustomer.id)).then(existingOrders=> {
+        DataStore.query(Order, o => o.customerID.eq(dbCustomer.id)).then(existingOrders=> {
             if(existingOrders) setOrders(existingOrders)
         });
     }, [dbCustomer]);
