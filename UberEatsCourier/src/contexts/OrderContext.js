@@ -33,7 +33,7 @@ const OrderContextProvider = ({children}) => {
       //  setUser(fetchedUser);
     }
 
-    const acceptOrder = (order) => {
+    const acceptOrder = () => {
 // updated the order, and change status, and assign the courier
         DataStore.save(
             Order.copyOf(order, (updated) => {
@@ -41,11 +41,32 @@ const OrderContextProvider = ({children}) => {
                 updated.Courier = dbCourier;
 
             })
-        ).then(setActiveOrder);
+        ).then(setOrder);
     }
 
+    const pickupOrder = () => {
+// updated the order, and change status, and assign the courier
+        DataStore.save(
+            Order.copyOf(order, (updated) => {
+                updated.status = "PICKED_UP";// update to "ACCEPTED"
+                updated.Courier = dbCourier;
+
+            })
+        ).then(setOrder);
+    }
+
+    const completeOrder = () => {
+// updated the order, and change status, and assign the courier
+        DataStore.save(
+            Order.copyOf(order, (updated) => {
+                updated.status = "COMPLETED";// update to "ACCEPTED"
+                updated.Courier = dbCourier;
+
+            })
+        ).then(setOrder);
+    }
     return (
-        <OrderContext.Provider value={{acceptOrder, order, user, fetchOrder, fetchUser, restaurant, orderDishes}}>
+        <OrderContext.Provider value={{acceptOrder, order, user, fetchOrder, fetchUser, restaurant, orderDishes, pickupOrder, completeOrder}}>
             {children}
         </OrderContext.Provider>
     )
