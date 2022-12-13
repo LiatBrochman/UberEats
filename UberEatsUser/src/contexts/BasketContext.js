@@ -119,48 +119,39 @@ const BasketContextProvider = ({children}) => {
     }, [dishes])
 
 
+    function checkIfDishAlreadyExists({basket, restaurant}) {
+
+        return undefined;
+    }
+
     const addDishToBasket = async (dish) => {
         console.log("\n\n function addDishToBasket() has been called!")
-        // let newDish
 
         //get the existing basket or create a new one
-        if (!basket) {
-            console.log("\n\nno basket was found")
-            await createNewBasket()
+        let theBasket = basket || await createNewBasket()
+
+        const exists = checkIfDishAlreadyExists({basket:theBasket,restaurant})
+        if(exists){//this updates the dish in the DB
+            await DataStore.save(Dish.copyOf(exists,updated=>{
+                updated.quantity = dish.quantity
+            }))
+        }else{
+            const newDish = {
+                name:dish.name,
+                price:dish.price,
+                image:dish.image,
+                description:dish.description,
+                quantity:dish.quantity,
+                restaurantID:dish.restaurantID,
+                basketID:theBasket.id,
+                isActive:true,
+                isDeleted:false,
+            }
+            console.log("\n\newDish:",newDish)
+            await DataStore.save(new Dish(newDish))
+            setDishes([...dishes, newDish])
         }
-
-        setDishes([...dishes, await DataStore.save(new Dish(
-            {...dish, basketID: basket?.id}
-        ))])
-
-        //in case of an existing dish (customer has this dish inside his basket) :
-
-        // const [existingDish] = await DataStore.query(Dish, dish.id)
-        // console.log("\n\nin case of an existing dish:",existingDish)
-        //
-        // //all we do is update it's quantity (since customer isn't allowed to changed anything else)
-        // if (existingDish) {
-        //     console.log("\n\nall we do is update it's quantity (since customer isn't allowed to changed anything else)")
-        //     newDish = await DataStore.save(
-        //         Dish.copyOf(existingDish, updated => {
-        //             updated.quantity = dish.quantity
-        //         })
-        //     )
-        // } else {
-        // create a new Dish and save it
-        // newDish = await DataStore.save(new Dish({
-        //         ...dish,
-        //         isDeleted: false,
-        //         isActive: true,
-        //         restaurantID: restaurant?.id,
-        //         basketID: basket?.id,
-        //     })
-        // )
-        // }
-
-        // setDishes([...dishes, newDish])
-
-    }
+      }
 
     const createNewBasket = async () => {
         let theBasket = getBasketFromDB({dbCustomer, restaurant})
@@ -173,6 +164,7 @@ const BasketContextProvider = ({children}) => {
             }))
         }
         setBasket(theBasket)
+        return theBasket
     }
 
     const removeDishFromBasket = async ({dish}) => {
