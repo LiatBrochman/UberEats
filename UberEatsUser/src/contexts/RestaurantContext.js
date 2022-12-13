@@ -2,17 +2,22 @@ import {DataStore} from "aws-amplify";
 import {Dish, Restaurant} from "../models";
 import {createContext, useState, useEffect, useContext} from "react";
 
-const getDishes_ByRestaurant = async ({restaurant})=>{
-    return await DataStore.query(Dish, dish => dish.restaurantID.eq(restaurant.id))
+const getDishes_ByRestaurant = async ({restaurant}) => {
+    return await DataStore.query(Dish, dish => dish.and(
+        dish =>
+            [
+                dish.restaurantID.eq(restaurant.id),
+                dish.basketID.eq(null)
+            ]
+    ))
 }
-
 
 
 const RestaurantContext = createContext({})
 const RestaurantContextProvider = ({children}) => {
     const getRestaurant_ByID = async id => {
         // const res =
-        return await DataStore.query(Restaurant,id)
+        return await DataStore.query(Restaurant, id)
         // return (res instanceof Array ? [res] : res)
     }
 
@@ -22,7 +27,6 @@ const RestaurantContextProvider = ({children}) => {
     useEffect(() => {
         restaurant && !dishes && getDishes_ByRestaurant({restaurant}).then(setDishes)
     }, [restaurant])
-
 
 
     return (<RestaurantContext.Provider
@@ -42,7 +46,6 @@ const RestaurantContextProvider = ({children}) => {
     );
 
 }
-
 
 
 export default RestaurantContextProvider;
