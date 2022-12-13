@@ -96,9 +96,9 @@ type EagerDish = {
   readonly quantity: number;
   readonly isActive: boolean;
   readonly isDeleted: boolean;
-  readonly orderID: string;
+  readonly orderID?: string | null;
   readonly restaurantID: string;
-  readonly basketID: string;
+  readonly basketID?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -117,9 +117,9 @@ type LazyDish = {
   readonly quantity: number;
   readonly isActive: boolean;
   readonly isDeleted: boolean;
-  readonly orderID: string;
+  readonly orderID?: string | null;
   readonly restaurantID: string;
-  readonly basketID: string;
+  readonly basketID?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -141,7 +141,7 @@ type EagerOrder = {
   readonly restaurantLocation: Location;
   readonly customerLocation: Location;
   readonly isDeleted: boolean;
-  readonly courierID: string;
+  readonly courierID?: string | null;
   readonly Dishes?: (Dish | null)[] | null;
   readonly customerID: string;
   readonly restaurantID: string;
@@ -160,7 +160,7 @@ type LazyOrder = {
   readonly restaurantLocation: Location;
   readonly customerLocation: Location;
   readonly isDeleted: boolean;
-  readonly courierID: string;
+  readonly courierID?: string | null;
   readonly Dishes: AsyncCollection<Dish>;
   readonly customerID: string;
   readonly restaurantID: string;

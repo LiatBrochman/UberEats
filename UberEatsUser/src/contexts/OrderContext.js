@@ -9,7 +9,7 @@ const OrderContext = createContext({});
 const OrderContextProvider = ({children}) => {
 
     const {dbCustomer} = useAuthContext();
-    const {restaurant, totalPrice, basket , dishes ,removeDishFromBasket} = useBasketContext();
+    const {restaurant, totalPrice , dishes ,removeDishFromBasket} = useBasketContext();
     const [orders, setOrders] = useState();
 
     useEffect(() => {
@@ -39,20 +39,6 @@ const OrderContextProvider = ({children}) => {
             restaurantID: restaurant.id,
             dishes:dishes
             }));
-
-        //add all dishes to the order
-
-        // await Promise.allSettled(
-        //     basketDishes.map((basketDish) =>
-        //         DataStore.save(
-        //             new OrderDish({
-        //                 quantity: basketDish.quantity,
-        //                 orderID: newOrder.id,
-        //                 Dish: basketDish.Dish,
-        //             })
-        //         )
-        //     )
-        // );
 
         //update context
         setOrders([...orders, newOrder]);

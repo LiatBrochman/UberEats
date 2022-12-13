@@ -235,7 +235,7 @@ export const schema = {
                     "name": "orderID",
                     "isArray": false,
                     "type": "ID",
-                    "isRequired": true,
+                    "isRequired": false,
                     "attributes": []
                 },
                 "restaurantID": {
@@ -249,7 +249,7 @@ export const schema = {
                     "name": "basketID",
                     "isArray": false,
                     "type": "ID",
-                    "isRequired": true,
+                    "isRequired": false,
                     "attributes": []
                 },
                 "createdAt": {
@@ -376,7 +376,7 @@ export const schema = {
                     "name": "courierID",
                     "isArray": false,
                     "type": "ID",
-                    "isRequired": true,
+                    "isRequired": false,
                     "attributes": []
                 },
                 "Dishes": {
@@ -863,5 +863,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.3.2",
-    "version": "2fed96c8d221cd75310843b09f89bdfe"
+    "version": "638ec360b9ccbddf9234800519e31f90"
 };

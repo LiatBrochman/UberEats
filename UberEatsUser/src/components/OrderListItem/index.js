@@ -10,13 +10,13 @@ const OrderListItem = ({order}) => {
         onPress={()=> navigation.navigate("Order", {id:order.id})}
         style={styles.container}>
         <Image
-            source={{uri: restaurant.image}}
+            source={{uri: restaurant?.image}}
             style={styles.image}
         />
         <View>
-            <Text style={styles.name}>{restaurant.name}</Text>
+            <Text style={styles.name}>{restaurant?.name}</Text>
             <Text style={styles.price}>3 items &#8226; $38.45</Text>
-            <Text>2 days ago &#8226; {order.status}</Text>
+            <Text>2 days ago &#8226; {order?.status}</Text>
         </View>
     </Pressable>
     );
