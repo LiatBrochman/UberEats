@@ -13,16 +13,16 @@ import {Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishDetailsScreen = () => {
-    const [dish, setDish] = useState(null);
+    const [dish, setDish] = useState();
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
 
-    const {addDishToBasket, getDish} = useBasketContext();
+    const {addDishToBasket, getDish_ByID} = useBasketContext();
 
     useEffect(() => {
         if (id) {
-            getDish(id).then(dish => {
+            getDish_ByID(id).then(dish => {
                 setDish({...dish, quantity: 1})
             });
         }

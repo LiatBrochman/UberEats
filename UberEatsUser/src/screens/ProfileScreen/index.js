@@ -50,13 +50,16 @@ const Profile = () => {
                 new Customer({
                     sub: sub,
                     name: name,
-                    isDeleted:false,
-                    address: address,
-                    lat: parseFloat(lat),
-                    lng: parseFloat(lng),
+                    location:{
+                        address: address,
+                        lat: parseFloat(lat),
+                        lng: parseFloat(lng)
+                    },
+                    isDeleted:false
                 })
             );
             setDbCustomer(customer)
+
         } catch (e) {
             Alert.alert("Error", e.message);
         }
@@ -136,6 +139,7 @@ const Profile = () => {
 
             {/*    <Button onPress={async () => await Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>*/}
             {/*}*/}
+            <Button onPress={()=>Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>
         </SafeAreaView>
     );
 };

@@ -20,7 +20,7 @@ const Basket = () => {
 
             <Text style={styles.title}>Your items</Text>
             <FlatList data={dishes} renderItem={({item}) => <BasketDishItem dish={item}/>}/>
-            <Text>Delivery Fee : $ {restaurant.deliveryFee.toFixed(2)}</Text>
+            <Text>Delivery Fee : $ {restaurant?.deliveryFee.toFixed(2)}</Text>
 
             <View style={styles.separator}/>
             <Pressable onPress={onCreateOrder} style={styles.button}>

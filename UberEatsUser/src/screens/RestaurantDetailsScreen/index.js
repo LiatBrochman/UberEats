@@ -14,26 +14,28 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import {DataStore} from "aws-amplify";
 import { Restaurant, Dish } from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 const RestaurantDetailsPage = () => {
     // const [restaurant, setRestaurant] = useState();
     // const [dishes, setDishes] = useState();
     const route = useRoute()
     const navigation = useNavigation()
-    const {restaurant, setRestaurant, basket, dishes} = useBasketContext()
+    const {getRestaurant_ByID, restaurant, setRestaurant , dishes} = useRestaurantContext()
+    const { basket } = useBasketContext()
     const id = route.params?.id
 
     useEffect(() => {
         if(id) {
             // fetch the restaurant with the id
-            DataStore.query(Restaurant, id).then(setRestaurant)
+            getRestaurant_ByID(id).then(setRestaurant)
             // DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes)
         }
     }, [id]);
 
-    useEffect(() => {
-        setRestaurant(restaurant);
-    }, [restaurant]);
+    // useEffect(() => {
+    //     setRestaurant(restaurant);
+    // }, [restaurant]);
 
 
     if (!restaurant) {

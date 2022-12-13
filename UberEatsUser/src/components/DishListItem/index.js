@@ -4,11 +4,11 @@ import {useNavigation} from "@react-navigation/native";
 const DishListItem = ({dish}) => {
     const navigation = useNavigation();
     return (
-
         <Pressable
             onPress={() => navigation.navigate("Dish", {id: dish.id})}
             style={styles.container}>
             <View style={{flex: 1}}>
+                {console.log("\n\ndish:",dish)}
                 <Text style={styles.name}>{dish.name}</Text>
                 <Text style={styles.description} numberOfLines={2}>{dish.description}</Text>
                 <Text style={styles.price}>$ {dish.price}</Text>
