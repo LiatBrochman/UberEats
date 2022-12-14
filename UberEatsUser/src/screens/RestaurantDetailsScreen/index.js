@@ -21,8 +21,8 @@ const RestaurantDetailsPage = () => {
     // const [dishes, setDishes] = useState();
     const route = useRoute()
     const navigation = useNavigation()
-    const {getRestaurant_ByID, restaurant, setRestaurant , dishes} = useRestaurantContext()
-    const { basket } = useBasketContext()
+    const {getRestaurant_ByID, restaurant, setRestaurant, dishes } = useRestaurantContext()
+    const { getBasketSize , basket } = useBasketContext()
     const id = route.params?.id
 
     useEffect(() => {
@@ -57,7 +57,7 @@ const RestaurantDetailsPage = () => {
 
             { basket && (
             <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
-                <Text style={styles.buttonText}>Open basket({dishes?.length || 0})</Text>
+                <Text style={styles.buttonText}>Open basket({getBasketSize() || 0})</Text>
             </Pressable>
             )}
         </View>

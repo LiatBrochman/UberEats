@@ -44,11 +44,13 @@ const DishDetailsScreen = () => {
     };
 
     const onPlus = () => {
-        setDish(d => {
-            console.log("\n\n on plus:",d)
-            if (d?.quantity)
-                d.quantity += 1
+        setDish(prevDish => {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ prevDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(prevDish, null, 4))
+            if (prevDish?.quantity)
+                prevDish.quantity += 1
         })
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ after update ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish, null, 4))
+
         // setQuantity(quantity + 1);
     };
 

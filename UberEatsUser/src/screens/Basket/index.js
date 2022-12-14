@@ -3,15 +3,17 @@ import BasketDishItem from "../../components/BasketDishItem";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useOrderContext} from "../../contexts/OrderContext";
 import { useNavigation } from "@react-navigation/native";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 const Basket = () => {
-    const {restaurant, dishes, totalPrice} = useBasketContext();
-    const {createOrder} = useOrderContext();
-    const navigation = useNavigation();
+    const {dishes, totalPrice} = useBasketContext()
+    const {restaurant} = useRestaurantContext()
+    const {createOrder} = useOrderContext()
+    const navigation = useNavigation()
 
     const onCreateOrder = async () => {
-        await createOrder();
-        navigation.goBack();
+        await createOrder()
+        navigation.goBack()
     };
 
     return (
@@ -24,7 +26,7 @@ const Basket = () => {
 
             <View style={styles.separator}/>
             <Pressable onPress={onCreateOrder} style={styles.button}>
-                <Text style={styles.buttonText}>Create order &#8226; $ {typeof totalPrice === "number" && totalPrice.toFixed(2)}</Text>
+                <Text style={styles.buttonText}>Create order &#8226; $ {totalPrice.toFixed(2)}</Text>
             </Pressable>
         </View>
     );

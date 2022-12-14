@@ -3,13 +3,16 @@ import {Dish, Restaurant} from "../models";
 import {createContext, useState, useEffect, useContext} from "react";
 
 const getDishes_ByRestaurant = async ({restaurant}) => {
-    return await DataStore.query(Dish, dish => dish.and(
+    const restaurantDishes = await DataStore.query(Dish, dish => dish.and(
         dish =>
             [
                 dish.restaurantID.eq(restaurant.id),
                 dish.basketID.eq(null)
             ]
     ))
+console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurantDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurantDishes,null,4))
+
+    return restaurantDishes
 }
 
 
