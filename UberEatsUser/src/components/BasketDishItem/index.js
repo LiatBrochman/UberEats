@@ -1,4 +1,5 @@
-import {StyleSheet, Text, View} from "react-native";
+import {Image, StyleSheet, Text, View} from "react-native";
+
 
 
 
@@ -8,6 +9,9 @@ const BasketDishItem = ({dish}) => {
             <View style={styles.quantityContainer}>
                 <Text>{dish?.quantity}</Text>
             </View>
+            <Image
+                source={{uri: dish?.image}}
+                style={styles.image}/>
             <Text style={styles.dishName}>{dish?.name}</Text>
             <Text style={styles.dishPrice}>$ {dish?.price}</Text>
         </View>
@@ -37,7 +41,7 @@ const styles = StyleSheet.create({
         marginLeft: "auto"
     },
     image: {
-        width: '100%',
+        width: '25%',
         aspectRatio: 5 / 3,
     }
 })
