@@ -14,10 +14,10 @@ const BasketContextProvider = ({children}) => {
                 b.restaurantID.eq(restaurant?.id),
                 b.customerID.eq(dbCustomer?.id)
             ]))
-            // .subscribe(snapshot => {
-            //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ snapshot ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(snapshot,null,4))
-            // const { items, isSynced } = snapshot
-            // console.log(`[Snapshot] item count: ${items.length}, isSynced: ${isSynced}`)
+        // .subscribe(snapshot => {
+        //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ snapshot ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(snapshot,null,4))
+        // const { items, isSynced } = snapshot
+        // console.log(`[Snapshot] item count: ${items.length}, isSynced: ${isSynced}`)
         // })
 
         // const [getBasketFromDB] = await DataStore.query(Basket, b =>
@@ -25,8 +25,8 @@ const BasketContextProvider = ({children}) => {
         //         b.restaurantID.eq(restaurant?.id),
         //         b.customerID.eq(dbCustomer?.id)
         //     ]))
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ getBasketFromDB ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(getBasketFromDB,null,4))
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ getBasketFromDB.dishes: ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(getBasketFromDB?.Dishes,null,4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ getBasketFromDB ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(getBasketFromDB, null, 4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ getBasketFromDB.dishes: ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(getBasketFromDB?.Dishes, null, 4))
 
         return getBasketFromDB
     }
@@ -71,7 +71,7 @@ const BasketContextProvider = ({children}) => {
         return await DataStore.query(Dish, id)
         // return (res instanceof Array ? [res] : res)
     }
-    const getBasketSize = () =>{
+    const getBasketSize = () => {
         return dishes?.length
     }
     const {dbCustomer} = useAuthContext()
@@ -110,7 +110,7 @@ const BasketContextProvider = ({children}) => {
     useEffect(() => {
         basket && !dishes && getDishes_ByBasket({basket}).then(customerDishes => {
             setDishes(customerDishes)
-console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes,null,4))
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
         })
 
     }, [basket])
@@ -135,14 +135,16 @@ console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :",
     }, [dishes])
 
 
-   async function checkIfDishAlreadyExists({dish, basket}) {
+    async function checkIfDishAlreadyExists({dish, basket, restaurant}) {
 
-        // const checkExistence = await DataStore.query(Basket, b=> b.and(b=>[
-        //
-        //     b.
-        // ]))
-        const dishesArr= await DataStore.query(Basket, basket=> basket.Dishes)
-        return null
+        const [existingDish] = await DataStore.query(Dish, d =>
+            d.and(d => [
+                basket.id.eq(d.basketID),
+                dish.id.eq(d.originalID),
+            ]))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
+
+        return existingDish
     }
 
     const addDishToBasket = async (dish) => {
@@ -151,33 +153,46 @@ console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :",
         //get the existing basket or create a new one
         let theBasket = basket || await createNewBasket()
 
-        const exists = checkIfDishAlreadyExists({dish, basket:theBasket})
+        const dishAlreadyExists = checkIfDishAlreadyExists({dish, basket: theBasket})
 
-        if(exists){//this updates the dish in the DB
-            await DataStore.save(Dish.copyOf(exists,updated=>{
+        if (dishAlreadyExists) {
+            //the customer is trying to add a new dish but it already exists in his basket.
+            //in this case we update the corresponding dish's quantity only.
+            await DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
                 updated.quantity = dish.quantity
             }))
-        }else{
+            setDishes(prevDishes => prevDishes.map(prevDish => {
+                    if (prevDish.originalID === dish.id) {
+                        prevDish.quantity = dish.quantity
+                    }
+                    return prevDish
+                })
+            )
+
+        } else {
+            //the customer is trying to add a new dish to his basket.
+            //in this case we need to create a new dish with the relevant arguments.
             const newDish = {
-                name:dish.name,
-                price:dish.price,
-                image:dish.image,
-                description:dish.description,
-                quantity:dish.quantity,
-                restaurantID:dish.restaurantID,
-                basketID:theBasket.id,
-                isActive:true,
-                isDeleted:false,
+                name: dish.name,
+                price: dish.price,
+                image: dish.image,
+                description: dish.description,
+                quantity: dish.quantity,
+                restaurantID: dish.restaurantID,
+                basketID: theBasket.id,
+                isActive: true,
+                isDeleted: false,
+                originalID: dish.id + ""
             }
-console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newDish,null,4))
-            await DataStore.save(new Dish(newDish))
-            setDishes([...dishes, newDish])
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newDish, null, 4))
+            const newDishFromDB = await DataStore.save(new Dish(newDish))
+            setDishes([...dishes, newDishFromDB])
         }
-      }
+    }
 
     const createNewBasket = async () => {
         let theBasket = getBasketFromDB({dbCustomer, restaurant})
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ theBasket ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(theBasket,null,4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ theBasket ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(theBasket, null, 4))
 
         if (!theBasket) {
             theBasket = await DataStore.save(new Basket({

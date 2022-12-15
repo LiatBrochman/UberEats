@@ -1,4 +1,4 @@
-import {useState, useEffect} from "react";
+import {useState, useEffect, useReducer} from "react";
 import {
     View,
     Text,
@@ -13,7 +13,17 @@ import {Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishDetailsScreen = () => {
-    const [dish, setDish] = useState();
+
+    const [dish, dispatch] = useReducer((state, action) => {
+        switch (action.type) {
+            case "onMinus":
+                return state.quantity -= 1
+            case "onPlus":
+                return state.quantity += 1
+            default:
+        }
+    }, initialState, init);
+    // const [dish, setDish] = useState();
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
@@ -73,14 +83,16 @@ const DishDetailsScreen = () => {
                     name="minuscircleo"
                     size={60}
                     color={"black"}
-                    onPress={onMinus}
+                    onPress={() => dispatch({type:"onMinus"})}
+                    // onPress={onMinus}
                 />
                 <Text style={styles.quantity}>{dish?.quantity}</Text>
                 <AntDesign
                     name="pluscircleo"
                     size={60}
                     color={"black"}
-                    onPress={onPlus}
+                    onPress={() => dispatch({type:"onPlus"})}
+                    // onPress={onPlus}
                 />
             </View>
 
