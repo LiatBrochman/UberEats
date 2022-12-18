@@ -14,59 +14,37 @@ import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishDetailsScreen = () => {
 
-    const [dish, dispatch] = useReducer((state, action) => {
-        switch (action.type) {
-            case "onMinus":
-                return state.quantity -= 1
-            case "onPlus":
-                return state.quantity += 1
-            default:
-        }
-    }, initialState, init);
-    // const [dish, setDish] = useState();
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
-
+    const [dish,setDish] = useState()
+    const [quantity,setQuantity] = useState(1)
     const {addDishToBasket, getDish_ByID} = useBasketContext();
 
     useEffect(() => {
         if (id) {
-            getDish_ByID(id).then(dish => {
-                setDish({...dish, quantity: 1})
-            });
+            getDish_ByID(id).then(dish => setDish({...dish, quantity: quantity}))
         }
     }, [id]);
 
     const onAddToBasket = async () => {
-        await addDishToBasket(dish);
-        navigation.goBack();
-    };
+        await addDishToBasket(dish)
+        navigation.goBack()
+    }
 
     const onMinus = () => {
-        if (dish?.quantity > 1) {
-            setDish(d => {
-                if (d?.quantity)
-                    d.quantity -= 1
-            })
-            // setQuantity(quantity - 1);
+        if (quantity > 1) {
+            setQuantity(quantity - 1)
         }
-    };
+    }
 
     const onPlus = () => {
-        setDish(prevDish => {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ prevDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(prevDish, null, 4))
-            if (prevDish?.quantity)
-                prevDish.quantity += 1
-        })
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ after update ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish, null, 4))
-
-        // setQuantity(quantity + 1);
-    };
+        setQuantity(quantity + 1)
+    }
 
     const getTotal = () => {
-        return (dish?.price * dish?.quantity).toFixed(2);
-    };
+        return (dish?.price * quantity)
+    }
 
     if (!dish) {
         return <ActivityIndicator size="large" color="gray"/>;
@@ -83,16 +61,14 @@ const DishDetailsScreen = () => {
                     name="minuscircleo"
                     size={60}
                     color={"black"}
-                    onPress={() => dispatch({type:"onMinus"})}
-                    // onPress={onMinus}
+                    onPress={onMinus}
                 />
-                <Text style={styles.quantity}>{dish?.quantity}</Text>
+                <Text style={styles.quantity}>{quantity}</Text>
                 <AntDesign
                     name="pluscircleo"
                     size={60}
                     color={"black"}
-                    onPress={() => dispatch({type:"onPlus"})}
-                    // onPress={onPlus}
+                    onPress={onPlus}
                 />
             </View>
 
