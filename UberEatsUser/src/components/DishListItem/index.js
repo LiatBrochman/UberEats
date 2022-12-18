@@ -8,7 +8,6 @@ const DishListItem = ({dish}) => {
             onPress={() => navigation.navigate("Dish", {id: dish.id})}
             style={styles.container}>
             <View style={{flex: 1}}>
-                {console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish,null,4))}
                 <Text style={styles.name}>{dish.name}</Text>
                 <Text style={styles.description} numberOfLines={2}>{dish.description}</Text>
                 <Text style={styles.price}>$ {dish.price}</Text>

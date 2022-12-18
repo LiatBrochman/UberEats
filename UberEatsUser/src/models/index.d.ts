@@ -99,6 +99,7 @@ type EagerDish = {
   readonly orderID?: string | null;
   readonly restaurantID: string;
   readonly basketID?: string | null;
+  readonly originalID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -120,6 +121,7 @@ type LazyDish = {
   readonly orderID?: string | null;
   readonly restaurantID: string;
   readonly basketID?: string | null;
+  readonly originalID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

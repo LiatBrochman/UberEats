@@ -44,7 +44,7 @@ const BasketContextProvider = ({children}) => {
 
         dishes.forEach(dish => totalPrice_calc += dish.price)
 
-        return totalPrice_calc
+        return (typeof totalPrice_calc === "number") && totalPrice_calc.toFixed(2)
 
         // return dishes.reduce(
         //     async (sum, dish) => {
@@ -139,8 +139,10 @@ const BasketContextProvider = ({children}) => {
 
         const [existingDish] = await DataStore.query(Dish, d =>
             d.and(d => [
-                basket.id.eq(d.basketID),
-                dish.id.eq(d.originalID),
+                d.basketID.eq(basket.id),
+                d.originalID.eq(dish.id)
+                // basket.id.eq(d.basketID),
+                // dish.id.eq(d.originalID),
             ]))
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
 
@@ -155,10 +157,10 @@ const BasketContextProvider = ({children}) => {
 
         const dishAlreadyExists = checkIfDishAlreadyExists({dish, basket: theBasket})
 
-        if (dishAlreadyExists) {
+        if (dishAlreadyExists instanceof Dish) {
             //the customer is trying to add a new dish but it already exists in his basket.
             //in this case we update the corresponding dish's quantity only.
-            await DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
+            await DataStore.save(Dish.copyOf(await dishAlreadyExists, updated => {
                 updated.quantity = dish.quantity
             }))
             setDishes(prevDishes => prevDishes.map(prevDish => {
@@ -194,7 +196,7 @@ const BasketContextProvider = ({children}) => {
         let theBasket = getBasketFromDB({dbCustomer, restaurant})
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ theBasket ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(theBasket, null, 4))
 
-        if (!theBasket) {
+        if (!(theBasket instanceof Basket)) {
             theBasket = await DataStore.save(new Basket({
                 customerID: dbCustomer?.id,
                 restaurantID: restaurant?.id,
