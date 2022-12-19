@@ -11,29 +11,34 @@ const OrderContextProvider = ({children}) => {
 
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
-    const {totalPrice, dishes, removeDishFromBasket,setDishes} = useBasketContext()
-    const [orders, setOrders] = useState()
+    const {totalPrice, dishes} = useBasketContext()
+    const [orders, setOrders] = useState([])
 
     useEffect(() => {
         dbCustomer &&
         DataStore.query(Order, o => o.customerID.eq(dbCustomer.id)).then(existingOrders => {
-            if (existingOrders) setOrders(existingOrders)
-        });
+            existingOrders instanceof Array &&
+            existingOrders[0] instanceof Order &&
+            setOrders(() => {
+                console.log("\n\n ~~~~~~~~~ existingOrders ~~~~~~~~~ :", existingOrders)
+                return existingOrders
+            })
+
+        })
     }, [dbCustomer])
 
     function validateTotalPrice(totalPrice) {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~typeof totalPrice ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(typeof totalPrice,null,4))
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant?.deliveryFee ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.deliveryFee,null,4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~typeof totalPrice ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(typeof totalPrice, null, 4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant?.deliveryFee ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.deliveryFee, null, 4))
 
         return (totalPrice && totalPrice > restaurant?.deliveryFee)
     }
-    const updatingDishesOrderIDs=async (newOrder)=>{
-        const result = dishes.map(async originDish=>await DataStore.save(Dish.copyOf(originDish,updated=>{
-                updated.orderID = newOrder.id
+
+    const updateDishOrderID_DB = async (dish, order) => {
+        return await DataStore.save(Dish.copyOf(
+            dish, updated => {
+                updated.orderID = order.id
             }))
-        )
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ after updating Dishes Orders IDs ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(result,null,4))
-        return  result
     }
     const createOrder = async () => {
         if (!validateTotalPrice(totalPrice)) {
@@ -51,15 +56,17 @@ const OrderContextProvider = ({children}) => {
             restaurantID: restaurant.id,
             dishes: dishes
         }))
-        const dishes = await updatingDishesOrderIDs()
+        dishes.map(async d => {
+            const updatedDish = await updateDishOrderID_DB(d, newOrder)
+            console.log("\n\n ~~~~~~~~ updatedDish ~~~~~~~~~ :", updatedDish)
+        })
 
-        //update context
-
+        // //update context
         setOrders([...orders, newOrder])
-        setDishes([...dishes])
-
-        //delete basket
-        await removeDishFromBasket()
+        // setDishes([...dishes])
+        //
+        // //delete basket
+        // await removeDishFromBasket()
     };
 
     const getOrder = async (id) => {
