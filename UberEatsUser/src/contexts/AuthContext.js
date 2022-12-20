@@ -17,7 +17,17 @@ const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
 
-        DataStore.query(Customer, (customer) => customer.sub.eq(sub)).then((customers) =>
+        DataStore.query(Customer, (customer) => customer.sub.eq(sub))
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+            .then((customers) =>
             setDbCustomer(customers[0]))
 
     }, [sub]);

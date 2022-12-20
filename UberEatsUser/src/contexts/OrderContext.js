@@ -16,7 +16,17 @@ const OrderContextProvider = ({children}) => {
 
     useEffect(() => {
         dbCustomer &&
-        DataStore.query(Order, o => o.customerID.eq(dbCustomer.id)).then(existingOrders => {
+        DataStore.query(Order, o => o.customerID.eq(dbCustomer.id))
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+            .then(existingOrders => {
             existingOrders instanceof Array &&
             existingOrders[0] instanceof Order &&
             setOrders(() => {
@@ -86,6 +96,16 @@ const OrderContextProvider = ({children}) => {
 
     const getOrder = async (id) => {
         return await DataStore.query(Order, id)
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+
         // const order = await DataStore.query(Order, id);
         // const orderDishes = await DataStore.query(OrderDish, (od) =>
         //     od.orderID.eq(id));
