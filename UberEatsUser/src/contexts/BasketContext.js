@@ -239,7 +239,6 @@ const BasketContextProvider = ({children}) => {
                 dishes,
                 setDishes,
 
-
                 setTotalPrice,
                 totalPrice
             }}

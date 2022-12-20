@@ -11,7 +11,7 @@ const OrderContextProvider = ({children}) => {
 
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
-    const {totalPrice, dishes} = useBasketContext()
+    const {totalPrice, dishes, setDishes ,setBasket} = useBasketContext()
     const [orders, setOrders] = useState([])
 
     useEffect(() => {
@@ -27,26 +27,25 @@ const OrderContextProvider = ({children}) => {
         })
     }, [dbCustomer])
 
-    function validateTotalPrice(totalPrice) {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~typeof totalPrice ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(typeof totalPrice, null, 4))
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant?.deliveryFee ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.deliveryFee, null, 4))
-
-        return (totalPrice && totalPrice > restaurant?.deliveryFee)
+    function checkIfPriceIsValid({totalPrice}) {
+        if (totalPrice && totalPrice > restaurant?.deliveryFee) {
+            console.log("price is valid!")
+            return true
+        } else {
+            console.error("price isn't valid! please fix it!", totalPrice)
+            return false
+        }
     }
 
-    const updateDishOrderID_DB = async (dish, order) => {
+    const updateDishOrderID_DB = async ({dish, order}) => {
         return await DataStore.save(Dish.copyOf(
             dish, updated => {
                 updated.orderID = order.id
             }))
     }
-    const createOrder = async () => {
-        if (!validateTotalPrice(totalPrice)) {
-            console.error("wrong total price!!", totalPrice)
-            return null
-        }
+    const createNewOrder_DB = async () => {
         //create the order
-        const newOrder = await DataStore.save(new Order({
+        return await DataStore.save(new Order({
             status: "NEW",
             total: parseFloat(totalPrice),
             restaurantLocation: restaurant.location,
@@ -56,13 +55,29 @@ const OrderContextProvider = ({children}) => {
             restaurantID: restaurant.id,
             dishes: dishes
         }))
-        dishes.map(async d => {
-            const updatedDish = await updateDishOrderID_DB(d, newOrder)
+    }
+
+    const updateDishes_DB = async({newOrder})=>{
+        //every dish that is related to this order :: dish.orderID = this order id
+        return dishes.map(async d => {
+            const updatedDish = await updateDishOrderID_DB({dish:d, order:newOrder})
             console.log("\n\n ~~~~~~~~ updatedDish ~~~~~~~~~ :", updatedDish)
         })
+    }
+    const createOrder = async () => {
+
+        if(checkIfPriceIsValid({totalPrice}) ){
+            const newOrder =  await createNewOrder_DB()
+            setOrders(existingOrders=> [...existingOrders,newOrder])
+            const updatedDishes = await updateDishes_DB({newOrder})
+            console.log("\n\n ~~~~~~~~~!!!!!!!!!!!!!!! updatedDishes ~~~~~~~~~ :",updatedDishes)
+            setDishes(updatedDishes)
+            setBasket(null)
+            // setDishes(existingDishes=> existingDishes.map(dish=> dish.orderID=newOrder.id))
+        }
 
         // //update context
-        setOrders([...orders, newOrder])
+        // setOrders([...orders, newOrder])
         // setDishes([...dishes])
         //
         // //delete basket
