@@ -14,6 +14,15 @@ const BasketContextProvider = ({children}) => {
                 b.restaurantID.eq(restaurant?.id),
                 b.customerID.eq(dbCustomer?.id)
             ]))
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
         // .subscribe(snapshot => {
         //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ snapshot ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(snapshot,null,4))
         // const { items, isSynced } = snapshot
@@ -35,6 +44,16 @@ const BasketContextProvider = ({children}) => {
     // }
     const getDishes_ByBasket = async ({basket}) => {
         return await DataStore.query(Dish, d => d.basketID.eq(basket?.id))
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+
     }
     const getTotalPrice = ({dishes, restaurant}) => {
 
@@ -69,6 +88,16 @@ const BasketContextProvider = ({children}) => {
     const getDish_ByID = async id => {
         // const res =
         return await DataStore.query(Dish, id)
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+
         // return (res instanceof Array ? [res] : res)
     }
     const getBasketSize = () => {
@@ -82,12 +111,12 @@ const BasketContextProvider = ({children}) => {
     const [dishes, setDishes] = useState()
     const [totalPrice, setTotalPrice] = useState()
 
-    const clearBasketContext = () => {
-        setRestaurant(null)
-        setBasket(null)
-        setDishes(null)
-        setTotalPrice(0)
-    }
+    // const clearBasketContext = () => {
+    //     setRestaurant(null)
+    //     setBasket(null)
+    //     setDishes(null)
+    //     setTotalPrice(0)
+    // }
 
 
     useEffect(() => {
@@ -116,7 +145,7 @@ const BasketContextProvider = ({children}) => {
     }, [basket])
 
     useEffect(() => {
-        dishes && !totalPrice && setTotalPrice(getTotalPrice({dishes, restaurant}))
+        dishes && setTotalPrice(getTotalPrice({dishes, restaurant}))
         // (async () =>{
         //     if (dishes) {
         //         const data =  await getTotalPrice({dishes, restaurant})
@@ -144,6 +173,16 @@ const BasketContextProvider = ({children}) => {
                 // basket.id.eq(d.basketID),
                 // dish.id.eq(d.originalID),
             ]))
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
 
         return existingDish
@@ -209,6 +248,17 @@ const BasketContextProvider = ({children}) => {
 
     const removeDishFromBasket = async ({dish}) => {
         const existingDish = await DataStore.query(Dish, dish.id)
+             .then(result =>{
+                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+
+
         if (existingDish) {
             await DataStore.save(
                 Dish.copyOf(existingDish, updated => {
@@ -227,7 +277,7 @@ const BasketContextProvider = ({children}) => {
     return (<BasketContext.Provider
             value={{
                 addDishToBasket,
-                clearBasketContext,
+                // clearBasketContext,
                 removeDishFromBasket,
                 getDishes_ByBasket,
                 getDish_ByID,
