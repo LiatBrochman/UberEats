@@ -3,17 +3,17 @@ import {Entypo} from "@expo/vector-icons";
 import {useNavigation} from '@react-navigation/native'
 import {useState, useEffect} from "react";
 import {DataStore} from "aws-amplify";
-import {Order, Restaurant, User} from '../../models';
+import {Order, Restaurant, Customer} from '../../models';
 
 
 const OrderItem = ({order}) => {
-    const [user, setUser] = useState(null)
+    const [customer, setCustomer] = useState(null)
     const [restaurant, setRestaurant] = useState(null)
     const navigation = useNavigation()
 
     useEffect(() => {
-        DataStore.query(User, order.userID).then(setUser)
-        DataStore.query(Restaurant, order.orderRestaurantId).then(setRestaurant)
+        DataStore.query(Customer, order.customerID).then(setCustomer)
+        DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
     }, [])
 
     return (
@@ -40,11 +40,11 @@ const OrderItem = ({order}) => {
                     <Text style={{fontSize: 18, fontWeight: "500"}}>
                         {restaurant.name}
                     </Text>
-                    <Text style={{color: "grey"}}>{restaurant.address}</Text>
+                    <Text style={{color: "grey"}}>{restaurant.Location.address}</Text>
 
                     <Text style={{marginTop: 10}}>Delivery Details:</Text>
-                    <Text style={{color: "grey"}}>{user?.name}</Text>
-                    <Text style={{color: "grey"}}>{user?.address}</Text>
+                    <Text style={{color: "grey"}}>{customer?.name}</Text>
+                    <Text style={{color: "grey"}}>{customer?.Location.address}</Text>
                 </View>
                 <View
                     style={{
