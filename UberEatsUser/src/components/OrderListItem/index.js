@@ -1,36 +1,37 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
+import {getDate, getTime}from"../../contexts/Queries"
 
 const OrderListItem = ({order}) => {
     const {restaurant} = useBasketContext()
     const navigation = useNavigation();
     return (
-    <Pressable
-        onPress={()=> navigation.navigate("Order", {id:order.id})}
-        style={styles.container}>
-        <Image
-            source={{uri: restaurant?.image}}
-            style={styles.image}
-        />
-        <View>
-            <Text style={styles.name}>{restaurant?.name}</Text>
-            <Text style={styles.price}>3 items &#8226; $38.45</Text>
-            <Text>2 days ago &#8226; {order?.status}</Text>
-        </View>
-    </Pressable>
+        <Pressable
+            onPress={() => navigation.navigate("Order", {id: order.id})}
+            style={styles.container}>
+            <Image
+                source={{uri: restaurant?.image}}
+                style={styles.image}
+            />
+            <View>
+                <Text style={styles.name}>{restaurant?.name}</Text>
+                <Text style={styles.price}>3 items &#8226; ${order.total}</Text>
+                <Text>{getDate({order})} {getTime({order})} &#8226; {order?.status}</Text>
+            </View>
+        </Pressable>
     );
 };
 
 export default OrderListItem;
 
 const styles = StyleSheet.create({
-    container:{
+    container: {
         flexDirection: "row",
-        margin:10,
+        margin: 10,
         alignItems: "center"
     },
-    image:{
+    image: {
         width: 75,
         height: 75,
         marginRight: 5
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontSize: 16
     },
-    price:{
+    price: {
         marginVertical: 5
     },
 })
