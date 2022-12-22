@@ -52,6 +52,7 @@ const OrderContextProvider = ({children}) => {
                 updated.orderID = order.id
             }))
     }
+
     const createNewOrder_DB = async () => {
         //create the order
         return await DataStore.save(new Order({
@@ -73,24 +74,20 @@ const OrderContextProvider = ({children}) => {
             console.log("\n\n ~~~~~~~~ updatedDish ~~~~~~~~~ :", updatedDish)
         })
     }
+
     const createOrder = async () => {
 
         if(checkIfPriceIsValid({totalPrice}) ){
+
             const newOrder =  await createNewOrder_DB()
             setOrders(existingOrders=> [...existingOrders,newOrder])
+
             const updatedDishes = await updateDishes_DB({newOrder})
-            console.log("\n\n ~~~~~~~~~!!!!!!!!!!!!!!! updatedDishes ~~~~~~~~~ :",updatedDishes)
             setDishes(updatedDishes)
+
             setBasket(null)
-            // setDishes(existingDishes=> existingDishes.map(dish=> dish.orderID=newOrder.id))
         }
 
-        // //update context
-        // setOrders([...orders, newOrder])
-        // setDishes([...dishes])
-        //
-        // //delete basket
-        // await removeDishFromBasket()
     };
 
     const getOrder = async (id) => {
