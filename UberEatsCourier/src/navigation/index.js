@@ -13,7 +13,7 @@ const Navigation = () => {
         <Stack.Navigator screenOptions={{headerShown: false}}>
             {dbCourier ? (
                 <>
-                    {console.log("\n\n.............first touch")}
+                    {/*{console.log("\n\n.............first touch")}*/}
                     <Stack.Screen name="OrdersScreen" component={OrdersScreen}/>
                     <Stack.Screen name="OrdersDeliveryScreen" component={OrdersDeliveryScreen}/>
                 </>

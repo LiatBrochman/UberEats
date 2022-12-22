@@ -15,11 +15,14 @@ const AuthContextProvider = ({children}) => {
 
 
     useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to find sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub, null, 4))
         if (sub) {
             DataStore.query(Courier, (courier) => courier.sub.eq(sub))
                 .then((couriers) => {
                     setDbCourier(couriers[0])
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setting dbCourier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers[0], null, 4))
                 })
+
         }
     }, [sub]);
 
