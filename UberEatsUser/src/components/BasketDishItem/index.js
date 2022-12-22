@@ -18,9 +18,9 @@ const BasketDishItem = ({dish}) => {
             <Text style={styles.dishName}>{dish?.name}</Text>
             <Text style={styles.dishPrice}>$ {dish?.price}</Text>
             <AntDesign
-                name="pluscircleo"
-                size={10}
-                color={"red"}
+                name="closesquareo"
+                size={20}
+                color={"darkred"}
                 onPress={()=> removeDishFromBasket({dish})}
             />
         </View>
