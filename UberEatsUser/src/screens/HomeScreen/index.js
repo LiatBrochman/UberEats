@@ -9,7 +9,16 @@ export default function HomeScreen() {
 
 
     useEffect(()=>{
-        DataStore.query(Restaurant).then(setRestaurants);
+        DataStore.query(Restaurant)
+             .then(result =>{ 
+                 if(!result) return null
+                 if(result instanceof Array ) {
+                    return result.filter(entity=>entity.isDeleted===false)
+                 }else{
+                     return result
+                 }
+             })
+            .then(setRestaurants)
     },[]);
 
     return (

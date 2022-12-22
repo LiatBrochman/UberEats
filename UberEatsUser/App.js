@@ -8,6 +8,7 @@ import config from './src/aws-exports';
 import AuthContextProvider from "./src/contexts/AuthContext";
 import BasketContextProvider from "./src/contexts/BasketContext";
 import OrderContextProvider from "./src/contexts/OrderContext";
+import RestaurantContextProvider from "./src/contexts/RestaurantContext";
 
 Amplify.configure({...config, Analytics: {disabled:true,},})
 
@@ -15,11 +16,13 @@ function App() {
     return (
 <NavigationContainer>
     <AuthContextProvider>
+        <RestaurantContextProvider>
         <BasketContextProvider>
             <OrderContextProvider>
                 <RootNavigator/>
             </OrderContextProvider>
         </BasketContextProvider>
+        </RestaurantContextProvider>
     </AuthContextProvider>
             <StatusBar style="light"/>
 </NavigationContainer>

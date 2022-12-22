@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect, useReducer} from "react";
 import {
     View,
     Text,
@@ -6,56 +6,56 @@ import {
     Pressable,
     ActivityIndicator,
 } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { DataStore } from "aws-amplify";
-import { Dish } from "../../models";
-import { useBasketContext } from "../../contexts/BasketContext";
+import {AntDesign} from "@expo/vector-icons";
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {DataStore} from "aws-amplify";
+import {Dish} from "../../models";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishDetailsScreen = () => {
-    const [dish, setDish] = useState(null);
-    const [quantity, setQuantity] = useState(1);
 
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
-
-    const { addDishToBasket } = useBasketContext();
+    const [dish,setDish] = useState()
+    const [quantity,setQuantity] = useState(1)
+    const {addDishToBasket, getDish_ByID} = useBasketContext();
 
     useEffect(() => {
         if (id) {
-            DataStore.query(Dish, id).then(setDish);
+            getDish_ByID({id}).then(dish => setDish({...dish, quantity: quantity}))
         }
     }, [id]);
 
     const onAddToBasket = async () => {
-        await addDishToBasket(dish, quantity);
-        navigation.goBack();
-    };
+        dish.quantity = quantity
+        await addDishToBasket({dish})
+        navigation.goBack()
+    }
 
     const onMinus = () => {
         if (quantity > 1) {
-            setQuantity(quantity - 1);
+            setQuantity(quantity - 1)
         }
-    };
+    }
 
     const onPlus = () => {
-        setQuantity(quantity + 1);
-    };
+        setQuantity(quantity + 1)
+    }
 
     const getTotal = () => {
-        return (dish.price * quantity).toFixed(2);
-    };
+        return (dish?.price * quantity)
+    }
 
     if (!dish) {
-        return <ActivityIndicator size="large" color="gray" />;
+        return <ActivityIndicator size="large" color="gray"/>;
     }
 
     return (
         <View style={styles.page}>
-            <Text style={styles.name}>{dish.name}</Text>
-            <Text style={styles.description}>{dish.description}</Text>
-            <View style={styles.separator} />
+            <Text style={styles.name}>{dish?.name}</Text>
+            <Text style={styles.description}>{dish?.description}</Text>
+            <View style={styles.separator}/>
 
             <View style={styles.row}>
                 <AntDesign

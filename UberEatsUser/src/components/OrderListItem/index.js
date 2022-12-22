@@ -1,20 +1,22 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const OrderListItem = ({order}) => {
+    const {restaurant} = useBasketContext()
     const navigation = useNavigation();
     return (
     <Pressable
         onPress={()=> navigation.navigate("Order", {id:order.id})}
         style={styles.container}>
         <Image
-            source={{uri: order.Restaurant.image}}
+            source={{uri: restaurant?.image}}
             style={styles.image}
         />
         <View>
-            <Text style={styles.name}>{order.Restaurant.name}</Text>
+            <Text style={styles.name}>{restaurant?.name}</Text>
             <Text style={styles.price}>3 items &#8226; $38.45</Text>
-            <Text>2 days ago &#8226; {order.status}</Text>
+            <Text>2 days ago &#8226; {order?.status}</Text>
         </View>
     </Pressable>
     );

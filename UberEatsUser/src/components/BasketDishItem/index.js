@@ -1,17 +1,28 @@
-import {StyleSheet, Text, View} from "react-native";
+import {Image, StyleSheet, Text, View} from "react-native";
+import {AntDesign} from "@expo/vector-icons";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 
 
-const BasketDishItem = ({basketDish}) => {
+
+const BasketDishItem = ({dish}) => {
+    const {removeDishFromBasket} = useBasketContext()
     return (
         <View style={styles.row}>
             <View style={styles.quantityContainer}>
-                <Text>{basketDish.quantity}</Text>
+                <Text>{dish?.quantity}</Text>
             </View>
-            {/*{console.log("##################",basketDish.Dish)}*/}
-            <Text style={styles.basketDishName}>{basketDish.Dish['_z']?.name}</Text>
-            <Text style={styles.basketDishPrice}>$ {basketDish.Dish['_z']?.price}</Text>
-            {/*<Image source={{uri: basketDish.Dish['_z'].image}} style={styles.image}/>*/}
+            <Image
+                source={{uri: dish?.image}}
+                style={styles.image}/>
+            <Text style={styles.dishName}>{dish?.name}</Text>
+            <Text style={styles.dishPrice}>$ {dish?.price}</Text>
+            <AntDesign
+                name="closesquareo"
+                size={20}
+                color={"darkred"}
+                onPress={()=> removeDishFromBasket({dish})}
+            />
         </View>
     )
 }
@@ -32,14 +43,15 @@ const styles = StyleSheet.create({
         marginRight: 10,
         borderRadius: 3,
     },
-    basketDishName: {
+    dishName: {
         fontWeight: '600'
     },
-    basketDishPrice: {
-        marginLeft: "auto"
+    dishPrice: {
+        marginLeft: "auto",
+        marginRight: 10,
     },
     image: {
-        width: '100%',
+        width: '25%',
         aspectRatio: 5 / 3,
     }
 })

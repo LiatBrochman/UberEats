@@ -14,46 +14,34 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import {DataStore} from "aws-amplify";
 import { Restaurant, Dish } from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 const RestaurantDetailsPage = () => {
-    const [restaurant, setRestaurant] = useState(null);
-    const [dishes, setDishes] = useState([]);
-
-    const route = useRoute();
-    const navigation = useNavigation();
-
-    const id = route.params?.id;
-
-    const {
-        setRestaurant: setBasketRestaurant,
-        basket,
-        basketDishes,
-    } = useBasketContext();
+    // const [restaurant, setRestaurant] = useState();
+    // const [dishes, setDishes] = useState();
+    const route = useRoute()
+    const navigation = useNavigation()
+    const {getRestaurant_ByID, restaurant, setRestaurant, dishes } = useRestaurantContext()
+    const { getBasketSize , basket } = useBasketContext()
+    const id = route.params?.id
 
     useEffect(() => {
-        if(!id){
-            return;
+        if(id) {
+            // fetch the restaurant with the id
+            getRestaurant_ByID(id).then(setRestaurant)
+            // DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes)
         }
-        setBasketRestaurant(null);
-        // fetch the restaurant with the id
-        DataStore.query(Restaurant, id).then(setRestaurant);
-
-        DataStore.query(Dish, (dish) => dish.restaurantID.eq(id)).then(
-            setDishes
-        );
-
     }, [id]);
 
-    useEffect(() => {
-        setBasketRestaurant(restaurant);
-    }, [restaurant]);
+    // useEffect(() => {
+    //     setRestaurant(restaurant);
+    // }, [restaurant]);
 
 
     if (!restaurant) {
         return <ActivityIndicator size={"large"} color="gray" />;
 
     }
-
 
 
     return (
@@ -69,7 +57,7 @@ const RestaurantDetailsPage = () => {
 
             { basket && (
             <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
-                <Text style={styles.buttonText}>Open basket({basketDishes?.length || 0})</Text>
+                <Text style={styles.buttonText}>Open basket({getBasketSize() || 0})</Text>
             </Pressable>
             )}
         </View>
