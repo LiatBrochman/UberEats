@@ -45,18 +45,9 @@ const BasketContextProvider = ({children}) => {
         const [existingDish] = await DataStore.query(Dish, d =>
             d.and(d => [
                 d.basketID.eq(basket.id),
-                d.originalID.eq(dish.id)
-                // basket.id.eq(d.basketID),
-                // dish.id.eq(d.originalID),
+                d.originalID.eq(dish.id),
+                d.isDeleted.eq(false)
             ]))
-            .then(result => {
-                if (!result) return null
-                if (result instanceof Array) {
-                    return result.filter(entity => entity.isDeleted === false)
-                } else {
-                    return result
-                }
-            })
 
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
 
@@ -69,13 +60,14 @@ const BasketContextProvider = ({children}) => {
         let theBasket = basket || await createNewBasket()
 
         //CHECK IF THE DISH ALREADY EXISTS
-        const dishAlreadyExists = checkIfDishAlreadyExists({dish, basket: theBasket})
+        const dishAlreadyExists = await checkIfDishAlreadyExists({dish, basket: theBasket})
 
         //IF THE DISH ALREADY EXISTS: update dish quantity
         if (dishAlreadyExists instanceof Dish) {
 
             const updatedDish = await updateDishQuantity_DB({dish: dishAlreadyExists, quantity: dish.quantity})
-            setDishes(
+
+            setDishes(dishes =>
                 dishes.map(d =>
                     d.originalID === dish.id
                         ? updatedDish
@@ -108,7 +100,7 @@ const BasketContextProvider = ({children}) => {
 
             await removeDish_DB({dish: existingDish})
 
-            setDishes(ds=> ds.filter(d=> d.id !== dish.id ))
+            setDishes(ds => ds.filter(d => d.id !== dish.id))
 
         }
     }
@@ -117,10 +109,22 @@ const BasketContextProvider = ({children}) => {
         return dishes?.length
     }
 
+    const getExistingDishQuantity = async ({basket, dish}) => {
+        const result= await DataStore.query(Dish, d =>
+            d.and(d =>
+                [
+                    d.originalID.eq(dish.id),
+                    d.basketID.eq(basket.id),
+                    d.isDeleted.eq(false)
+                ]
+            ))
+        return result[0].quantity
+    }
+
     return (<BasketContext.Provider
             value={{
                 addDishToBasket,
-                // clearBasketContext,
+                getExistingDishQuantity,
                 removeDishFromBasket,
                 getDishes_ByBasket,
                 getDish_ByID,
