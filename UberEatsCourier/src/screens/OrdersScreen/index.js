@@ -1,12 +1,11 @@
-import {useRef, useMemo, useState, useEffect} from "react";
-import {Text, View, useWindowDimensions} from 'react-native';
+import {useRef, useMemo, useState} from "react";
+import {Text, View, useWindowDimensions, Button} from 'react-native';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
-import {GestureHandlerRootView, FlatList} from 'react-native-gesture-handler'
+import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import OrderItem from '../../components/OrderItem';
 import MapView, {Marker} from "react-native-maps";
 import {Entypo} from "@expo/vector-icons";
-import {DataStore} from 'aws-amplify'
-import {Order, Restaurant} from '../../models'
+import {Amplify, Auth} from "aws-amplify";
 
 
 const OrdersScreen = () => {
@@ -18,30 +17,28 @@ const OrdersScreen = () => {
 
     const snapPoints = useMemo(() => ["12%", "95%"], [])
 
-    useEffect(() => {
-        DataStore.query(Order, (order) => order.status.eq("READY_FOR_PICKUP")).then(setOrders);
-        DataStore.query(Restaurant).then(setRestaurants)
-    }, [])
+
 
          // orders[0] && restaurants[0] && <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
     return (
-        restaurants[0] && <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
-            {console.log("\n\n.............second touch")}
+        //restaurants[0] && <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
+       <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
+            {/*{console.log("\n\n.............second touch")}*/}
             <MapView
                 style={{height, width}}
-                showsUserLocation
-                followUserLocation
+                showsCustomerLocation
+                followCutomerLocation
             >
                 {orders.map((order) => {
-                    const restaurant = restaurants.find(restaurant => restaurant.id === order.orderRestaurantId)
+                    const restaurant = restaurants.find(restaurant => restaurant.id === order.restaurantID)
                     return (
                         <Marker
                             key={order.id}
                             title={restaurant.name}
-                            description={restaurant.address}
+                            description={restaurant.Location.address}
                             coordinate={{
-                                latitude: restaurant.lat,
-                                longitude: restaurant.lng
+                                latitude: restaurant.Location.lat,
+                                longitude: restaurant.Location.lng
                             }}>
                             <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                                 <Entypo name="shop" size={24} color="white"/>
@@ -63,6 +60,14 @@ const OrdersScreen = () => {
                     renderItem={({item}) => <OrderItem order={item}/>}
                 />
             </BottomSheet>
+           <Button onPress={async () => await Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>
+           <Text
+               onPress={() => Auth.signOut()}
+               style={{textAlign: "center", color: 'red', margin: 10}}>
+               Sign out
+           </Text>
+
+
         </GestureHandlerRootView>
     );
 };
