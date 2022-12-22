@@ -10,8 +10,7 @@ const getDishes_ByRestaurant = async ({restaurant}) => {
                 dish.basketID.eq(null)
             ]
     ))
-        .then(result =>{
-                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+        .then(result =>{ 
                  if(!result) return null
                  if(result instanceof Array ) {
                     return result.filter(entity=>entity.isDeleted===false)
@@ -31,8 +30,7 @@ const RestaurantContextProvider = ({children}) => {
     const getRestaurant_ByID = async id => {
         // const res =
         return await DataStore.query(Restaurant, id)
-            .then(result =>{
-                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+            .then(result =>{ 
                  if(!result) return null
                  if(result instanceof Array ) {
                     return result.filter(entity=>entity.isDeleted===false)

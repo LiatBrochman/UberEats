@@ -4,6 +4,7 @@ import {useBasketContext} from "../../contexts/BasketContext";
 import {useOrderContext} from "../../contexts/OrderContext";
 import { useNavigation } from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import {AntDesign} from "@expo/vector-icons";
 
 const Basket = () => {
     const {dishes, totalPrice} = useBasketContext()

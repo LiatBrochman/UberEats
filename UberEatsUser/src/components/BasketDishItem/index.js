@@ -1,9 +1,12 @@
 import {Image, StyleSheet, Text, View} from "react-native";
+import {AntDesign} from "@expo/vector-icons";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 
 
 
 const BasketDishItem = ({dish}) => {
+    const {removeDishFromBasket} = useBasketContext()
     return (
         <View style={styles.row}>
             <View style={styles.quantityContainer}>
@@ -14,6 +17,12 @@ const BasketDishItem = ({dish}) => {
                 style={styles.image}/>
             <Text style={styles.dishName}>{dish?.name}</Text>
             <Text style={styles.dishPrice}>$ {dish?.price}</Text>
+            <AntDesign
+                name="pluscircleo"
+                size={10}
+                color={"red"}
+                onPress={()=> removeDishFromBasket({dish})}
+            />
         </View>
     )
 }
@@ -38,7 +47,8 @@ const styles = StyleSheet.create({
         fontWeight: '600'
     },
     dishPrice: {
-        marginLeft: "auto"
+        marginLeft: "auto",
+        marginRight: 10,
     },
     image: {
         width: '25%',
