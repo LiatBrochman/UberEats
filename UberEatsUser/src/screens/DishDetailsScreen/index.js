@@ -18,14 +18,20 @@ const DishDetailsScreen = () => {
     const route = useRoute();
     const id = route.params?.id;
     const [dish,setDish] = useState()
+    const {addDishToBasket, getDish_ByID, basket, getExistingDishQuantity} = useBasketContext()
     const [quantity,setQuantity] = useState(1)
-    const {addDishToBasket, getDish_ByID} = useBasketContext();
+
+
 
     useEffect(() => {
         if (id) {
-            getDish_ByID({id}).then(dish => setDish({...dish, quantity: quantity}))
+            getDish_ByID({id}).then(async dish => {
+                setDish({...dish, quantity: quantity})
+                setQuantity(await getExistingDishQuantity({basket, dish}))
+            })
         }
-    }, [id]);
+    }, [id])
+
 
     const onAddToBasket = async () => {
         dish.quantity = quantity
