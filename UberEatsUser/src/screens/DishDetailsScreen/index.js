@@ -23,13 +23,13 @@ const DishDetailsScreen = () => {
 
     useEffect(() => {
         if (id) {
-            getDish_ByID(id).then(dish => setDish({...dish, quantity: quantity}))
+            getDish_ByID({id}).then(dish => setDish({...dish, quantity: quantity}))
         }
     }, [id]);
 
     const onAddToBasket = async () => {
         dish.quantity = quantity
-        await addDishToBasket(dish)
+        await addDishToBasket({dish})
         navigation.goBack()
     }
 
@@ -75,7 +75,7 @@ const DishDetailsScreen = () => {
 
             <Pressable onPress={onAddToBasket} style={styles.button}>
                 <Text style={styles.buttonText}>
-                    Add {dish?.quantity} to basket &#8226; ${getTotal()}
+                    Add {quantity} to basket &#8226; ${getTotal()}
                 </Text>
             </Pressable>
         </View>

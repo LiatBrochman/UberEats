@@ -17,8 +17,7 @@ const OrderContextProvider = ({children}) => {
     useEffect(() => {
         dbCustomer &&
         DataStore.query(Order, o => o.customerID.eq(dbCustomer.id))
-             .then(result =>{
-                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+             .then(result =>{ 
                  if(!result) return null
                  if(result instanceof Array ) {
                     return result.filter(entity=>entity.isDeleted===false)
@@ -96,8 +95,7 @@ const OrderContextProvider = ({children}) => {
 
     const getOrder = async (id) => {
         return await DataStore.query(Order, id)
-             .then(result =>{
-                 console.log("\n\n ~~~~~~~~~ result ~~~~~~~~~ :",result)
+             .then(result =>{ 
                  if(!result) return null
                  if(result instanceof Array ) {
                     return result.filter(entity=>entity.isDeleted===false)
