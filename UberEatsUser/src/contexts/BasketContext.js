@@ -1,141 +1,136 @@
 import {createContext, useState, useEffect, useContext} from "react";
 import {DataStore} from "aws-amplify";
-import {Basket, BasketDish, Dish} from "../models";
+import {Basket, Dish, Restaurant} from "../models";
 import {useAuthContext} from "./AuthContext";
+import {useRestaurantContext} from "./RestaurantContext";
+import {
+    getBasket_DB,
+    getDishes_ByBasket,
+    getTotalPrice,
+    getDish_ByID,
+    createNewBasket_DB,
+    updateDishQuantity_DB,
+    createNewDish_DB,
+    removeDish_DB
+} from "./Queries";
 
 const BasketContext = createContext({});
 
 const BasketContextProvider = ({children}) => {
 
-    const getBasketFromDB = async ({dbUser, restaurant}) => {
-        const res = await DataStore.query(Basket, b =>
-            b.and(b => [
-                b.restaurantID.eq(restaurant?.id),
-                b.userID.eq(dbUser?.id)
+    const {dbCustomer} = useAuthContext()
+    const {restaurant} = useRestaurantContext()
+    const [basket, setBasket] = useState()
+    const [dishes, setDishes] = useState()
+    const [totalPrice, setTotalPrice] = useState()
+
+    useEffect(() => {
+        restaurant && !basket && getBasket_DB({dbCustomer, restaurant}).then(setBasket)
+    }, [restaurant])
+
+    useEffect(() => {
+        basket && !dishes && getDishes_ByBasket({basket}).then(customerDishes => {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
+            setDishes(customerDishes)
+        })
+
+    }, [basket])
+
+    useEffect(() => {
+        dishes && setTotalPrice(getTotalPrice({dishes, restaurant}))
+    }, [dishes])
+
+    const checkIfDishAlreadyExists = async ({dish, basket}) => {
+
+        const [existingDish] = await DataStore.query(Dish, d =>
+            d.and(d => [
+                d.basketID.eq(basket.id),
+                d.originalID.eq(dish.id)
+                // basket.id.eq(d.basketID),
+                // dish.id.eq(d.originalID),
             ]))
-        return res[0]
-    }
-    const getBasketDishesFromDB = async ({basket}) => {
-        const res = await DataStore.query(BasketDish, bd => bd.basketID.eq(basket.id))
-        return res
-    }
-    const getTotalPrice = async ({basketDishes, restaurant}) => {
-
-        if (!basketDishes) return 0
-
-        return basketDishes.reduce(
-            async (sum, basketDish) => {
-
-                return await DataStore.query(Dish, d => d.id.eq(basketDish.basketDishDishId))
-                    .then(([dish])=>{
-                    console.log("dish price=", Number(dish.price))
-                    console.log("basketDish.quantity=", Number(basketDish.quantity))
-                    console.log("sum=", sum)
-                    if(sum.hasOwnProperty('_z')) sum=sum['_z']
-                    console.log(sum)
-                    // console.log("\n\n\n######## basket dish is:",basketDish)
-                    // // console.log("\n\n\n@@@@@@@@ DISH :",basketDish.Dish)
-                    // console.log("\n\n\n@@@@@@@@ DISH query :", await DataStore.query(Dish, d=> d.id.eq(basketDish.basketDishDishId)))
-                    const res = sum + basketDish.quantity * dish.price
-                    console.log("calc",res)
-                    return res
-                })
-            }
-            , restaurant?.deliveryFee)
-    }
-
-    const {dbUser} = useAuthContext();
-    const [restaurant, setRestaurant] = useState();
-    const [basket, setBasket] = useState();
-    const [basketDishes, setBasketDishes] = useState();
-    const [totalPrice, setTotalPrice] = useState();
-
-    const clearBasketContext = () => {
-        setRestaurant(null)
-        setBasket(null)
-        setBasketDishes(null)
-        setTotalPrice(0)
-    }
-
-    // useEffect(()=>{
-    //     setRestaurant((async()=> await getRestaurantFromDB())())
-    // },[]);
-    useEffect(() => {
-
-        if (restaurant && !basket) {
-            (async () => {
-                const data = await getBasketFromDB({dbUser, restaurant})
-                if (data) {
-                    setBasket(data)
+            .then(result => {
+                if (!result) return null
+                if (result instanceof Array) {
+                    return result.filter(entity => entity.isDeleted === false)
+                } else {
+                    return result
                 }
-            })()
-        }
-    }, [restaurant]);
+            })
 
-    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
 
-        if (basket && !basketDishes) {
-            (async () => {
-                const data = await getBasketDishesFromDB({basket})
-                if (data) {
-                    setBasketDishes(data)
-                }
-            })()
+        return existingDish
+    }
 
+    const addDishToBasket = async ({dish}) => {
+
+        //GET THE EXISTING BASKET \ CREATE NEW BASKET
+        let theBasket = basket || await createNewBasket()
+
+        //CHECK IF THE DISH ALREADY EXISTS
+        const dishAlreadyExists = checkIfDishAlreadyExists({dish, basket: theBasket})
+
+        //IF THE DISH ALREADY EXISTS: update dish quantity
+        if (dishAlreadyExists instanceof Dish) {
+
+            const updatedDish = await updateDishQuantity_DB({dish: dishAlreadyExists, quantity: dish.quantity})
+            setDishes(
+                dishes.map(d =>
+                    d.originalID === dish.id
+                        ? updatedDish
+                        : d
+                )
+            )
         }
 
-    }, [basket]);
-
-    useEffect(() => {
-        (async () =>{
-            if (basketDishes) {
-                const data =  await getTotalPrice({basketDishes, restaurant})
-                if (data) {
-                    console.log("\n\n\nsetting total price: " + data)
-                    try{
-                        console.log(data.toFixed(2))
-                    }catch (e) {
-                        console.error(e)
-                    }
-                    setTotalPrice(data)
-                }
-            }
-        })()
-
-    }, [basketDishes]);
-
-
-    const addDishToBasket = async (dish, quantity) => {
-        //get the existing basket or create a new one
-        let theBasket = basket || (await createNewBasket());
-
-        // create a BasketDish item and save to Datastore
-        const newBasketDish = await DataStore.save(new BasketDish({quantity, Dish: dish, basketID: theBasket.id})
-        );
-
-        // console.log("\n\nnew dish:",newDish)
-        setBasketDishes([...basketDishes, newBasketDish]);
-    };
+        //CREATE A NEW DISH
+        else {
+            const newDishFromDB = await createNewDish_DB({dish, basket})
+            setDishes([...dishes, newDishFromDB])
+        }
+    }
 
     const createNewBasket = async () => {
-        const newBasket = await DataStore.save(new Basket({userID: dbUser?.id, restaurantID: restaurant?.id}));
-        setBasket(newBasket);
-        return newBasket;
-    };
+        let theBasket = getBasket_DB({dbCustomer, restaurant})
+        if (!(theBasket instanceof Basket)) {
+            theBasket = await createNewBasket_DB({dbCustomer, restaurant})
+        }
+        setBasket(theBasket)
+        return theBasket
+    }
+
+    const removeDishFromBasket = async ({dish}) => {
+
+        const existingDish = await getDish_ByID({id: dish.id})
+
+        if (existingDish instanceof Dish) {
+
+            await removeDish_DB({dish: existingDish})
+
+            setDishes(ds=> ds.filter(d=> d.id !== dish.id ))
+
+        }
+    }
+
+    const getBasketSize = () => {
+        return dishes?.length
+    }
 
     return (<BasketContext.Provider
             value={{
                 addDishToBasket,
-                clearBasketContext,
-
-                restaurant,
-                setRestaurant,
+                // clearBasketContext,
+                removeDishFromBasket,
+                getDishes_ByBasket,
+                getDish_ByID,
+                getBasketSize,
 
                 basket,
                 setBasket,
 
-                basketDishes,
-                setBasketDishes,
+                dishes,
+                setDishes,
 
                 setTotalPrice,
                 totalPrice

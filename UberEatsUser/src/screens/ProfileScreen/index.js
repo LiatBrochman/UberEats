@@ -2,57 +2,64 @@ import {View, Text, TextInput, StyleSheet, Button, Alert} from "react-native";
 import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Amplify, Auth, DataStore, Predicates} from "aws-amplify";
-import {BasketDish, Basket, Dish, User} from '../../models'
+import {Basket, Dish, Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
-import {useBasketContext} from "../../contexts/BasketContext";
+// import {useBasketContext} from "../../contexts/BasketContext";
 
 const Profile = () => {
-    const {dbUser} = useAuthContext();
-    const {clearBasketContext} = useBasketContext();
-    const [name, setName] = useState(dbUser?.name || "");
-    const [address, setAddress] = useState(dbUser?.address || "");
-    const [lat, setLat] = useState(dbUser?.lat + "" || "0");
-    const [lng, setLng] = useState(dbUser?.lng + "" || "0");
+    const {dbCustomer} = useAuthContext();
+    // const {clearBasketContext} = useBasketContext();
+    const [name, setName] = useState(dbCustomer?.name || "");
+    const [address, setAddress] = useState(dbCustomer?.location?.address || "");
+    const [lat, setLat] = useState(dbCustomer?.location?.lat + "" || "0");
+    const [lng, setLng] = useState(dbCustomer?.location?.lng + "" || "0");
 
-    const {sub, setDbUser} = useAuthContext();
+    const {sub, setDbCustomer} = useAuthContext();
 
     const navigation = useNavigation()
 
     const onSave = async () => {
-        console.log("dbUser:", dbUser)
-        if (dbUser) {
-            await updateUser();
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer,null,4))
+        if (dbCustomer) {
+            await updateCustomer();
         } else {
-            await createUser();
+            await createNewCustomer();
         }
         navigation.goBack()
     };
 
-    const updateUser = async () => {
-        const user = await DataStore.save(
-            User.copyOf(dbUser, (updated) => {
-                updated.name = name;
-                updated.address = address;
-                updated.lat = parseFloat(lat);
-                updated.lng = parseFloat(lng);
-            })
-        );
-        setDbUser(user);
-    };
-
-    const createUser = async () => {
-        try {
-            const user = await DataStore.save(
-                new User({
-                    sub: sub,
-                    name: name,
+    const updateCustomer = async () => {
+        const customer = await DataStore.save(
+            Customer.copyOf(dbCustomer, (updated) => {
+                updated.name = name
+                updated.isDeleted=false
+                updated.location = {
                     address: address,
                     lat: parseFloat(lat),
                     lng: parseFloat(lng),
+                }
+            })
+        );
+        setDbCustomer(customer);
+    };
+
+    const createNewCustomer = async () => {
+        try {
+            const customer = await DataStore.save(
+                new Customer({
+                    sub: sub,
+                    name: name,
+                    location:{
+                        address: address,
+                        lat: parseFloat(lat),
+                        lng: parseFloat(lng)
+                    },
+                    isDeleted:false
                 })
             );
-            setDbUser(user)
+            setDbCustomer(customer)
+
         } catch (e) {
             Alert.alert("Error", e.message);
         }
@@ -93,45 +100,46 @@ const Profile = () => {
                 Sign out
             </Text>
 
+            {/*{*/}
+            {/*    <Button onPress={async () => {*/}
+            {/*        await Promise.allSettled([*/}
+            {/*            // DataStore.delete(BasketDish, Predicates.ALL),*/}
+            {/*            DataStore.delete(Basket, Predicates.ALL),*/}
+            {/*            DataStore.delete(Dish, Predicates.ALL),*/}
+            {/*        ])*/}
+            {/*        clearBasketContext()*/}
 
-            <Button onPress={async () => {
-                await Promise.allSettled([
-                    DataStore.delete(BasketDish, Predicates.ALL),
-                    DataStore.delete(Basket, Predicates.ALL),
-                    DataStore.delete(Dish, Predicates.ALL),
-                ])
-                clearBasketContext()
+            {/*    }} title="remove all baskets + dishes from DB"/>*/}
 
-            }} title="clean all baskets + dishes + basketDishes"/>
+            {/*    <Button onPress={async () => {*/}
 
-            <Button onPress={async () => {
+            {/*    const res = await DataStore.save(*/}
+            {/*    new Dish({*/}
+            {/*    name: "Pancake",*/}
+            {/*    image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2580&q=80",*/}
+            {/*    description: "...",*/}
+            {/*    price: Number(10.0),*/}
+            {/*    restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"*/}
+            {/*}*/}
+            {/*    )*/}
+            {/*    )*/}
+            {/*    console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)*/}
+            {/*}} title="add dish"/>*/}
 
-                const res = await DataStore.save(
-                    new Dish({
-                            name: "Pancake",
-                            image: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2580&q=80",
-                            description: "...",
-                            price: Number(10.0),
-                            restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"
-                        }
-                    )
-                )
-                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
-            }} title="add dish"/>
+            {/*    <Button onPress={async () => {*/}
 
-            <Button onPress={async () => {
+            {/*    const res = await DataStore.save(*/}
+            {/*    new Basket({*/}
+            {/*    CustomerID: dbCustomer.id,*/}
+            {/*    restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"*/}
+            {/*})*/}
+            {/*    )*/}
+            {/*    console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)*/}
+            {/*}} title="create an empty basket"/>*/}
 
-                const res = await DataStore.save(
-                    new Basket({
-                        userID: dbUser.id,
-                        restaurantID: "08150edf-2839-47ff-aedf-3bda9d476bbd"
-                        })
-                )
-                console.log("\n\n\n^^^^^^^^^^^^^^^^^^^ added:", res)
-            }} title="add empty basket"/>
-
-            <Button onPress={async () => await Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>
-
+            {/*    <Button onPress={async () => await Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>*/}
+            {/*}*/}
+            <Button onPress={()=>Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>
         </SafeAreaView>
     );
 };

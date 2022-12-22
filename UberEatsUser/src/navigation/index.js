@@ -14,10 +14,10 @@ import { Foundation, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-    const { dbUser } = useAuthContext();
+    const { dbCustomer } = useAuthContext();
     return (
         <Stack.Navigator screenOptions={{headerShown: false}}>
-            {dbUser ? (
+            {dbCustomer ? (
                 <Stack.Screen name="HomeTabs" component={HomeTabs}/>
             ): (
                 <Stack.Screen name="Profile" component={ProfileScreen} />

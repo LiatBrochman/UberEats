@@ -3,15 +3,18 @@ import BasketDishItem from "../../components/BasketDishItem";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useOrderContext} from "../../contexts/OrderContext";
 import { useNavigation } from "@react-navigation/native";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import {AntDesign} from "@expo/vector-icons";
 
 const Basket = () => {
-    const {restaurant, basketDishes, totalPrice} = useBasketContext();
-    const {createOrder} = useOrderContext();
-    const navigation = useNavigation();
+    const {dishes, totalPrice} = useBasketContext()
+    const {restaurant} = useRestaurantContext()
+    const {createOrder} = useOrderContext()
+    const navigation = useNavigation()
 
     const onCreateOrder = async () => {
-        await createOrder();
-        navigation.goBack();
+        await createOrder()
+        navigation.goBack()
     };
 
     return (
@@ -19,12 +22,12 @@ const Basket = () => {
             <Text style={styles.name}>{restaurant?.name}</Text>
 
             <Text style={styles.title}>Your items</Text>
-            <FlatList data={basketDishes} renderItem={({item}) => <BasketDishItem basketDish={item}/>}/>
-            <Text>Delivery Fee : $ {restaurant.deliveryFee.toFixed(2)}</Text>
+            <FlatList data={dishes} renderItem={({item}) => <BasketDishItem dish={item}/>}/>
+            <Text>Delivery Fee : $ {restaurant?.deliveryFee}</Text>
 
             <View style={styles.separator}/>
             <Pressable onPress={onCreateOrder} style={styles.button}>
-                <Text style={styles.buttonText}>Create order &#8226; $ {typeof totalPrice == 'number' && totalPrice.toFixed(2)}</Text>
+                <Text style={styles.buttonText}>Create order &#8226; $ {totalPrice}</Text>
             </Pressable>
         </View>
     );
