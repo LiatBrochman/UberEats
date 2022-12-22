@@ -103,6 +103,24 @@ const removeDish_DB = async ({dish}) => {
         })
     )
 }
+const getDate=({order})=>{
+    if (order && order?.createdAt) {
+        let date = new Date(order.createdAt)
+        return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear()
+    }
+}
+const getTime=({order})=>{
+    if (order && order?.createdAt) {
+        let date = new Date(order.createdAt)
+        return date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
+    }
+}
+const getDateAndTime = ({order}) => {
+    if (order && order?.createdAt) {
+        let date = new Date(order.createdAt)
+        return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + '  ' + date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
+    }
+}
 
 module.exports = {
     getBasket_DB,
@@ -113,4 +131,7 @@ module.exports = {
     updateDishQuantity_DB,
     createNewDish_DB,
     removeDish_DB,
+    getDate,
+    getTime,
+    getDateAndTime,
 }
