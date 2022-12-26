@@ -1,6 +1,6 @@
 import {createContext, useState, useEffect, useContext} from "react";
 import {DataStore} from "aws-amplify";
-import {Basket, Dish, Restaurant} from "../models";
+import {Basket, Dish} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {useRestaurantContext} from "./RestaurantContext";
 import {
@@ -14,6 +14,8 @@ import {
     removeDish_DB
 } from "./Queries";
 
+import {useNavigation, useRoute} from "@react-navigation/native";
+
 const BasketContext = createContext({});
 
 const BasketContextProvider = ({children}) => {
@@ -23,6 +25,10 @@ const BasketContextProvider = ({children}) => {
     const [basket, setBasket] = useState()
     const [dishes, setDishes] = useState()
     const [totalPrice, setTotalPrice] = useState()
+    const [quantity,setQuantity] = useState(1)
+    const [dish,setDish] = useState()
+
+
 
     useEffect(() => {
         restaurant && !basket && getBasket_DB({dbCustomer, restaurant}).then(setBasket)
@@ -121,6 +127,11 @@ const BasketContextProvider = ({children}) => {
         return result[0].quantity
     }
 
+
+
+
+
+
     return (<BasketContext.Provider
             value={{
                 addDishToBasket,
@@ -137,7 +148,14 @@ const BasketContextProvider = ({children}) => {
                 setDishes,
 
                 setTotalPrice,
-                totalPrice
+                totalPrice,
+
+                quantity,
+                setQuantity,
+
+                dish,
+                setDish
+
             }}
         >
             {children}

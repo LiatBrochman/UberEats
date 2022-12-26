@@ -7,8 +7,8 @@ import {
     ActivityIndicator,
 } from "react-native";
 import {AntDesign} from "@expo/vector-icons";
-import {useNavigation, useRoute} from "@react-navigation/native";
-import {DataStore} from "aws-amplify";
+ import {useNavigation, useRoute} from "@react-navigation/native";
+ import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
 
@@ -17,9 +17,9 @@ const DishDetailsScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
-    const [dish,setDish] = useState()
-    const {addDishToBasket, getDish_ByID, basket, getExistingDishQuantity} = useBasketContext()
-    const [quantity,setQuantity] = useState(1)
+
+    const {addDishToBasket, quantity, setQuantity, dish, getDish_ByID, getExistingDishQuantity, basket, setDish} = useBasketContext()
+    // const [quantity,setQuantity] = useState(1)
 
 
 
