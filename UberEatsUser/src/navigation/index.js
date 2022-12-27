@@ -5,7 +5,7 @@ import RestaurantDetailsScreen from "../screens/RestaurantDetailsScreen";
 import DishDetailsScreen from "../screens/DishDetailsScreen";
 import Basket from "../screens/Basket";
 import OrdersScreen from "../screens/OrdersScreen";
-import OrderDetails from "../screens/OrderDetails";
+import OrderDetails from "../components/OrderDetails";
 import ProfileScreen from "../screens/ProfileScreen";
 import {useAuthContext} from "../contexts/AuthContext";
 
@@ -43,7 +43,7 @@ const HomeTabs = () => {
                 }}/>
             <Tab.Screen
                 name="Orders"
-                component={OrderStackNavigator}
+                component={OrdersStackNavigator}
                 options={{
                     tabBarIcon: ({color}) => (
                         <MaterialIcons name="list-alt" size={24} color={color}/>),
@@ -74,11 +74,11 @@ const HomeStackNavigator = () => {
 
 const OrdersStack = createNativeStackNavigator();
 
-const OrderStackNavigator = () => {
+const OrdersStackNavigator = () => {
     return (
         <OrdersStack.Navigator>
-            <OrdersStack.Screen name="Orders" component={OrdersScreen}/>
-            <OrdersStack.Screen name="Order" component={OrderDetails}/>
+            <OrdersStack.Screen name="OrdersScreen" component={OrdersScreen}/>
+            <OrdersStack.Screen name="OrderDetails" component={OrderDetails}/>
         </OrdersStack.Navigator>
     );
 };

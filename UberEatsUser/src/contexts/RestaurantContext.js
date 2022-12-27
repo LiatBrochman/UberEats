@@ -7,7 +7,8 @@ const getDishes_ByRestaurant = async ({restaurant}) => {
         dish =>
             [
                 dish.restaurantID.eq(restaurant.id),
-                dish.basketID.eq(null)
+                dish.basketID.eq(null),
+                dish.orderID.eq(null)
             ]
     ))
         .then(result =>{ 
@@ -19,7 +20,7 @@ const getDishes_ByRestaurant = async ({restaurant}) => {
                  }
              })
 
-    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurantDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurantDishes, null, 4))
+    //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurantDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurantDishes, null, 4))
 
     return restaurantDishes
 }

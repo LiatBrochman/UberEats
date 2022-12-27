@@ -22,9 +22,8 @@ const RestaurantDetailsPage = () => {
     const route = useRoute()
     const navigation = useNavigation()
     const {getRestaurant_ByID, restaurant, setRestaurant, dishes } = useRestaurantContext()
-    const { getBasketSize , basket } = useBasketContext()
+    const {basket ,basketSize} = useBasketContext()
     const id = route.params?.id
-
     useEffect(() => {
         if(id) {
             // fetch the restaurant with the id
@@ -32,10 +31,6 @@ const RestaurantDetailsPage = () => {
             // DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes)
         }
     }, [id]);
-
-    // useEffect(() => {
-    //     setRestaurant(restaurant);
-    // }, [restaurant]);
 
 
     if (!restaurant) {
@@ -56,8 +51,8 @@ const RestaurantDetailsPage = () => {
                       style={styles.iconContainer}/>
 
             { basket && (
-            <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
-                <Text style={styles.buttonText}>Open basket({getBasketSize() || 0})</Text>
+            <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button} disabled={typeof basketSize !=='number'}>
+                <Text style={styles.buttonText}>Open basket({basketSize})</Text>
             </Pressable>
             )}
         </View>
