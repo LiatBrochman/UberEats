@@ -3,40 +3,25 @@ import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
 
 
-const BasketDishItem = ({dish}) => {
-    const {removeDishFromBasket} = useBasketContext()
+const OrderDishItem = ({dish}) => {
+
     return (
         <>
             {dish.isDeleted === false &&
             <View style={styles.row}>
                 <View style={{flexDirection: "column"}}>
-                    <AntDesign
-                        name="plussquareo"
-                        size={17}
-                        color={"black"}
-                        // onPress={}
-                    />
+
                     <View style={styles.quantityContainer}>
                         <Text>{dish?.quantity}</Text>
                     </View>
-                    <AntDesign
-                        name="minussquareo"
-                        size={17}
-                        color={"black"}
-                        // onPress={}
-                    />
+
                 </View>
                 <Image
                     source={{uri: dish?.image}}
                     style={styles.image}/>
                 <Text style={styles.dishName}>{dish?.name}</Text>
                 <Text style={styles.dishPrice}>$ {dish?.price}</Text>
-                <AntDesign
-                    name="closesquareo"
-                    size={20}
-                    color={"darkred"}
-                    onPress={() => removeDishFromBasket({dish})}
-                />
+
             </View>
             }
         </>
@@ -44,7 +29,7 @@ const BasketDishItem = ({dish}) => {
     )
 }
 
-export default BasketDishItem;
+export default OrderDishItem;
 
 
 const styles = StyleSheet.create({

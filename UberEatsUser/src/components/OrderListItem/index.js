@@ -1,25 +1,28 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {useNavigation} from "@react-navigation/native";
-import {useBasketContext} from "../../contexts/BasketContext";
-import {getDate, getTime}from"../../contexts/Queries"
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {getDate, getTime} from "../../contexts/Queries"
 
 const OrderListItem = ({order}) => {
-    const {restaurant} = useBasketContext()
-    const navigation = useNavigation();
+    const navigation = useNavigation()
+
     return (
-        <Pressable
-            onPress={() => navigation.navigate("Order", {id: order.id})}
-            style={styles.container}>
-            <Image
-                source={{uri: restaurant?.image}}
-                style={styles.image}
-            />
-            <View>
-                <Text style={styles.name}>{restaurant?.name}</Text>
-                <Text style={styles.price}>3 items &#8226; ${order.total}</Text>
-                <Text>{getDate({order})} {getTime({order})} &#8226; {order?.status}</Text>
-            </View>
-        </Pressable>
+        <View>
+            {console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))}
+            <Pressable
+                onPress={() => navigation.navigate("OrderDetails", {order:order})}
+                style={styles.container}>
+                <Image
+                    source={{uri: order?.restaurant?.image }}
+                    style={styles.image}
+                />
+                <View>
+                    <Text style={styles.name}>{order?.restaurant?.name }</Text>
+                    <Text style={styles.price}>{order?.quantity} items &#8226; ${order?.total}</Text>
+                    <Text>{getDate({order})} {getTime({order})} &#8226; {order?.status}</Text>
+                </View>
+            </Pressable>
+
+        </View>
     );
 };
 

@@ -1,4 +1,4 @@
-import {createContext, useState, useEffect, useContext} from "react";
+import {createContext, useState, useEffect, useContext, useReducer} from "react";
 import {DataStore} from "aws-amplify";
 import {Basket, Dish, Restaurant} from "../models";
 import {useAuthContext} from "./AuthContext";
@@ -11,7 +11,7 @@ import {
     createNewBasket_DB,
     updateDishQuantity_DB,
     createNewDish_DB,
-    removeDish_DB
+    deleteDish_DB
 } from "./Queries";
 
 const BasketContext = createContext({});
@@ -23,6 +23,7 @@ const BasketContextProvider = ({children}) => {
     const [basket, setBasket] = useState()
     const [dishes, setDishes] = useState()
     const [totalPrice, setTotalPrice] = useState()
+    const [basketSize, setBasketSize] = useState('Empty')
 
     useEffect(() => {
         restaurant && !basket && getBasket_DB({dbCustomer, restaurant}).then(setBasket)
@@ -30,21 +31,28 @@ const BasketContextProvider = ({children}) => {
 
     useEffect(() => {
         basket && !dishes && getDishes_ByBasket({basket}).then(customerDishes => {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
+            //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
             setDishes(customerDishes)
         })
 
     }, [basket])
 
     useEffect(() => {
-        dishes && setTotalPrice(getTotalPrice({dishes, restaurant}))
+        if (dishes && dishes instanceof Array && dishes[0] instanceof Dish) {
+            setTotalPrice(getTotalPrice({dishes, restaurant}))
+            setBasketSize(dishes.reduce((quantitySum, dish) =>  quantitySum + dish.quantity, 0))
+        }else{
+            setTotalPrice(restaurant?.deliveryFee)
+            setBasketSize('Empty')
+        }
     }, [dishes])
+
 
     const checkIfDishAlreadyExists = async ({dish, basket}) => {
 
         const [existingDish] = await DataStore.query(Dish, d =>
             d.and(d => [
-                d.basketID.eq(basket.id),
+                d.basketID.eq(basket?.id),
                 d.originalID.eq(dish.id),
                 d.isDeleted.eq(false)
             ]))
@@ -98,26 +106,23 @@ const BasketContextProvider = ({children}) => {
 
         if (existingDish instanceof Dish) {
 
-            await removeDish_DB({dish: existingDish})
+            await deleteDish_DB({dish: existingDish})
 
-            setDishes(ds => ds.filter(d => d.id !== dish.id))
-
+            setDishes(ds => ds.filter(d => d.id !== existingDish.id))
+            // setTotalPrice(currentTotalPrice=> (currentTotalPrice-(existingDish.price*existingDish.quantity)).toFixed(2) )
         }
     }
 
-    const getBasketSize = () => {
-        return dishes?.length
-    }
-
     const getExistingDishQuantity = async ({basket, dish}) => {
-        const result= await DataStore.query(Dish, d =>
+        const result = await DataStore.query(Dish, d =>
             d.and(d =>
                 [
                     d.originalID.eq(dish.id),
-                    d.basketID.eq(basket.id),
+                    d.basketID.eq(basket?.id),
                     d.isDeleted.eq(false)
                 ]
             ))
+        if (!(result instanceof Array && result[0] instanceof Dish)) return null
         return result[0].quantity
     }
 
@@ -128,8 +133,8 @@ const BasketContextProvider = ({children}) => {
                 removeDishFromBasket,
                 getDishes_ByBasket,
                 getDish_ByID,
-                getBasketSize,
 
+                basketSize,
                 basket,
                 setBasket,
 
