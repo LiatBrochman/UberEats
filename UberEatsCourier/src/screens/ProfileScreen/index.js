@@ -39,7 +39,6 @@ const Profile = () => {
                 updated.isActive= false;
                 updated.transportationMode = transportationMode;
                 updated.location = {
-                    address: null,
                     lat: parseFloat(driverLocation.latitude),
                     lng: parseFloat(driverLocation.longitude),
                 }

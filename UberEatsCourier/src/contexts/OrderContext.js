@@ -8,13 +8,14 @@ const OrderContext = createContext({});
 
 const OrderContextProvider = ({children}) => {
     const {dbCourier} = useAuthContext();
-    const [order, setOrder] = useState();
-    const [customer, setCustomer] = useState();
+    const [order, setOrder] = useState(null);
+    const [customer, setCustomer] = useState(null);
     const [restaurant, setRestaurant] = useState(null);
-    const [dishes, setDishes] = useState([]);
-    const [orders, setOrders] = useState([])
+    const [dishes, setDishes] = useState(null);
+    const [orders, setOrders] = useState(null)
     const [restaurants, setRestaurants] = useState([])
     const [driverLocation, setDriverLocation] = useState({latitude:32, longitude:34})
+
     const startWatchingDriverLocation = async () => {
         await Location.watchPositionAsync(
             {
@@ -27,7 +28,7 @@ const OrderContextProvider = ({children}) => {
                     longitude: updatedLocation.coords.longitude,
                 });
             })
-            // .then(setForegroundSubscription)
+            //.then(setForegroundSubscription)
 
         // let location = await Location.getCurrentPositionAsync()
         // return setDriverLocation({
@@ -38,15 +39,17 @@ const OrderContextProvider = ({children}) => {
     // const route = useRoute();
     // const id = route.params?.id;
 
-    const fetchOrder = (id) => {
+    const fetchOrder = async (id) => {
         if (id) {
-            //const fetchedOrder = await DataStore.query(Order, id);
-            DataStore.query(Order, id).then(setOrder)
+           // const fetchedOrder = await DataStore.query(Order, id);
+           DataStore.query(Order, id).then(setOrder)
+           // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(Order,null,4))
+            //setOrder(fetchedOrder);
         }
-        //setOrder(fetchedOrder);
+
     }
 
-    const fetchCustomer = (order) => {
+    const fetchCustomer = ({order}) => {
         if (order) {
             DataStore.query(Customer, order.customerID).then(setCustomer)
             DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
@@ -55,7 +58,7 @@ const OrderContextProvider = ({children}) => {
         //  setUser(fetchedUser);
     }
 
-    const acceptOrder = () => {
+    const acceptOrder = ({order}) => {
 // updated the order, and change status, and assign the courier
         DataStore.save(
             Order.copyOf(order, (updated) => {
@@ -66,7 +69,7 @@ const OrderContextProvider = ({children}) => {
         ).then(setOrder);
     }
 
-    const pickupOrder = () => {
+    const pickupOrder = ({order}) => {
 // updated the order, and change status, and assign the courier
         DataStore.save(
             Order.copyOf(order, (updated) => {
@@ -77,10 +80,10 @@ const OrderContextProvider = ({children}) => {
         ).then(setOrder);
     }
 
-    const completeOrder = () => {
+    const completeOrder = ({order}) => {
 // updated the order, and change status, and assign the courier
         DataStore.save(
-            Order.copyOf(order, (updated) => {
+            Order.copyOf(order, updated => {
                 updated.status = "COMPLETED";// update to "ACCEPTED"
                 updated.Courier = dbCourier;
 
@@ -115,7 +118,10 @@ const OrderContextProvider = ({children}) => {
             dishes,
             pickupOrder,
             completeOrder,
-            driverLocation
+            driverLocation,
+            restaurants,
+            orders
+
         }}>
             {children}
         </OrderContext.Provider>
