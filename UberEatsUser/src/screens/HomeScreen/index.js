@@ -1,30 +1,28 @@
 import {useState, useEffect} from "react";
 import { StyleSheet, FlatList, View } from "react-native";
 import RestaurantItem from "../../components/RestaurantItem";
-import { DataStore } from "aws-amplify";
-import { Restaurant } from "../../models";
+import {getAllRestaurants} from "../../contexts/Queries";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 export default function HomeScreen() {
-    const [restaurants,setRestaurants] = useState([]);
+    const {allRestaurants} = useRestaurantContext()
+    // const [restaurants,setRestaurants] = useState([]);
 
 
-    useEffect(()=>{
-        DataStore.query(Restaurant)
-             .then(result =>{ 
-                 if(!result) return null
-                 if(result instanceof Array ) {
-                    return result.filter(entity=>entity.isDeleted===false)
-                 }else{
-                     return result
-                 }
-             })
-            .then(setRestaurants)
-    },[]);
+    // useEffect(()=>{
+    //     // DataStore.query(Restaurant,restaurant=> restaurant.isDeleted.eq(false))
+    //         // .then(setRestaurants)
+    //     getAllRestaurants()
+    //         .then(restaurants=>{
+    //             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ HomeScreen restaurants ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurants,null,4))
+    //             restaurants instanceof Array && setRestaurants(restaurants)
+    //         })
+    // },[]);
 
     return (
         <View style={styles.page}>
             <FlatList
-                data={restaurants}
+                data={allRestaurants}
                 renderItem={({item}) =><RestaurantItem restaurant={item} />}
                 showsVerticalScrollIndicator={false}
             />

@@ -11,46 +11,68 @@ import {useNavigation, useRoute} from "@react-navigation/native";
 import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
+import {useDishContext} from "../../contexts/DishContext";
 
 const DishDetailsScreen = () => {
 
     const navigation = useNavigation();
     const route = useRoute();
     const id = route.params?.id;
-    const [dish,setDish] = useState()
-    const {addDishToBasket, getDish_ByID, basket, getExistingDishQuantity} = useBasketContext()
-    const [quantity,setQuantity] = useState(0)
+    // const [dish,setDish] = useState()
+    const {dish}=useDishContext()
+    // const [tempDish,setTempDish] = useState()
 
+    const {addDishToBasket, getDish_ByID, basket, getExistingDishQuantity} = useBasketContext()
+    const [quantity,setQuantity] = useState(1)
 
 
     useEffect(() => {
-        if (id) {
-            getDish_ByID({id}).then(async dish => {
-                setDish({...dish, quantity: quantity})
-                setQuantity(await getExistingDishQuantity({basket, dish}))
-            })
-        }
-    }, [id])
+        // setTempDish({...originDish, quantity: 1})
+
+                if( This_is_a_Restaurant_Quantity({dish}) ){
+                    getExistingDishQuantity({basket, dish}).then(setQuantity)
+                }else{
+                    setQuantity(1)
+
+                }
+
+                // getExistingDishQuantity({basket, dish}).then(setQuantity)
+                // setQuantity(await getExistingDishQuantity({basket, dish}))
+
+    }, [dish])
+    // useEffect(() => {
+    //     if (id) {
+    //         getDish_ByID({id}).then(async dish => {
+    //             setDish({...dish, quantity: quantity})
+    //             setQuantity(dish.quantity)
+    //            // getExistingDishQuantity({basket, dish}).then(setQuantity)
+    //            // setQuantity(await getExistingDishQuantity({basket, dish}))
+    //         })
+    //     }
+    // }, [id])
 
 
     const onAddToBasket = async () => {
-        dish.quantity = quantity
-        await addDishToBasket({dish})
+        // dish.quantity = quantity
+        await addDishToBasket({...dish,quantity})
         navigation.goBack()
     }
 
     const onMinus = () => {
         if (quantity > 1) {
+            // setTempDish({...originDish,quantity: quantity - 1})
             setQuantity(quantity - 1)
         }
     }
 
     const onPlus = () => {
+        // setDish({...dish,quantity: quantity + 1})
         setQuantity(quantity + 1)
     }
 
     const getTotal = () => {
-        return (dish?.price * quantity)
+        // return (dish?.price * dish.quantity).toFixed(2)
+        return (dish?.price * quantity).toFixed(2)
     }
 
     if (!dish) {

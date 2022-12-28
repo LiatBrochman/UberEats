@@ -9,6 +9,7 @@ import AuthContextProvider from "./src/contexts/AuthContext";
 import BasketContextProvider from "./src/contexts/BasketContext";
 import OrderContextProvider from "./src/contexts/OrderContext";
 import RestaurantContextProvider from "./src/contexts/RestaurantContext";
+import DishContextProvider from "./src/contexts/DishContext";
 
 Amplify.configure({...config, Analytics: {disabled:true,},})
 
@@ -19,7 +20,9 @@ function App() {
         <RestaurantContextProvider>
         <BasketContextProvider>
             <OrderContextProvider>
+                <DishContextProvider>
                 <RootNavigator/>
+                    </DishContextProvider>
             </OrderContextProvider>
         </BasketContextProvider>
         </RestaurantContextProvider>

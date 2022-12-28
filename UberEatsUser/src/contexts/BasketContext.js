@@ -40,12 +40,32 @@ const BasketContextProvider = ({children}) => {
     useEffect(() => {
         if (dishes && dishes instanceof Array && dishes[0] instanceof Dish) {
             setTotalPrice(getTotalPrice({dishes, restaurant}))
-            setBasketSize(dishes.reduce((quantitySum, dish) =>  quantitySum + dish.quantity, 0))
-        }else{
+            setBasketSize(dishes.reduce((quantitySum, dish) => quantitySum + dish.quantity, 0))
+        } else {
             setTotalPrice(restaurant?.deliveryFee)
             setBasketSize('Empty')
         }
     }, [dishes])
+
+
+    const updateDishQuantity = async ({existingDish, quantity}) => {
+
+        const updatedDish = await updateDishQuantity_DB({dish: existingDish, quantity: quantity})
+
+        // setDishes( [...dishes.filter(d=> d.originalID!== existingDish.originalID),updatedDish] )
+        setDishes(dishes =>
+            dishes.map(d =>
+                // d.originalID === existingDish.originalID
+                d.id === existingDish.id
+                    ? updatedDish
+                    : d
+            )
+        )
+    }
+    const createNewDish = async ({restaurantDish, basket = basket}) => {
+        const newDishFromDB = await createNewDish_DB({dish: restaurantDish, basket})
+        setDishes([...dishes, newDishFromDB])
+    }
 
 
     const checkIfDishAlreadyExists = async ({dish, basket}) => {
@@ -53,7 +73,7 @@ const BasketContextProvider = ({children}) => {
         const [existingDish] = await DataStore.query(Dish, d =>
             d.and(d => [
                 d.basketID.eq(basket?.id),
-                d.originalID.eq(dish.id),
+                d.originalID.eq(dish?.id),
                 d.isDeleted.eq(false)
             ]))
 
@@ -73,21 +93,25 @@ const BasketContextProvider = ({children}) => {
         //IF THE DISH ALREADY EXISTS: update dish quantity
         if (dishAlreadyExists instanceof Dish) {
 
-            const updatedDish = await updateDishQuantity_DB({dish: dishAlreadyExists, quantity: dish.quantity})
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists instanceof Dish = true ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishAlreadyExists, null, 4))
 
-            setDishes(dishes =>
-                dishes.map(d =>
-                    d.originalID === dish.id
-                        ? updatedDish
-                        : d
-                )
-            )
+            await updateDishQuantity({existingDish: dishAlreadyExists, quantity: dish.quantity})
+            // const updatedDish = await updateDishQuantity_DB({dish: dishAlreadyExists, quantity: dish.quantity})
+            //
+            // setDishes(dishes =>
+            //     dishes.map(d =>
+            //         d.originalID === dish?.id
+            //             ? updatedDish
+            //             : d
+            //     )
+            // )
         }
 
         //CREATE A NEW DISH
         else {
-            const newDishFromDB = await createNewDish_DB({dish, basket})
-            setDishes([...dishes, newDishFromDB])
+            // const newDishFromDB = await createNewDish_DB({dish, basket})
+            // setDishes([...dishes, newDishFromDB])
+            await createNewDish({restaurantDish: dish})
         }
     }
 
@@ -102,13 +126,13 @@ const BasketContextProvider = ({children}) => {
 
     const removeDishFromBasket = async ({dish}) => {
 
-        const existingDish = await getDish_ByID({id: dish.id})
+        const existingDish = await getDish_ByID({id: dish?.id})
 
         if (existingDish instanceof Dish) {
 
             await deleteDish_DB({dish: existingDish})
 
-            setDishes(ds => ds.filter(d => d.id !== existingDish.id))
+            setDishes(ds => ds.filter(d => d?.id !== existingDish?.id))
             // setTotalPrice(currentTotalPrice=> (currentTotalPrice-(existingDish.price*existingDish.quantity)).toFixed(2) )
         }
     }
@@ -117,7 +141,7 @@ const BasketContextProvider = ({children}) => {
         const result = await DataStore.query(Dish, d =>
             d.and(d =>
                 [
-                    d.originalID.eq(dish.id),
+                    d?.originalID.eq(dish?.id),
                     d.basketID.eq(basket?.id),
                     d.isDeleted.eq(false)
                 ]
@@ -133,6 +157,7 @@ const BasketContextProvider = ({children}) => {
                 removeDishFromBasket,
                 getDishes_ByBasket,
                 getDish_ByID,
+                updateDishQuantity,
 
                 basketSize,
                 basket,

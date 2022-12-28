@@ -24,18 +24,21 @@ const RestaurantDetailsPage = () => {
     const {getRestaurant_ByID, restaurant, setRestaurant, dishes } = useRestaurantContext()
     const {basket ,basketSize} = useBasketContext()
     const id = route.params?.id
-    useEffect(() => {
-        if(id) {
-            // fetch the restaurant with the id
-            getRestaurant_ByID(id).then(setRestaurant)
-            // DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes)
-        }
-    }, [id]);
+    // useEffect(() => {
+    //     if(id) {
+    //         // fetch the restaurant with the id
+    //
+    //         getRestaurant_ByID({id}).then(setRestaurant)
+    //
+    //
+    //
+    //         // DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes)
+    //     }
+    // }, [id]);
 
 
-    if (!restaurant) {
+    if (!restaurant && !(restaurant instanceof Restaurant)) {
         return <ActivityIndicator size={"large"} color="gray" />;
-
     }
 
 

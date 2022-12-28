@@ -34,11 +34,9 @@ const getDish_ByID = async ({id}) => {
             d.id.eq(id),
             d.isDeleted.eq(false)
         ]))
-    return (
-        result instanceof Array
-            ? result[0]
-            : result
-    )
+    if(result && result instanceof Array && result[0] instanceof Dish )
+    return result[0]
+
 }
 const getDishes_ByOrder = async ({order}) => {
     const result = await DataStore.query(Dish, d =>
@@ -73,7 +71,9 @@ const getOrder_ByID = async ({id}) => {
         )
     })
 }
-
+const getAllRestaurants = async ()=>{
+    return await DataStore.query(Restaurant,restaurant=> restaurant.isDeleted.eq(false))
+}
 
 const createNewBasket_DB = async ({dbCustomer, restaurant}) => {
     return await DataStore.save(new Basket({
@@ -93,7 +93,7 @@ const createNewDish_DB = async ({dish, basket}) => {
         basketID: basket?.id,
         isActive: true,
         isDeleted: false,
-        originalID: dish.id + "",
+        originalID: dish?.id + "",
         orderID: null
     }
     return await DataStore.save(new Dish(newDish))
@@ -188,7 +188,7 @@ const getTotalPrice = ({dishes, restaurant}) => {
 
     if (dishes && restaurant?.deliveryFee) {
 
-        let totalPrice_calc = restaurant.deliveryFee
+        let totalPrice_calc = restaurant?.deliveryFee
 
         dishes.forEach(dish => totalPrice_calc += dish.price * dish.quantity)
 
@@ -219,6 +219,7 @@ const getTotalPrice = ({dishes, restaurant}) => {
 
 
 module.exports = {
+    getAllRestaurants,
     getOrder_ByID,
     getOrders_DB,
     updateDishOrderID_DB,
