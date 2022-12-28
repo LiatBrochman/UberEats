@@ -1,11 +1,19 @@
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import {View, Text, StyleSheet, Image, Pressable} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
+import {useDishContext} from "../../contexts/DishContext";
+import {Dish} from "../../models";
 
 const DishListItem = ({dish}) => {
     const navigation = useNavigation();
+    const {setDish} = useDishContext()
     return (
         <Pressable
-            onPress={() => navigation.navigate("Dish", {id: dish.id})}
+            onPress={() => {
+                if (dish instanceof Dish) {
+                    setDish(dish)
+                    navigation.navigate("Dish", {id: dish?.id})
+                }
+            }}
             style={styles.container}>
             <View style={{flex: 1}}>
                 <Text style={styles.name}>{dish.name}</Text>

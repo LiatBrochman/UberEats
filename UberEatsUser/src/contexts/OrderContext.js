@@ -39,7 +39,7 @@ const OrderContextProvider = ({children}) => {
             order.restaurant = await getRestaurant_ByOrder({order})
 
             order.dishes = await getDishes_ByOrder({order})
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order.dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order.dishes,null,4))
+            //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order.dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order.dishes,null,4))
 
             order.quantity = order.dishes.reduce((prev, current) => prev + current.quantity, 0)
             return order

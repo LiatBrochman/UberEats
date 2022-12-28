@@ -1,10 +1,28 @@
 import {Image, StyleSheet, Text, View} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
+import {useState} from "react";
+import {getDish_ByID} from "../../contexts/Queries";
 
 
 const BasketDishItem = ({dish}) => {
-    const {removeDishFromBasket} = useBasketContext()
+    const {removeDishFromBasket,addDishToBasket,updateDishQuantity} = useBasketContext()
+    // const [dish,setDish] = useState()
+    // const [quantity,setQuantity] = useState(0)
+
+    const onAddToBasket = async () => {
+        dish.quantity = quantity
+        await addDishToBasket({dish})
+    }
+    const onMinus = () => {
+        if (quantity > 1) {
+            setQuantity(quantity - 1)
+        }
+    }
+    const onPlus = () => {
+        setQuantity(quantity + 1)
+    }
+
     return (
         <>
             {dish.isDeleted === false &&
@@ -14,7 +32,12 @@ const BasketDishItem = ({dish}) => {
                         name="plussquareo"
                         size={17}
                         color={"black"}
-                        // onPress={}
+                        onPress={async()=>{
+                           // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(await getDish_ByID({id:dish?.originalID}),null,4))
+                           // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ basket dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish,null,4))
+                            return await updateDishQuantity({existingDish:dish,quantity:dish.quantity+1})
+                            // return await addDishToBasket({...dish,id:dish.originalID,quantity:dish.quantity+1})
+                        }}
                     />
                     <View style={styles.quantityContainer}>
                         <Text>{dish?.quantity}</Text>
@@ -23,7 +46,10 @@ const BasketDishItem = ({dish}) => {
                         name="minussquareo"
                         size={17}
                         color={"black"}
-                        // onPress={}
+                        onPress={async()=>{
+                            return await updateDishQuantity({existingDish:dish,quantity:dish.quantity-1})
+                            //await addDishToBasket({...dish,id:dish.originalID,quantity:dish.quantity-1})
+                        }}
                     />
                 </View>
                 <Image

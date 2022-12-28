@@ -256,7 +256,7 @@ export const schema = {
                     "name": "originalID",
                     "isArray": false,
                     "type": "String",
-                    "isRequired": true,
+                    "isRequired": false,
                     "attributes": []
                 },
                 "createdAt": {
@@ -870,5 +870,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.3.2",
-    "version": "3a50c0c179d509ae2c55f1b03bd0001f"
+    "version": "c43aee7db7e29a743b3af7a7ad85821b"
 };
