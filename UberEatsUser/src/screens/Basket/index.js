@@ -22,7 +22,14 @@ const Basket = () => {
             <Text style={styles.name}>{restaurant?.name}</Text>
 
             <Text style={styles.title}>Your items</Text>
-            <FlatList data={dishes} renderItem={({item}) => <BasketDishItem dish={item}/>}/>
+
+            <FlatList
+
+                data={dishes}
+                renderItem={({item}) => <BasketDishItem dish={item}/>}
+
+
+            />
             <Text>Delivery Fee : $ {restaurant?.deliveryFee}</Text>
 
             <View style={styles.separator}/>

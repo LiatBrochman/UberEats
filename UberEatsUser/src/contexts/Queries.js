@@ -1,5 +1,5 @@
 import {DataStore} from "aws-amplify";
-import {Basket, Dish} from "../models";
+import {Basket, Dish, Restaurant} from "../models";
 
 const getBasket_DB = async ({dbCustomer, restaurant}) => {
     const [getBasket_DB] = await DataStore.query(Basket, b =>
@@ -103,13 +103,13 @@ const removeDish_DB = async ({dish}) => {
         })
     )
 }
-const getDate=({order})=>{
+const getDate = ({order}) => {
     if (order && order?.createdAt) {
         let date = new Date(order.createdAt)
         return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear()
     }
 }
-const getTime=({order})=>{
+const getTime = ({order}) => {
     if (order && order?.createdAt) {
         let date = new Date(order.createdAt)
         return date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
@@ -121,8 +121,46 @@ const getDateAndTime = ({order}) => {
         return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear() + '  ' + date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
     }
 }
+const getOrderQuantity = async ({order}) => {
+    const dishesOfOrder = await DataStore.query(Dish, d => d.and(d => [
+        d.orderID.eq(order.id),
+        d.isDeleted.eq(false)
+    ]))
+    if(dishesOfOrder?._z){
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishesOfOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishesOfOrder,null,4))
+        return null
+    }
+    if(dishesOfOrder){
+        return dishesOfOrder.reduce((count,dish)=>count+dish.quantity,0)
+    }else{
+       console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishesOfOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishesOfOrder,null,4))
+        return null
+    }
+
+}
+const getRestaurant_byOrder = async ({order})=>{
+    const restaurant = await DataStore.query(Restaurant,r=>r.and(r=>[
+        r.id.eq(order.restaurantID),
+    ]))
+    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant[0] ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.[0],null,4))
+
+    return restaurant[0]
+}
+const getDishes_ByOrder  = async ({order})=>{
+    const dishes = await DataStore.query(Dish,d=>d.and(d=>[
+        d.orderID.eq(order.id),
+        d.isDeleted.eq(false)
+    ]))
+    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishes,null,4))
+
+    return dishes
+}
+
 
 module.exports = {
+    getDishes_ByOrder,
+    getRestaurant_byOrder,
+    getOrderQuantity,
     getBasket_DB,
     getDishes_ByBasket,
     getTotalPrice,
@@ -135,3 +173,4 @@ module.exports = {
     getTime,
     getDateAndTime,
 }
+
