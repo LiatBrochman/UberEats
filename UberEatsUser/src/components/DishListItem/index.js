@@ -9,14 +9,12 @@ const DishListItem = ({dish}) => {
     return (
         <Pressable
             onPress={() => {
-                if (dish instanceof Dish) {
                     setDish(dish)
-                    navigation.navigate("Dish", {id: dish?.id})
-                }
+                    navigation.navigate("Dish")
             }}
             style={styles.container}>
             <View style={{flex: 1}}>
-                <Text style={styles.name}>{dish.name}</Text>
+                <Text style={styles.name}>{dish?.name}</Text>
                 <Text style={styles.description} numberOfLines={2}>{dish.description}</Text>
                 <Text style={styles.price}>$ {dish.price}</Text>
             </View>
