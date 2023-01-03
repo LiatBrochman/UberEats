@@ -22,7 +22,7 @@ const OrderDetails = () => {
     useEffect(() => {
 
        if (order){
-           console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~???????? order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
+           //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~???????? order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
 
            getDishes_ByOrder({order}).then(setDishes)
 

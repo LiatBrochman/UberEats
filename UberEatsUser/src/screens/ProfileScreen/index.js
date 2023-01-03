@@ -20,7 +20,7 @@ const Profile = () => {
     const navigation = useNavigation()
 
     const onSave = async () => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer,null,4))
+        //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer,null,4))
         if (dbCustomer) {
             await updateCustomer();
         } else {

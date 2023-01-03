@@ -36,7 +36,7 @@ const BasketContextProvider = ({children}) => {
 
     useEffect(() => {
         basket && !dishes && getDishes_ByBasket({basket}).then(customerDishes => {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
+            //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
             setDishes(customerDishes)
         })
 
@@ -55,7 +55,7 @@ const BasketContextProvider = ({children}) => {
                 d.isDeleted.eq(false)
             ]))
 
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
+        //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
 
         return existingDish
     }
