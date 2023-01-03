@@ -77,9 +77,10 @@ const createNewBasket_DB = async ({dbCustomer, restaurant}) => {
     }))
 }
 const updateDishQuantity_DB = async ({dish, quantity}) => {
-    return await DataStore.save(Dish.copyOf(await dish, updated => {
-        updated.quantity = quantity
-    }))
+    return await updateDish_DB({dish,options:{quantity}})
+    // return await DataStore.save(Dish.copyOf(await dish, updated => {
+    //     updated.quantity = quantity
+    // }))
 }
 const createNewDish_DB = async ({dish, basket}) => {
     const newDish = {
@@ -89,10 +90,11 @@ const createNewDish_DB = async ({dish, basket}) => {
         description: dish.description,
         quantity: dish.quantity,
         restaurantID: dish.restaurantID,
-        basketID: basket.id,
         isActive: true,
         isDeleted: false,
-        originalID: dish.id + ""
+        originalID: dish.id + "",
+        basketID: basket.id,
+        orderID:"null",
     }
     return await DataStore.save(new Dish(newDish))
 }
@@ -126,38 +128,72 @@ const getOrderQuantity = async ({order}) => {
         d.orderID.eq(order.id),
         d.isDeleted.eq(false)
     ]))
-    if(dishesOfOrder?._z){
-        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishesOfOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishesOfOrder,null,4))
+    if (dishesOfOrder?._z) {
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishesOfOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishesOfOrder, null, 4))
         return null
     }
-    if(dishesOfOrder){
-        return dishesOfOrder.reduce((count,dish)=>count+dish.quantity,0)
-    }else{
-       console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishesOfOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishesOfOrder,null,4))
+    if (dishesOfOrder) {
+        return dishesOfOrder.reduce((count, dish) => count + dish.quantity, 0)
+    } else {
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishesOfOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishesOfOrder, null, 4))
         return null
     }
 
 }
-const getRestaurant_byOrder = async ({order})=>{
-    const restaurant = await DataStore.query(Restaurant,r=>r.and(r=>[
+const getRestaurant_byOrder = async ({order}) => {
+    const restaurant = await DataStore.query(Restaurant, r => r.and(r => [
         r.id.eq(order.restaurantID),
     ]))
-    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant[0] ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.[0],null,4))
+    //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant[0] ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.[0], null, 4))
 
     return restaurant[0]
 }
-const getDishes_ByOrder  = async ({order})=>{
-    const dishes = await DataStore.query(Dish,d=>d.and(d=>[
+const getDishes_ByOrder = async ({order}) => {
+    const dishes = await DataStore.query(Dish, d => d.and(d => [
         d.orderID.eq(order.id),
         d.isDeleted.eq(false)
     ]))
-    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishes,null,4))
+    //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishes, null, 4))
 
     return dishes
 }
+const updateDish_DB = async ({dish, options = {}}) => {
+    // const originDish = await getDish_ByID({id: dish.id})
+    // const result= await DataStore.save(Dish.copyOf(await originDish, updated => Object.assign(updated, options)))
+    // return (
+    //     result instanceof Array
+    //         ? result[0]
+    //         : result
+    // )
 
+    const result= await DataStore.save(Dish.copyOf(await dish, updated => Object.assign(updated, options)))
+    return (
+        result instanceof Array
+            ? result[0]
+            : result
+    )
+}
+const moveDishes_fromBasket_toOrder = async ({dishes, order}) => {
+    const promises = []
+    dishes.forEach(dish => {
+
+        promises.push(
+            (async () => await updateDish_DB({
+                    dish,
+                    options: {
+                        orderID: order.id,
+                        basketID: "null"
+                    }
+                })
+            )()
+        )
+    })
+    return Promise.allSettled(promises).then(results=> results.map(result=>result?.value))
+}
 
 module.exports = {
+    moveDishes_fromBasket_toOrder,
+    updateDish_DB,
     getDishes_ByOrder,
     getRestaurant_byOrder,
     getOrderQuantity,

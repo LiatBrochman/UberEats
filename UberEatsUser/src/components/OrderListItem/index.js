@@ -12,8 +12,10 @@ const OrderListItem = ({order}) => {
     const [orderQuantity, setOrderQuantity] = useState(0)
     const [restaurant, setRestaurant]=useState()
     useEffect(() => {
+        if(order){
         getOrderQuantity({order}).then(setOrderQuantity)
         getRestaurant_byOrder({order}).then(setRestaurant)
+        }
     }, [order])
     return (
         <Pressable
