@@ -5,7 +5,7 @@ import {getRestaurant_ByOrder,getDishes_ByOrder} from "../../contexts/Queries";
 import {useEffect, useState} from "react";
 
 const OrderScreen = () => {
-    const { orders } = useOrderContext()
+    const { customerOrders } = useOrderContext()
     // const [theArr,setTheArr] = useState([])
     // useEffect(()=>{
     //      const result = orders.map(async order=>{
@@ -26,8 +26,8 @@ const OrderScreen = () => {
     return (
     <View style={styles.container}>
             <FlatList
-                data={orders}
-                renderItem={({item}) => <OrderListItem order={item.hasOwnProperty('_z') ? item['_z'] : item} />}
+                data={customerOrders}
+                renderItem={({item}) => <OrderListItem order={item?.['_z'] || item} />}
             />
     </View>
     );

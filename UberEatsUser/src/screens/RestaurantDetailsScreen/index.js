@@ -10,57 +10,56 @@ import {Ionicons} from "@expo/vector-icons";
 import DishListItem from "../../components/DishListItem";
 import Header from "./Header";
 import styles from "./styles";
-import { useRoute, useNavigation } from "@react-navigation/native";
+import {useRoute, useNavigation} from "@react-navigation/native";
 import {DataStore} from "aws-amplify";
-import { Restaurant, Dish } from "../../models";
+import {Restaurant, Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import {getRestaurantDishes} from "../../contexts/Queries";
+import {useDishContext} from "../../contexts/DishContext";
 
-const RestaurantDetailsPage = () => {
-    // const [restaurant, setRestaurant] = useState();
-    // const [dishes, setDishes] = useState();
-    const route = useRoute()
+const RestaurantDetailsScreen = () => {
     const navigation = useNavigation()
-    const {getRestaurant_ByID, restaurant, setRestaurant, dishes } = useRestaurantContext()
-    const {basket ,basketSize} = useBasketContext()
-    const id = route.params?.id
-    // useEffect(() => {
-    //     if(id) {
-    //         // fetch the restaurant with the id
-    //
-    //         getRestaurant_ByID({id}).then(setRestaurant)
-    //
-    //
-    //
-    //         // DataStore.query(Dish, dish => dish.restaurantID.eq(id)).then(setDishes)
-    //     }
-    // }, [id]);
+    const {restaurant} = useRestaurantContext()
+    const {basket} = useBasketContext()
+    const {restaurantDishes,basketDishes} = useDishContext()
+   // const itemsInBasket = ()=>basketDishes && basketDishes.reduce((count,dish)=>count+dish?.quantity,0)
+    // const itemsInBasket = ()=>basketDishes.sum(dish=>dish.quantity,0)
 
+    const [items,setItems]=useState(0)
 
-    if (!restaurant && !(restaurant instanceof Restaurant)) {
-        return <ActivityIndicator size={"large"} color="gray" />;
+    useEffect(()=>{
+    console.log("\n\n !@#$%!@#!$@#!!@!##!!#$$@@!#@@#!# basketDishes from RestaurantDetailsScreen !@#$%!@#!$@#!!@!##!!#$$@@!#@@#!# :", JSON.stringify(basketDishes,null,4))
+
+        basketDishes &&
+        setItems(basketDishes.reduce((count,dish)=>count+dish.quantity,0))
+    },[basketDishes])
+
+    if (!restaurant || !basket ) {
+        return <ActivityIndicator size={"large"} color="gray"/>
     }
 
 
     return (
-         <View style={styles.page}>
+        <View style={styles.page}>
             <FlatList
                 ListHeaderComponent={() => <Header restaurant={restaurant}/>}
-                data={dishes}
+                data={restaurantDishes}
                 renderItem={({item}) => <DishListItem dish={item}/>}
                 keyExtractor={(item) => item.name}
             />
             <Ionicons onPress={() => navigation.goBack()} name="arrow-back-circle" size={45} color="white"
                       style={styles.iconContainer}/>
 
-            { basket && (
-            <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button} disabled={typeof basketSize !=='number'}>
-                <Text style={styles.buttonText}>Open basket({basketSize})</Text>
+            <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}
+                       disabled={!items}>
+                <Text style={styles.buttonText}>Open basket({items})</Text>
             </Pressable>
-            )}
+
+
         </View>
     );
 };
 
 
-export default RestaurantDetailsPage;
+export default RestaurantDetailsScreen;

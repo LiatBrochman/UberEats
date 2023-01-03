@@ -1,103 +1,29 @@
-import {createContext, useContext, useState, useEffect} from "react";
-import {DataStore} from "aws-amplify";
-import {Dish, Order, Restaurant} from "../models";
+import {createContext, useContext, useEffect, useState} from "react";
 import {useAuthContext} from "./AuthContext";
-import {useBasketContext} from "./BasketContext";
 import {useRestaurantContext} from "./RestaurantContext";
-import {
-    getOrder_ByID,
-    getDishes_ByOrder,
-    getRestaurant_ByOrder,
-    removeDishesFromBasket_DB,
-    updateDish_DB,
-    updateDishOrderID_DB,
-    createNewOrder_DB,
-    updateDishesAfterNewOrder_DB,
-    getOrders_DB,
-} from "./Queries";
-
+import {useBasketContext} from "./BasketContext";
+import {createNewOrder_DB, getOrders_DB, updateDishesAfterNewOrder_DB} from "./Queries";
+import {useDishContext} from "./DishContext";
 
 const OrderContext = createContext({})
-const OrderContextProvider = ({children}) => {
 
-    const _ = require("lodash")
+
+const OrderContextProvider = ({children}) => {
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
-    const {totalPrice, dishes, setDishes, basket} = useBasketContext()
-    // const [order, setOrder] = useState()
-    const [orders, setOrders] = useState()
-    // const [dishes, setDishes] = useState()
-    // const [restaurant, setRestaurant] = useState()
-    // const [hashMapOrders, setHashMapOrders] = useState(
-    //     //   --------------------------------------------- [ {order:{},dishes:{},restaurant:{}} ,{order,dishes,restaurant }, {...} ,...  ]
-    //
-    //     //    [{orderid123:{restaurant:"pooding",dishes:[dish,dish...]},{orderid87567:{restaurant:"pinca",dishes:[dish,dish...]}]
-    // )
-    const oldSetOrder = ({orders}) => {
-        return setOrders(_.cloneDeep([...orders]).map(async order => {
+    const {totalPrice} = useBasketContext()
+    const {orderDishes} = useDishContext()
 
-            order.restaurant = await getRestaurant_ByOrder({order})
 
-            order.dishes = await getDishes_ByOrder({order})
-            //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order.dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order.dishes,null,4))
+    const [customerOrders, setCustomerOrders] = useState()
+    const [order, setOrder] = useState()
 
-            order.quantity = order.dishes.reduce((prev, current) => prev + current.quantity, 0)
-            return order
-        }))
-    }
-
-    // useEffect(() => {
-    //     //Init Orders :
-    //     dbCustomer &&
-    //     getOrders_DB({dbCustomer}).then(setOrders)
-    // }, [dbCustomer, basket])
     useEffect(() => {
-        //Init Orders :
-        dbCustomer &&
-        getOrders_DB({dbCustomer}).then(orders=> oldSetOrder({orders}))
-    }, [dbCustomer, basket])
-    // useEffect(() => {
-    //     if (orders && orders instanceof Array && orders[0] instanceof Order) {
-    //         // getRestaurant_ByOrder({order}).then(setRestaurant)
-    //         // getDishes_ByOrder({order}).then(setDishes)
-    //
-    //
-    //
-    //         // const promises=[]
-    //         // orders.forEach(order => {
-    //         //     promises.push(async()=> await getDishes_ByOrder({order}))
-    //         //     promises.push(async() => await getRestaurant_ByOrder({order}))
-    //         // })
-    //         // const res = Promise.allSettled(promises)
-    //         //
-    //         // const hashMapInit = _.cloneDeep(orders).map(order=>({ order: order,dishes:res[]})
-    //
-    //
-    //         // const hashMapInit = _.cloneDeep(orders).map(async order => {
-    //         //
-    //         //
-    //         //     const temp = {
-    //         //         order: order,
-    //         //         dishes: (async () => await getDishes_ByOrder({order}))(),
-    //         //         restaurant: (async () => await getRestaurant_ByOrder({order}))()
-    //         //     }
-    //         //
-    //         //
-    //         //
-    //         //
-    //         //     return temp
-    //         // })
-    //         // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ hashMapInit ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(hashMapInit, null, 4))
-    //         // setHashMapOrders(hashMapInit)
-    //
-    //
-    //         // clonedOrders.forEach(order => order )
-    //         // setHashMapOrders(  )
-    //
-    //     }
-    // }, [orders])
+        customerOrders?.length === 0 &&
+        getOrders_DB({dbCustomer}).then(setCustomerOrders)
+    }, [dbCustomer])
 
-    const checkIfPriceIsValid = ({totalPrice}) => {
+    const orderValidation = () => {
         if (totalPrice && totalPrice > restaurant?.deliveryFee) {
             console.log("price is valid!", totalPrice)
             return true
@@ -107,15 +33,16 @@ const OrderContextProvider = ({children}) => {
         }
     }
 
-    const createOrder = async () => {
+    const createNewOrder = async ({}) => {
 
-        if (checkIfPriceIsValid({totalPrice})) {
+        if (orderValidation() === true) {
 
-            const newOrder = await createNewOrder_DB({totalPrice, restaurant, dbCustomer, dishes})
-            // setOrders(existingOrders => [...existingOrders, newOrder])
+            const newOrder = await createNewOrder_DB({totalPrice, restaurant, dbCustomer, orderDishes})
+            setCustomerOrders(existingOrders => [...existingOrders, newOrder])
             setOrder(newOrder)
 
-            const updatedDishes = await updateDishesAfterNewOrder_DB({dishes, order: newOrder})
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updating dishes after new order was created. each dish will be have the order's id, and its basket id will be removed ~~~~~~~~~~~~~~~~~~~~~")
+            const updatedDishes = await updateDishesAfterNewOrder_DB({orderDishes, order: newOrder})
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updatedDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedDishes, null, 4))
             setDishes(updatedDishes)
         }
@@ -124,10 +51,9 @@ const OrderContextProvider = ({children}) => {
 
     return (
         <OrderContext.Provider value={{
-            createOrder,
-            getOrder_ByID,
-
-            orders
+            createNewOrder,
+            customerOrders,
+            order
         }}>
             {children}
         </OrderContext.Provider>

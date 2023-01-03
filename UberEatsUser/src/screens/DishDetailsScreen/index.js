@@ -12,6 +12,7 @@ import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useDishContext} from "../../contexts/DishContext";
+import {getDishQuantity} from "../../contexts/Queries";
 
 const DishDetailsScreen = () => {
 
@@ -19,42 +20,30 @@ const DishDetailsScreen = () => {
     const route = useRoute();
     const id = route.params?.id;
     // const [dish,setDish] = useState()
-    const {dish}=useDishContext()
-    // const [tempDish,setTempDish] = useState()
-
-    const {addDishToBasket, getDish_ByID, basket, getExistingDishQuantity} = useBasketContext()
-    const [quantity,setQuantity] = useState(1)
-
-
-    useEffect(() => {
-        // setTempDish({...originDish, quantity: 1})
-
-                if( This_is_a_Restaurant_Quantity({dish}) ){
-                    getExistingDishQuantity({basket, dish}).then(setQuantity)
-                }else{
-                    setQuantity(1)
-
-                }
-
-                // getExistingDishQuantity({basket, dish}).then(setQuantity)
-                // setQuantity(await getExistingDishQuantity({basket, dish}))
-
-    }, [dish])
-    // useEffect(() => {
-    //     if (id) {
-    //         getDish_ByID({id}).then(async dish => {
-    //             setDish({...dish, quantity: quantity})
-    //             setQuantity(dish.quantity)
-    //            // getExistingDishQuantity({basket, dish}).then(setQuantity)
-    //            // setQuantity(await getExistingDishQuantity({basket, dish}))
-    //         })
-    //     }
-    // }, [id])
-
+    const {dish, addDishToBasket} = useDishContext()
+    const {basket} = useBasketContext()
+    // const initial={
+    //     getDishQuantity:(async()=>{
+    //         return basket ? await getDishQuantity({basket,dish_of_restaurant:dish}) : 1
+    //     })()
+    // }
+    // const [quantity,setQuantity] = useState(initial?.getDishQuantity || 1)
+    const [quantity, setQuantity] = useState(1)
 
     const onAddToBasket = async () => {
         // dish.quantity = quantity
-        await addDishToBasket({...dish,quantity})
+        const _ = require("lodash")
+        let tempDish = _.cloneDeep(dish)
+        tempDish.quantity = quantity
+        delete tempDish.createdAt
+        delete tempDish.updatedAt
+        delete tempDish._version
+        delete tempDish._lastChangedAt
+        delete tempDish._deleted
+
+        // tempDish= {...dish,quantity:quantity,createdAt:undefined,updatedAt:undefined}
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ tempDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(tempDish, null, 4))
+        await addDishToBasket({dish:tempDish})
         navigation.goBack()
     }
 
