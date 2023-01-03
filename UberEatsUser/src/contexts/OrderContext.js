@@ -91,25 +91,19 @@ const OrderContextProvider = ({children}) => {
     };
 
     const getOrder = async (id) => {
-        return await DataStore.query(Order, id)
-             .then(result =>{ 
-                 if(!result) return null
-                 if(result instanceof Array ) {
-                    return result.filter(entity=>entity.isDeleted===false)
-                 }else{
-                     return result
-                 }
-             })
-
-        // const order = await DataStore.query(Order, id);
-        // const orderDishes = await DataStore.query(OrderDish, (od) =>
-        //     od.orderID.eq(id));
-        //
-        // return {...order, dishes: orderDishes};
+        const order= await DataStore.query(Order, o => o.and(o => [
+            o.id.eq(id),
+            o.isDeleted.eq(false)
+        ]))
+        return order?.[0]
     }
 
     return (
-        <OrderContext.Provider value={{createOrder, orders, getOrder}}>
+        <OrderContext.Provider value={{
+            createOrder,
+            orders,
+            getOrder
+        }}>
             {children}
         </OrderContext.Provider>
     );
