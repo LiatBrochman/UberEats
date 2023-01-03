@@ -146,10 +146,19 @@ const getRestaurant_byOrder = async ({order})=>{
 
     return restaurant[0]
 }
+const getDishes_ByOrder  = async ({order})=>{
+    const dishes = await DataStore.query(Dish,d=>d.and(d=>[
+        d.orderID.eq(order.id),
+        d.isDeleted.eq(false)
+    ]))
+    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishes,null,4))
 
+    return dishes
+}
 
 
 module.exports = {
+    getDishes_ByOrder,
     getRestaurant_byOrder,
     getOrderQuantity,
     getBasket_DB,
