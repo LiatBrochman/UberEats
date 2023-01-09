@@ -7,7 +7,7 @@ import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 
 const Basket = () => {
-    const {dishes, totalPrice} = useBasketContext()
+    const {basketDishes, totalPrice} = useBasketContext()
     const {restaurant} = useRestaurantContext()
     const {createOrder} = useOrderContext()
     const navigation = useNavigation()
@@ -25,7 +25,7 @@ const Basket = () => {
 
             <FlatList
 
-                data={dishes}
+                data={basketDishes}
                 renderItem={({item}) => <BasketDishItem dish={item}/>}
 
 

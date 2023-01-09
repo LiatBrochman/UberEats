@@ -139,7 +139,8 @@ const Profile = () => {
 
             {/*    <Button onPress={async () => await Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>*/}
             {/*}*/}
-            <Button onPress={()=>Amplify.DataStore.clear()} title="Amplify.DataStore.clear()"/>
+            <Button onPress={async()=> await DataStore.clear().then(async ()=>await DataStore.start())
+            } title="Amplify.DataStore.clear()"/>
         </SafeAreaView>
     );
 };

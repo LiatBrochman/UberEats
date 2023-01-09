@@ -70,19 +70,27 @@ const getDish_ByID = async ({id}) => {
     )
 }
 const createNewBasket_DB = async ({dbCustomer, restaurant}) => {
-    return await DataStore.save(new Basket({
-        customerID: dbCustomer?.id,
-        restaurantID: restaurant?.id,
-        isDeleted: false
-    }))
+    if (dbCustomer && restaurant) {
+        return await DataStore.save(new Basket({
+            customerID: dbCustomer?.id,
+            restaurantID: restaurant?.id,
+            isDeleted: false
+        }))
+    }else{
+        console.error("\n\nUnable to create new basket!! \nreason: ")
+        !dbCustomer && console.error("customer id isn't valid")
+        !restaurant && console.error("restaurant id isn't valid")
+        return null
+    }
 }
 const updateDishQuantity_DB = async ({dish, quantity}) => {
-    return await updateDish_DB({dish,options:{quantity}})
+    return await updateDish_DB({dish, options: {quantity}})
     // return await DataStore.save(Dish.copyOf(await dish, updated => {
     //     updated.quantity = quantity
     // }))
 }
 const createNewDish_DB = async ({dish, basket}) => {
+    if(!basket) return null
     const newDish = {
         name: dish.name,
         price: dish.price,
@@ -94,7 +102,7 @@ const createNewDish_DB = async ({dish, basket}) => {
         isDeleted: false,
         originalID: dish.id + "",
         basketID: basket.id,
-        orderID:"null",
+        orderID: "null",
     }
     return await DataStore.save(new Dish(newDish))
 }
@@ -166,7 +174,7 @@ const updateDish_DB = async ({dish, options = {}}) => {
     //         : result
     // )
 
-    const result= await DataStore.save(Dish.copyOf(await dish, updated => Object.assign(updated, options)))
+    const result = await DataStore.save(Dish.copyOf(await dish, updated => Object.assign(updated, options)))
     return (
         result instanceof Array
             ? result[0]
@@ -188,7 +196,7 @@ const moveDishes_fromBasket_toOrder = async ({dishes, order}) => {
             )()
         )
     })
-    return Promise.allSettled(promises).then(results=> results.map(result=>result?.value))
+    return Promise.allSettled(promises).then(results => results.map(result => result?.value))
 }
 
 module.exports = {

@@ -27,7 +27,7 @@ const OrderListItem = ({order}) => {
             />
             <View>
                 <Text style={styles.name}>{restaurant?.name}</Text>
-                <Text style={styles.price}>{orderQuantity} items &#8226; ${order.total}</Text>
+                <Text style={styles.price}>{orderQuantity} items &#8226; ${order.totalPrice}</Text>
                 <Text>{getDate({order})} {getTime({order})} &#8226; {order?.status}</Text>
             </View>
         </Pressable>

@@ -1,31 +1,63 @@
 import {Image, StyleSheet, Text, View} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
-
-
+import {useEffect} from "react";
 
 
 const BasketDishItem = ({dish}) => {
-    const {removeDishFromBasket} = useBasketContext()
+    const {removeDishFromBasket,addDishToBasket} = useBasketContext()
+
+    // useEffect(() => {
+    //     if(dishes){
+    //         console.log("\ndishes are being updated")
+    //         // console.log(dishes.map(d=>({name:dish.name,quantity:d.quantity})))
+    //     }
+    // }, [dishes]);
+
+
+    const onMinus = async () => {
+        await addDishToBasket({dish:{...dish,quantity:dish.quantity-1}})
+    }
+
+    const onPlus = async () => {
+        await addDishToBasket({dish:{...dish,quantity:dish.quantity+1}})
+    }
+
+    const onRemove = async ()=>{
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ removing dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish,null,4))
+
+         await removeDishFromBasket({dish})
+    }
 
     return (
         <View style={styles.row}>
             <View style={styles.quantityContainer}>
-                <Text>{dish?.quantity}</Text>
+                <AntDesign
+                    name="plussquareo"
+                    size={15}
+                    color={"black"}
+                    onPress={onPlus}
+                />
+                <Text style={{textAlign:"center"}}>{dish?.quantity}</Text>
+                <AntDesign
+                    name="minussquareo"
+                    size={15}
+                    color={"black"}
+                    onPress={onMinus}
+                />
             </View>
             <Image
                 source={{uri: dish?.image}}
                 style={styles.image}/>
             <Text style={styles.dishName}>{dish?.name}</Text>
             <Text style={styles.dishPrice}>$ {dish?.price}</Text>
-            <>
-                {dish?.basketID && <AntDesign
-                    name="closesquareo"
-                    size={20}
-                    color={"darkred"}
-                    onPress={()=> removeDishFromBasket({dish})}
-                />}
-            </>
+            <AntDesign
+                name="closesquareo"
+                size={20}
+                color={"darkred"}
+                onPress={onRemove}
+            />
+
 
         </View>
     )
@@ -41,7 +73,6 @@ const styles = StyleSheet.create({
         marginVertical: 15,
     },
     quantityContainer: {
-        backgroundColor: 'lightgray',
         paddingHorizontal: 5,
         paddingVertical: 2,
         marginRight: 10,

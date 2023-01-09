@@ -347,19 +347,17 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "total": {
-                    "name": "total",
+                "totalQuantity": {
+                    "name": "totalQuantity",
                     "isArray": false,
-                    "type": "Float",
+                    "type": "Int",
                     "isRequired": true,
                     "attributes": []
                 },
-                "restaurantLocation": {
-                    "name": "restaurantLocation",
+                "totalPrice": {
+                    "name": "totalPrice",
                     "isArray": false,
-                    "type": {
-                        "nonModel": "Location"
-                    },
+                    "type": "Float",
                     "isRequired": true,
                     "attributes": []
                 },
@@ -372,18 +370,20 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "restaurantLocation": {
+                    "name": "restaurantLocation",
+                    "isArray": false,
+                    "type": {
+                        "nonModel": "Location"
+                    },
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "isDeleted": {
                     "name": "isDeleted",
                     "isArray": false,
                     "type": "Boolean",
                     "isRequired": true,
-                    "attributes": []
-                },
-                "courierID": {
-                    "name": "courierID",
-                    "isArray": false,
-                    "type": "ID",
-                    "isRequired": false,
                     "attributes": []
                 },
                 "Dishes": {
@@ -407,6 +407,13 @@ export const schema = {
                     "isArray": false,
                     "type": "ID",
                     "isRequired": true,
+                    "attributes": []
+                },
+                "courierID": {
+                    "name": "courierID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": false,
                     "attributes": []
                 },
                 "restaurantID": {
@@ -443,18 +450,18 @@ export const schema = {
                 {
                     "type": "key",
                     "properties": {
-                        "name": "byCourier",
+                        "name": "byCustomer",
                         "fields": [
-                            "courierID"
+                            "customerID"
                         ]
                     }
                 },
                 {
                     "type": "key",
                     "properties": {
-                        "name": "byCustomer",
+                        "name": "byCourier",
                         "fields": [
-                            "customerID"
+                            "courierID"
                         ]
                     }
                 },
@@ -870,5 +877,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.3.2",
-    "version": "3a50c0c179d509ae2c55f1b03bd0001f"
+    "version": "d5600c9d053798199ebf3289fec06d53"
 };

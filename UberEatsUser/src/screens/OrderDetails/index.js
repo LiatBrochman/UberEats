@@ -10,7 +10,7 @@ import {getDishes_ByOrder} from "../../contexts/Queries";
 const OrderDetails = () => {
 
     const [order, setOrder] = useState()
-    const [dishes, setDishes] = useState()
+    const [dishes, setDishes] = useState([])
     const {getOrder} = useOrderContext()
     const route = useRoute();
     const id = route.params?.id;

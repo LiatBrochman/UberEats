@@ -1,13 +1,15 @@
 import { StyleSheet, Text, View, Image, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 const DEFAULT_IMAGE =
     "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/uber-eats/restaurant1.jpeg";
 
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()
-
+    const {setRestaurant} = useRestaurantContext()
     const onPress = () => {
+        setRestaurant(restaurant)
         navigation.navigate("Restaurant", { id: restaurant?.id });
     };
     return (
@@ -24,7 +26,7 @@ const RestaurantItem = ({restaurant}) => {
             <Text style={styles.title}>{restaurant?.name}</Text>
             <Text style={styles.subtitle}>
                 ${restaurant?.deliveryFee.toFixed(1)} &#8226;{" "}
-                {restaurant?.minDeliveryMinutes}-{restaurant?.minDeliveryMinutes} minutes</Text>
+                {restaurant?.minDeliveryMinutes}-{restaurant?.maxDeliveryMinutes} minutes</Text>
             </View>
                 <View style={styles.rating}>
                     <Text>{restaurant?.rating.toFixed(1)}</Text>
