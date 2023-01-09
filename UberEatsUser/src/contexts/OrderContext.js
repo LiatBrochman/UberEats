@@ -5,6 +5,7 @@ import {useAuthContext} from "./AuthContext";
 import {useBasketContext} from "./BasketContext";
 import {useRestaurantContext} from "./RestaurantContext";
 import {moveDishes_fromBasket_toOrder} from "./Queries";
+import {subscription} from "../screens/HomeScreen";
 
 const OrderContext = createContext({})
 
@@ -12,8 +13,9 @@ const OrderContextProvider = ({children}) => {
 
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
-    const {totalPrice, dishes, setDishes, setBasket} = useBasketContext()
+    const {totalPrice, basketDishes} = useBasketContext()
     const [orders, setOrders] = useState([])
+    const [orderDishes, setOrderDishes] = useState([])
 
     useEffect(() => {
         dbCustomer &&
@@ -58,13 +60,14 @@ const OrderContextProvider = ({children}) => {
         //create the order
         return await DataStore.save(new Order({
             status: "NEW",
-            total: parseFloat(totalPrice),
+            totalPrice: parseFloat(totalPrice),
+            totalQuantity: dishes.reduce((count, dish) => count + dish.quantity, 0),
             restaurantLocation: restaurant.location,
             customerLocation: dbCustomer.location,
             isDeleted: false,
             customerID: dbCustomer.id,
             restaurantID: restaurant.id,
-            dishes: dishes
+            dishes: dishes,
         }))
     }
 
@@ -80,17 +83,91 @@ const OrderContextProvider = ({children}) => {
 
         if (checkIfPriceIsValid({totalPrice})) {
 
-            const newOrder = await createNewOrder_DB()
-            setOrders(existingOrders => [...existingOrders, newOrder])
+            // const newOrder = await createNewOrder_DB()
+            // setOrders(existingOrders => [...existingOrders, newOrder])
+
+            /**
+             create new Order:
+             */
+            await DataStore.save(new Order({
+                status: "NEW",
+                totalPrice: parseFloat(totalPrice),
+                totalQuantity: basketDishes.reduce((count, dish) => count + dish.quantity, 0),
+                restaurantLocation: restaurant.location,
+                customerLocation: dbCustomer.location,
+                isDeleted: false,
+                customerID: dbCustomer.id,
+                restaurantID: restaurant.id,
+                dishes: basketDishes,
+            })).then(async newOrder => {
+
+                /**
+                 set Orders
+                 */
+                subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
+                ).subscribe(({items}) => {
+                    if (items?.length) setOrders(items)
+                })
+
+                /**
+                 stop listening to basketDishes
+                 */
+                subscription.basketDishes.unsubscribe()
+
+
+                /**
+                 remove dishes from basket and create order dishes (by setting the basketID to null and the orderID to newOrder.id)
+                 */
+                const promises = basketDishes.map(async dish => await DataStore.save(
+                        Dish.copyOf(dish, updated => {
+                                updated.orderID = newOrder.id
+                                updated.basketID = 'null'
+                            }
+                        )
+                    )
+                )
+
+                Promise.allSettled(promises).then(() => {
+
+                    /**
+                     update OrderDishes listener
+                     */
+                    if(subscription?.orderDishes) subscription.orderDishes.unsubscribe()
+                    subscription.orderDishes = DataStore.observeQuery(Dish, d => d.and(d => [
+                            d.orderID.eq(newOrder.id),
+                            d.isDeleted.eq(false)
+                        ]
+                    )).subscribe(({items}) => {
+                        if (items?.length) setOrderDishes(items)
+                    })
+                })
+            })
+
+            // const dishesToUpdate = []
+            // dishes.forEach(dish => {
+            //
+            //     dishesToUpdate.push(
+            //         (async () => await DataStore.save(Dish.copyOf(await dish, updated => {
+            //             updated.orderID: newOrder.id,
+            //                 updated.basketID: "null"
+            //         })))())
+            //     dish,
+            //         options: {
+            //         orderID: order.id,
+            //             basketID: "null"
+            //     }
+            // })
+            // Promise.allSettled(dishesToUpdate).then(results => results.map(result => result?.value))
+
 
             // const updatedDishes = await updateDishes_DB({newOrder})
-            const updatedDishes = await moveDishes_fromBasket_toOrder({dishes,order:newOrder})
-            setDishes(updatedDishes)
+            // const updatedDishes = await moveDishes_fromBasket_toOrder({dishes,order:newOrder})
+            // setDishes(updatedDishes)
             //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updatedDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedDishes,null,4))
 
         }
 
-    };
+    }
 
     const getOrder = async (id) => {
         const order = await DataStore.query(Order, o => o.and(o => [
@@ -103,8 +180,9 @@ const OrderContextProvider = ({children}) => {
     return (
         <OrderContext.Provider value={{
             createOrder,
+            getOrder,
             orders,
-            getOrder
+            orderDishes
         }}>
             {children}
         </OrderContext.Provider>

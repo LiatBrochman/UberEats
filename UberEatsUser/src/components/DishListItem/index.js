@@ -1,11 +1,17 @@
 import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishListItem = ({dish}) => {
-    const navigation = useNavigation();
+    const navigation = useNavigation()
+    const {setDish,setQuantity} = useBasketContext()
     return (
         <Pressable
-            onPress={() => navigation.navigate("Dish", {id: dish.id})}
+            onPress={() => {
+                setDish(dish)
+               console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setDish(dish) ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish,null,4))
+                navigation.navigate("Dish", {id: dish.id})
+            }}
             style={styles.container}>
             <View style={{flex: 1}}>
                 <Text style={styles.name}>{dish.name}</Text>

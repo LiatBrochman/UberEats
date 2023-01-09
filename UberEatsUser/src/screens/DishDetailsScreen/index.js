@@ -7,10 +7,11 @@ import {
     ActivityIndicator,
 } from "react-native";
 import {AntDesign} from "@expo/vector-icons";
- import {useNavigation, useRoute} from "@react-navigation/native";
- import {DataStore} from "aws-amplify";
+import {useNavigation, useRoute} from "@react-navigation/native";
+import {Amplify, DataStore} from "aws-amplify";
 import {Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 const DishDetailsScreen = () => {
 
@@ -18,40 +19,63 @@ const DishDetailsScreen = () => {
     const route = useRoute();
     const id = route.params?.id;
 
-    const {addDishToBasket, quantity, setQuantity, dish, getDish_ByID, getExistingDishQuantity, basket, setDish} = useBasketContext()
-    // const [quantity,setQuantity] = useState(1)
+    const {addDishToBasket, quantity:realQuantity,basketDishes, basket} = useBasketContext()
+    const {restaurantDishes} = useRestaurantContext()
+    const [dish,setDish]= useState(restaurantDishes?.[0])
+    const [tempQuantity,setTempQuantity] = useState(realQuantity||1)
+
+    useEffect(()=>{
+        setTempQuantity(realQuantity||1)
+    },[realQuantity])
+    useEffect(()=>{
+        restaurantDishes?.[0] && setDish(restaurantDishes.find(d=>d.id===id))
+    },[restaurantDishes])
+
+    // useEffect(() => {
+    //     restaurantDish?.length && setDish(restaurantDish.find(d=>d.originalID===id))
+    // }, [restaurantDish])
 
 
+    // useEffect(() => {
+    //     Amplify.DataStore.observeQuery(Dish, d =>
+    //         d.and(d => [
+    //                 d.basketID.eq(basket.id),
+    //                 d.isDeleted.eq(false)
+    //             ]
+    //         )
+    //     ).subscribe()
+    // },[id])
 
-    useEffect(() => {
-        if (id) {
-            getDish_ByID({id}).then(async dish => {
-                setDish({...dish, quantity: quantity})
-                setQuantity(await getExistingDishQuantity({basket, dish}))
-            })
-        }
-    }, [id])
+    // useEffect(() => {
+    //     if (id) {
+    //         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(id ,null,4))
+    //
+    //         getDish_ByID({id}).then(setDish)
+            // getDish_ByID({id}).then(async dish => {
+            //     setDish({...dish, quantity: quantity})
+            //     setQuantity(await getExistingDishQuantity({basket, dish}))
+            // })
+    //     }
+    // }, [id])
 
 
     const onAddToBasket = async () => {
-        dish.quantity = quantity
-        await addDishToBasket({dish})
+        const clonedDish = {dish:{...dish,quantity: tempQuantity,basketID:basket?.id}}
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ clonedDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(clonedDish,null,4))
+        await addDishToBasket(clonedDish)
         navigation.goBack()
     }
 
     const onMinus = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1)
+        if (tempQuantity > 1) {
+            setTempQuantity(tempQuantity - 1)
         }
     }
 
     const onPlus = () => {
-        setQuantity(quantity + 1)
+        setTempQuantity(tempQuantity + 1)
     }
 
-    const getTotal = () => {
-        return (dish?.price * quantity)
-    }
 
     if (!dish) {
         return <ActivityIndicator size="large" color="gray"/>;
@@ -70,7 +94,7 @@ const DishDetailsScreen = () => {
                     color={"black"}
                     onPress={onMinus}
                 />
-                <Text style={styles.quantity}>{quantity}</Text>
+                <Text style={styles.quantity}>{tempQuantity}</Text>
                 <AntDesign
                     name="pluscircleo"
                     size={60}
@@ -81,7 +105,7 @@ const DishDetailsScreen = () => {
 
             <Pressable onPress={onAddToBasket} style={styles.button}>
                 <Text style={styles.buttonText}>
-                    Add {quantity} to basket &#8226; ${getTotal()}
+                    Add {tempQuantity} to basket &#8226; ${dish.price * tempQuantity}
                 </Text>
             </Pressable>
         </View>
