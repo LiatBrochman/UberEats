@@ -1,20 +1,16 @@
 import {createContext, useState, useEffect, useContext} from "react";
-import {Amplify, DataStore} from "aws-amplify";
+import { DataStore} from "aws-amplify";
 import {Basket, Dish} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {useRestaurantContext} from "./RestaurantContext";
 import {
     getBasket_DB,
     getDishes_ByBasket,
-    getTotalPrice,
     getDish_ByID,
     createNewBasket_DB,
-    updateDishQuantity_DB,
-    createNewDish_DB,
-    removeDish_DB
+
 } from "./Queries";
 
-import {useNavigation, useRoute} from "@react-navigation/native";
 import {subscription} from "../screens/HomeScreen";
 
 const BasketContext = createContext({});
@@ -30,90 +26,6 @@ const BasketContextProvider = ({children}) => {
         const [quantity, setQuantity] = useState(0)
         const [dish, setDish] = useState()
 
-        // const subscriptionMap = {
-        //     basket: async () =>
-        //         await DataStore.observeQuery(Basket, b => b.and(b => [
-        //             b.restaurantID.eq(restaurant?.id),
-        //             b.customerID.eq(dbCustomer?.id),
-        //             b.isDeleted.eq(false)]
-        //         )).subscribe(basket => {
-        //             setBasket(basket?.items?.[0])
-        //             // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub of basket ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basket.items[0], null, 4))
-        //         }),
-        //     dishes: async () =>
-        //         await DataStore.observeQuery(Dish, d => d.and(d => [
-        //                 d.basketID.eq(basket?.id),
-        //                 d.isDeleted.eq(false)
-        //             ]
-        //         )).subscribe(basket_dishes => {
-        //
-        //             if (basket_dishes?.items && basket_dishes?.items?.length) {
-        //
-        //                 setDishes(basket_dishes.items)
-        //
-        //                 setTotalPrice(Number(basket_dishes.items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-        //
-        //                 setTotalBasketQuantity(basket_dishes.items.reduce((sum, d) => sum + d.quantity, 0))
-        //
-        //                 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub of dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basket_dishes.items[0], null, 4))
-        //
-        //             }
-        //         }),
-        //     dish: async (newDishFromDB) =>
-        //         await DataStore.observe(Dish, newDishFromDB.id).subscribe(dish => {
-        //             if (dish?.items) {
-        //                 setDish(dish.items[0])
-        //                 setQuantity(dish.items[0].quantity)
-        //                 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub of new dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish.items[0], null, 4))
-        //             }
-        //         })
-        // }
-
-        // const startSubscription = {
-        //     basket: (() =>
-        //             subscriptionMap.basket = Amplify.DataStore.observeQuery(Basket, b => b.and(b => [
-        //                 b.restaurantID.eq(restaurant?.id),
-        //                 b.customerID.eq(dbCustomer?.id),
-        //                 b.isDeleted.eq(false)]
-        //             )).subscribe(basket => {
-        //                 setBasket(basket?.items?.[0])
-        //                 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub of basket ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basket.items, null, 4))
-        //             })
-        //
-        //     ),
-        //     dishes: (() =>
-        //         subscriptionMap.dishes = Amplify.DataStore.observeQuery(Dish, d => d.and(d => [
-        //                 d.basketID.eq(basket?.id),
-        //                 d.isDeleted.eq(false)
-        //             ]
-        //         )).subscribe(basket_dishes => {
-        //
-        //                 if (basket_dishes?.items?.length) {
-        //
-        //                     setDishes(basket_dishes.items)
-        //
-        //                     setTotalPrice(Number(basket_dishes.items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-        //
-        //                     setTotalBasketQuantity(basket_dishes.items.reduce((sum, d) => sum + d.quantity, 0))
-        //
-        //                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub of dishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basket_dishes.items, null, 4))
-        //
-        //                 }
-        //             }
-        //         )),
-        //     dish: ((newDishFromDB) =>
-        //         subscriptionMap.dish = Amplify.DataStore.observeQuery(Dish, newDishFromDB.id).subscribe(dish => {
-        //                 if (dish?.items?.quantity) {
-        //                     setDish(dish.items)
-        //                     setQuantity(dish.items.quantity)
-        //                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub of new dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish.items, null, 4))
-        //
-        //                 }
-        //             }
-        //         ))
-        //
-        // }
-
 
         /**
          set basket
@@ -128,29 +40,7 @@ const BasketContextProvider = ({children}) => {
                 ).subscribe(({items}) => {
                    setBasket(items[0])
                 })
-            // restaurant && !basket && getBasket_DB({dbCustomer, restaurant}).then(setBasket)//todo
-            // subscriptionMap.basket = Amplify.DataStore.observeQuery(Basket, b =>
-            //     b.and(b => [
-            //         b.restaurantID.eq(restaurant?.id),
-            //         b.customerID.eq(dbCustomer?.id),
-            //         b.isDeleted.eq(false)
-            //     ])).subscribe(basket => {
-            //     setBasket(basket?.items?.[0])
-            // })
-            // if (restaurant) {
-            //     (async () => {
-            //
-            //             if (!basket) {
-            //                 await createNewBasket()
-            //                 await subscriptionMap.basket()
-            //
-            //             } else {
-            //                 await subscriptionMap.basket()
-            //             }
-            //         }
-            //     )()
-            //
-            // }
+
         }, [restaurant])
 
         /**
@@ -171,49 +61,8 @@ const BasketContextProvider = ({children}) => {
                         setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
 
                 })
-            // basket && !dishes && getDishes_ByBasket({basket}).then(customerDishes => {
-            //     //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
-            //     setDishes(customerDishes)//todo dont delete!
-            // if (basket?.id && !dishes) {
-            //
-            //     subscriptionMap.dishes()
 
-            // subscriptionMap.dishes = Amplify.DataStore.observeQuery(Dish, d =>
-            //     d.and(d => [
-            //             d.basketID.eq(basket.id),
-            //             d.isDeleted.eq(false)
-            //         ]
-            //     )
-            // ).subscribe(basket_dishes => {
-            //
-            //     basket_dishes?.items?.length &&
-            //
-            //     setDishes(basket_dishes.items)
-            //
-            //     setTotalPrice(Number(basket_dishes.items.reduce(
-            //         (sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-            //
-            //     setTotalBasketQuantity(basket_dishes.items.reduce((sum, d) => sum + d.quantity, 0))
-            //
-            // })
-
-            // }
         }, [basket])
-
-        // const getTotalPrice = (dishes) => {
-        //
-        //     if (dishes?.length && restaurant?.deliveryFee) {
-        //
-        //         let totalPrice_calc = restaurant.deliveryFee
-        //
-        //         dishes.forEach(dish => totalPrice_calc += dish.price * dish.quantity)
-        //
-        //         return (typeof totalPrice_calc === "number") && totalPrice_calc.toFixed(2)
-        //     }
-        // }
-        // useEffect(() => {
-        //dishes && setTotalPrice(getTotalPrice({dishes, restaurant}))//todo
-        // }, [dishes])
 
         const checkIfDishAlreadyExists = async ({dish, basket}) => {
             if (!basket) return null
@@ -238,7 +87,6 @@ const BasketContextProvider = ({children}) => {
 
             })
 
-            //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~checkIfDishAlreadyExists() ---> existingDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish, null, 4))
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ existingDish?.[0] ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingDish?.[0], null, 4))
 
             return existingDish?.[0]
@@ -252,31 +100,6 @@ const BasketContextProvider = ({children}) => {
              GET THE EXISTING BASKET \ CREATE NEW BASKET
              */
             const theBasket = basket || await createNewBasket()
-            // if (!(basket?.id)) {
-            //     if (dbCustomer && restaurant) {
-            //         const newBasket = await DataStore.save(new Basket({
-            //             customerID: dbCustomer?.id,
-            //             restaurantID: restaurant?.id,
-            //             isDeleted: false
-            //         }))
-            //
-            //         subscription.basket = DataStore.observeQuery(Basket, b => b.id.eq(newBasket.id))
-            //             .subscribe(({items}) => {
-            //                 items?.[0] && setBasket(items[0])
-            //             })
-            //
-            //
-            //
-            //
-            //     }
-            //
-            // } else {
-            //     console.error("\n\nUnable to create new basket!! \nreason: ")
-            //     !dbCustomer && console.error("customer id isn't valid")
-            //     !restaurant && console.error("restaurant id isn't valid")
-            //     return null
-            // }
-
 
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ theBasket ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(theBasket, null, 4))
 
@@ -291,9 +114,6 @@ const BasketContextProvider = ({children}) => {
                         d.id.eq(dish.id)
                     ])
                 ])).then(res => res?.[0])
-            // basketDishes.find(d => d.originalID === dish.id || d.id===dish.id)
-            //const dishAlreadyExists = await checkIfDishAlreadyExists({dish, basket: theBasket})
-            //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists ?? ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishAlreadyExists, null, 4))
 
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishAlreadyExists, null, 4))
 
@@ -350,104 +170,6 @@ const BasketContextProvider = ({children}) => {
                     setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
 
             })
-
-
-            // //IF THE DISH ALREADY EXISTS: update dish quantity
-            // if (dishAlreadyExists && dishAlreadyExists.isDeleted===false) {
-            //     await DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
-            //         updated.quantity = dish.quantity
-            //     })).then(() => {
-            //
-            //
-            //         if (subscription?.basketDishes) subscription.basketDishes.unsubscribe()
-            //
-            //         subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
-            //                 d.basketID.eq(basket.id),
-            //                 d.isDeleted.eq(false)
-            //             ]
-            //         )).subscribe(({items}) => {
-            //             if (items?.length) {
-            //                 setBasketDishes(items)
-            //                 setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-            //                 setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-            //             }
-            //         })
-            //     })
-            //     //const updatedDish = await updateDishQuantity_DB({dish: dishAlreadyExists, quantity: dish.quantity})
-            //
-            //     // setDishes(dishes =>
-            //     //     dishes.map(d =>
-            //     //         d.originalID === dish.id
-            //     //             ? (
-            //     //                 setQuantity(prevQuantity => prevQuantity - d.quantity + updatedDish.quantity) &&
-            //     //                 updatedDish
-            //     //             )
-            //     //             : d
-            //     //     )
-            //     // )//todo dont delete
-            // }
-            // if (dishAlreadyExists && dishAlreadyExists.isDeleted===true) {
-            //         await DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
-            //             updated.quantity = dish.quantity
-            //             updated.isDeleted = false
-            //         })).then(() => {
-            //
-            //
-            //             if (subscription?.basketDishes) subscription.basketDishes.unsubscribe()
-            //
-            //             subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
-            //                     d.basketID.eq(basket.id),
-            //                     d.isDeleted.eq(false)
-            //                 ]
-            //             )).subscribe(({items}) => {
-            //                 if (items?.length) {
-            //                     setBasketDishes(items)
-            //                     setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-            //                     setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-            //                 }
-            //             })
-            //         })
-            //     }
-            // //CREATE A NEW DISH
-            // else {
-            //     await DataStore.save(new Dish({
-            //         name: dish.name,
-            //         price: dish.price,
-            //         image: dish.image,
-            //         description: dish.description,
-            //         quantity: dish.quantity,
-            //         restaurantID: dish.restaurantID,
-            //         isActive: true,
-            //         isDeleted: false,
-            //         originalID: dish.id + '',
-            //         basketID: theBasket.id,
-            //         orderID: 'null',
-            //     })).then(newDish => {
-            //
-            //
-            //         if (subscription?.basketDishes) subscription.basketDishes.unsubscribe()
-            //
-            //         subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
-            //                 d.basketID.eq(basket.id),
-            //                 d.isDeleted.eq(false)
-            //             ]
-            //         )).subscribe(({items}) => {
-            //             if (items?.length) {
-            //                 setBasketDishes(items)
-            //                 setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-            //                 setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-            //             }
-            //         })
-            //     })
-            //
-            //     //const newDishFromDB = await createNewDish_DB({dish, basket: theBasket})
-            //     //subscriptionMap.dish_unsub = await subscriptionMap.dish(newDishFromDB)
-            //     // subscriptionMap.dish = DataStore.observe(Dish,newDishFromDB.id).subscribe(({items}) => {
-            //     //     setDish(items)
-            //     //     setQuantity(items.quantity)
-            //     // })
-            //     // setDishes([...dishes, newDishFromDB])
-            // }
         }
 
         const createNewBasket = async () => {
@@ -515,13 +237,6 @@ const BasketContextProvider = ({children}) => {
 
             })
         }
-// const existingDish = await getDish_ByID({id: dish.id})
-// if (existingDish instanceof Dish) {
-// await removeDish_DB({dish: existingDish})
-// setDishes(ds => {
-//     ds.filter(d => d.id !== dish.id)
-// })
-// setQuantity(prev => prev - dish.quantity)
 
         const getExistingDishQuantity = async ({basket, dish}) => {
             if (!basket) return 0
@@ -559,8 +274,8 @@ const BasketContextProvider = ({children}) => {
                     dish,
                     setDish,
 
-                    totalBasketQuantity
-
+                    totalBasketQuantity,
+                    setTotalBasketQuantity
                 }}
             >
                 {children}

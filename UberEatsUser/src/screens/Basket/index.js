@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
+import {View, Text, StyleSheet, FlatList, Pressable} from "react-native";
 import BasketDishItem from "../../components/BasketDishItem";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useOrderContext} from "../../contexts/OrderContext";
-import { useNavigation } from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {useEffect} from "react";
 
@@ -13,15 +13,16 @@ const Basket = () => {
     const {createOrder} = useOrderContext()
     const navigation = useNavigation()
 
-    useEffect(()=>{
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~Basket page: basketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basketDishes,null,4))
-
-    },[basketDishes])
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~Basket page: basketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basketDishes, null, 4))
+    }, [basketDishes])
 
     const onCreateOrder = async () => {
+        if(totalPrice && restaurant?.deliveryFee && totalPrice > restaurant.deliveryFee){
         await createOrder()
         navigation.goBack()
-    };
+        }
+    }
 
     return (
         <View style={styles.page}>
@@ -43,15 +44,15 @@ const Basket = () => {
                 <Text style={styles.buttonText}>Create order &#8226; $ {totalPrice}</Text>
             </Pressable>
         </View>
-    );
-};
+    )
+}
 
 
 const styles = StyleSheet.create({
     page: {
         flex: 1,
         width: "100%",
-        paddingVertical: 40, // temp fix
+        paddingVertical: 40,
         padding: 10,
     },
     name: {

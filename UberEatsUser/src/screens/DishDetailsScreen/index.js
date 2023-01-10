@@ -1,4 +1,4 @@
-import {useState, useEffect, useReducer} from "react";
+import {useState, useEffect} from "react";
 import {
     View,
     Text,
@@ -8,8 +8,6 @@ import {
 } from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useNavigation, useRoute} from "@react-navigation/native";
-import {Amplify, DataStore} from "aws-amplify";
-import {Dish} from "../../models";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
@@ -19,7 +17,7 @@ const DishDetailsScreen = () => {
     const route = useRoute();
     const id = route.params?.id;
 
-    const {addDishToBasket, quantity:realQuantity,basketDishes, basket} = useBasketContext()
+    const {addDishToBasket, quantity:realQuantity, basket} = useBasketContext()
     const {restaurantDishes} = useRestaurantContext()
     const [dish,setDish]= useState(restaurantDishes?.[0])
     const [tempQuantity,setTempQuantity] = useState(realQuantity||1)
@@ -31,37 +29,9 @@ const DishDetailsScreen = () => {
         restaurantDishes?.[0] && setDish(restaurantDishes.find(d=>d.id===id))
     },[restaurantDishes])
 
-    // useEffect(() => {
-    //     restaurantDish?.length && setDish(restaurantDish.find(d=>d.originalID===id))
-    // }, [restaurantDish])
-
-
-    // useEffect(() => {
-    //     Amplify.DataStore.observeQuery(Dish, d =>
-    //         d.and(d => [
-    //                 d.basketID.eq(basket.id),
-    //                 d.isDeleted.eq(false)
-    //             ]
-    //         )
-    //     ).subscribe()
-    // },[id])
-
-    // useEffect(() => {
-    //     if (id) {
-    //         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(id ,null,4))
-    //
-    //         getDish_ByID({id}).then(setDish)
-            // getDish_ByID({id}).then(async dish => {
-            //     setDish({...dish, quantity: quantity})
-            //     setQuantity(await getExistingDishQuantity({basket, dish}))
-            // })
-    //     }
-    // }, [id])
-
 
     const onAddToBasket = async () => {
         const clonedDish = {dish:{...dish,quantity: tempQuantity,basketID:basket?.id}}
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ clonedDish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(clonedDish,null,4))
         await addDishToBasket(clonedDish)
         navigation.goBack()
     }
@@ -116,7 +86,7 @@ const styles = StyleSheet.create({
     page: {
         flex: 1,
         width: "100%",
-        paddingVertical: 40, // temp fix
+        paddingVertical: 40,
         padding: 10,
     },
     name: {

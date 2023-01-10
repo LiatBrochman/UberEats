@@ -1,25 +1,30 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
-import {useBasketContext} from "../../contexts/BasketContext";
-import {getDate, getTime, getOrderQuantity,getRestaurant_byOrder} from "../../contexts/Queries"
+import {getDate, getTime} from "../../contexts/Queries"
 import {useEffect, useState} from "react";
-import {useRestaurantContext} from "../../contexts/RestaurantContext";
+
+import {DataStore} from "aws-amplify";
+import {Restaurant} from "../../models";
+import {useOrderContext} from "../../contexts/OrderContext";
 
 const OrderListItem = ({order}) => {
-    // const {restaurant} = useBasketContext()
-    // const {restaurant} = useRestaurantContext()
+
     const navigation = useNavigation()
-    const [orderQuantity, setOrderQuantity] = useState(0)
-    const [restaurant, setRestaurant]=useState()
+    const {setOrder} = useOrderContext()
+    const [restaurant, setRestaurant] = useState({})
+
     useEffect(() => {
-        if(order){
-        getOrderQuantity({order}).then(setOrderQuantity)
-        getRestaurant_byOrder({order}).then(setRestaurant)
-        }
+        DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
     }, [order])
+
     return (
         <Pressable
-            onPress={() => navigation.navigate("Order", {id: order.id})}
+            onPress={() => {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ clicked on order: ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
+
+                setOrder(order)
+                navigation.navigate("Order", {id: order.id})
+            }}
             style={styles.container}>
             <Image
                 source={{uri: restaurant?.image}}
@@ -27,7 +32,7 @@ const OrderListItem = ({order}) => {
             />
             <View>
                 <Text style={styles.name}>{restaurant?.name}</Text>
-                <Text style={styles.price}>{orderQuantity} items &#8226; ${order.totalPrice}</Text>
+                <Text style={styles.price}>{order?.totalQuantity} items &#8226; ${order?.totalPrice}</Text>
                 <Text>{getDate({order})} {getTime({order})} &#8226; {order?.status}</Text>
             </View>
         </Pressable>
