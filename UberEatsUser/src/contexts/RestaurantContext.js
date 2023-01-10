@@ -50,9 +50,7 @@ const RestaurantContextProvider = ({children}) => {
 
     useEffect(() => {
         subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).subscribe(({items}) => {
-            if (items?.length) {
                 setRestaurants(items)
-            }
         })
 
     }, [dbCustomer])
@@ -69,8 +67,8 @@ const RestaurantContextProvider = ({children}) => {
                         dish.restaurantID.eq(restaurant.id),
                         dish.originalID.eq("null")
                     ]
-            )).subscribe(dishes => {
-                dishes?.items?.length && setRestaurantDishes(dishes.items)
+            )).subscribe(({items}) => {
+               setRestaurantDishes(items)
             })
 
     }, [restaurant])

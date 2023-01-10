@@ -126,7 +126,7 @@ const BasketContextProvider = ({children}) => {
                         b.isDeleted.eq(false)
                     ])
                 ).subscribe(({items}) => {
-                    items?.[0] && setBasket(items[0])
+                   setBasket(items[0])
                 })
             // restaurant && !basket && getBasket_DB({dbCustomer, restaurant}).then(setBasket)//todo
             // subscriptionMap.basket = Amplify.DataStore.observeQuery(Basket, b =>
@@ -165,11 +165,11 @@ const BasketContextProvider = ({children}) => {
                         d.isDeleted.eq(false)
                     ]
                 )).subscribe(({items}) => {
-                    if (items?.length) {
+
                         setBasketDishes(items)
                         setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
                         setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-                    }
+
                 })
             // basket && !dishes && getDishes_ByBasket({basket}).then(customerDishes => {
             //     //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ customerDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(customerDishes, null, 4))
@@ -284,21 +284,20 @@ const BasketContextProvider = ({children}) => {
              CHECK IF THE DISH ALREADY EXISTS
              */
             const dishAlreadyExists =
-                // await DataStore.query(Dish, d => d.and(d => [
-                // d.basketID.eq(theBasket.id),
-                //     d.or(d=>[
-                //         d.originalID.eq(dish.id),
-                //         d.id.eq(dish.id)
-                //     ])
-                //
-                // ])).then(res=>res?.[0])
-            basketDishes.find(d => d.originalID === dish.id || d.id===dish.id)
+                await DataStore.query(Dish, d => d.and(d => [
+                    d.basketID.eq(theBasket.id),
+                    d.or(d => [
+                        d.originalID.eq(dish.id),
+                        d.id.eq(dish.id)
+                    ])
+                ])).then(res => res?.[0])
+            // basketDishes.find(d => d.originalID === dish.id || d.id===dish.id)
             //const dishAlreadyExists = await checkIfDishAlreadyExists({dish, basket: theBasket})
             //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists ?? ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishAlreadyExists, null, 4))
 
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishAlreadyExists, null, 4))
 
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists : ", !!dishAlreadyExists, "isDeleted:", dishAlreadyExists?.isDeleted)
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists :", !!dishAlreadyExists, ",isDeleted :", dishAlreadyExists?.isDeleted)
 
 
             let newDish;
@@ -342,11 +341,14 @@ const BasketContextProvider = ({children}) => {
                     d.isDeleted.eq(false)
                 ]
             )).subscribe(({items}) => {
-                if (items?.length) {
+
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~on add subscription?.basketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription?.basketDishes,null,4))
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ items ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
+
                     setBasketDishes(items)
                     setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
                     setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-                }
+
             })
 
 
@@ -457,7 +459,7 @@ const BasketContextProvider = ({children}) => {
                     case true:
                         subscription.basket = DataStore.observeQuery(Basket, b => b.id.eq(existingBasket.id))
                             .subscribe(({items}) => {
-                                items?.[0] && setBasket(items[0])
+                               setBasket(items[0])
                             })
                         return existingBasket
 
@@ -466,7 +468,7 @@ const BasketContextProvider = ({children}) => {
                         return createNewBasket_DB({dbCustomer, restaurant}).then(theBasket => {
                             subscription.basket = DataStore.observeQuery(Basket, b => b.id.eq(theBasket.id))
                                 .subscribe(({items}) => {
-                                    items?.[0] && setBasket(items[0])
+                                    setBasket(items[0])
                                 })
                             return theBasket
                         })
@@ -486,7 +488,6 @@ const BasketContextProvider = ({children}) => {
                 // setDishes(prev => prev.filter(d => d.id !== dish.id))
                 // setTotalPrice(prev => prev - (dish.quantity * dish.price))
                 // setTotalBasketQuantity(prev => prev - quantity)
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dish has been removed ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(removedDish, null, 4))
 
                 setDish(null)
                 setQuantity(0)
@@ -494,19 +495,23 @@ const BasketContextProvider = ({children}) => {
                 /**
                  update basketDishes listener
                  */
+
                 if (subscription?.basketDishes) subscription.basketDishes.unsubscribe()
+
 
                 subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
                         d.basketID.eq(basket.id),
                         d.isDeleted.eq(false)
                     ]
                 )).subscribe(({items}) => {
-                    if (items?.length) {
+
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setBasketDishes items:~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
                         setBasketDishes(items)
                         setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
                         setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-                    }
+
                 })
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ removed Dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(removedDish,null,4))
 
             })
         }
