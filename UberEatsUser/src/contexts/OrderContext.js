@@ -104,9 +104,10 @@ const OrderContextProvider = ({children}) => {
                 /**
                  set Orders
                  */
+                if (subscription?.orders) subscription.orders.unsubscribe()
                 subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
                 ).subscribe(({items}) => {
-                    if (items?.length) setOrders(items)
+                   setOrders(items)
                 })
 
                 /**
@@ -138,7 +139,7 @@ const OrderContextProvider = ({children}) => {
                             d.isDeleted.eq(false)
                         ]
                     )).subscribe(({items}) => {
-                        if (items?.length) setOrderDishes(items)
+                         setOrderDishes(items)
                     })
                 })
             })

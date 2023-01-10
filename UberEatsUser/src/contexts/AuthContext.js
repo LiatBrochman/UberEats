@@ -18,8 +18,8 @@ const AuthContextProvider = ({children}) => {
     useEffect(() => {
 
         DataStore.observeQuery(Customer, c=> c.sub.eq(sub))
-            .subscribe(customers => {
-                setDbCustomer(customers?.items[0])
+            .subscribe(({items}) => {
+                setDbCustomer(items[0])
             })
     }, [sub]);
 

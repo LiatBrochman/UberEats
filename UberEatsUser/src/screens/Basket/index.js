@@ -4,6 +4,7 @@ import {useBasketContext} from "../../contexts/BasketContext";
 import {useOrderContext} from "../../contexts/OrderContext";
 import { useNavigation } from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import {useEffect} from "react";
 
 
 const Basket = () => {
@@ -11,6 +12,11 @@ const Basket = () => {
     const {restaurant} = useRestaurantContext()
     const {createOrder} = useOrderContext()
     const navigation = useNavigation()
+
+    useEffect(()=>{
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~Basket page: basketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basketDishes,null,4))
+
+    },[basketDishes])
 
     const onCreateOrder = async () => {
         await createOrder()
