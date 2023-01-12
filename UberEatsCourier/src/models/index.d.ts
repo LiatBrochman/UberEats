@@ -96,9 +96,10 @@ type EagerDish = {
   readonly quantity: number;
   readonly isActive: boolean;
   readonly isDeleted: boolean;
-  readonly orderID: string;
+  readonly orderID?: string | null;
   readonly restaurantID: string;
-  readonly basketID: string;
+  readonly basketID?: string | null;
+  readonly originalID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -117,9 +118,10 @@ type LazyDish = {
   readonly quantity: number;
   readonly isActive: boolean;
   readonly isDeleted: boolean;
-  readonly orderID: string;
+  readonly orderID?: string | null;
   readonly restaurantID: string;
-  readonly basketID: string;
+  readonly basketID?: string | null;
+  readonly originalID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -137,13 +139,14 @@ type EagerOrder = {
   };
   readonly id: string;
   readonly status: OrderStatus | keyof typeof OrderStatus;
-  readonly total: number;
-  readonly restaurantLocation: Location;
+  readonly totalQuantity: number;
+  readonly totalPrice: number;
   readonly customerLocation: Location;
+  readonly restaurantLocation: Location;
   readonly isDeleted: boolean;
-  readonly courierID: string;
   readonly Dishes?: (Dish | null)[] | null;
   readonly customerID: string;
+  readonly courierID: string;
   readonly restaurantID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -156,13 +159,14 @@ type LazyOrder = {
   };
   readonly id: string;
   readonly status: OrderStatus | keyof typeof OrderStatus;
-  readonly total: number;
-  readonly restaurantLocation: Location;
+  readonly totalQuantity: number;
+  readonly totalPrice: number;
   readonly customerLocation: Location;
+  readonly restaurantLocation: Location;
   readonly isDeleted: boolean;
-  readonly courierID: string;
   readonly Dishes: AsyncCollection<Dish>;
   readonly customerID: string;
+  readonly courierID: string;
   readonly restaurantID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;

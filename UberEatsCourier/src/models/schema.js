@@ -235,7 +235,7 @@ export const schema = {
                     "name": "orderID",
                     "isArray": false,
                     "type": "ID",
-                    "isRequired": true,
+                    "isRequired": false,
                     "attributes": []
                 },
                 "restaurantID": {
@@ -249,6 +249,13 @@ export const schema = {
                     "name": "basketID",
                     "isArray": false,
                     "type": "ID",
+                    "isRequired": false,
+                    "attributes": []
+                },
+                "originalID": {
+                    "name": "originalID",
+                    "isArray": false,
+                    "type": "String",
                     "isRequired": true,
                     "attributes": []
                 },
@@ -340,19 +347,17 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
-                "total": {
-                    "name": "total",
+                "totalQuantity": {
+                    "name": "totalQuantity",
                     "isArray": false,
-                    "type": "Float",
+                    "type": "Int",
                     "isRequired": true,
                     "attributes": []
                 },
-                "restaurantLocation": {
-                    "name": "restaurantLocation",
+                "totalPrice": {
+                    "name": "totalPrice",
                     "isArray": false,
-                    "type": {
-                        "nonModel": "Location"
-                    },
+                    "type": "Float",
                     "isRequired": true,
                     "attributes": []
                 },
@@ -365,17 +370,19 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "restaurantLocation": {
+                    "name": "restaurantLocation",
+                    "isArray": false,
+                    "type": {
+                        "nonModel": "Location"
+                    },
+                    "isRequired": true,
+                    "attributes": []
+                },
                 "isDeleted": {
                     "name": "isDeleted",
                     "isArray": false,
                     "type": "Boolean",
-                    "isRequired": true,
-                    "attributes": []
-                },
-                "courierID": {
-                    "name": "courierID",
-                    "isArray": false,
-                    "type": "ID",
                     "isRequired": true,
                     "attributes": []
                 },
@@ -397,6 +404,13 @@ export const schema = {
                 },
                 "customerID": {
                     "name": "customerID",
+                    "isArray": false,
+                    "type": "ID",
+                    "isRequired": true,
+                    "attributes": []
+                },
+                "courierID": {
+                    "name": "courierID",
                     "isArray": false,
                     "type": "ID",
                     "isRequired": true,
@@ -436,18 +450,18 @@ export const schema = {
                 {
                     "type": "key",
                     "properties": {
-                        "name": "byCourier",
+                        "name": "byCustomer",
                         "fields": [
-                            "courierID"
+                            "customerID"
                         ]
                     }
                 },
                 {
                     "type": "key",
                     "properties": {
-                        "name": "byCustomer",
+                        "name": "byCourier",
                         "fields": [
-                            "customerID"
+                            "courierID"
                         ]
                     }
                 },
@@ -862,6 +876,6 @@ export const schema = {
             }
         }
     },
-    "codegenVersion": "3.3.1",
-    "version": "2fed96c8d221cd75310843b09f89bdfe"
+    "codegenVersion": "3.3.2",
+    "version": "55fdf130c7dafe723b53b582b8a9e810"
 };

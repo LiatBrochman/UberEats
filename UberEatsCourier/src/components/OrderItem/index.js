@@ -12,12 +12,16 @@ const OrderItem = ({order}) => {
     const navigation = useNavigation()
 
     useEffect(() => {
-        DataStore.query(Customer, order.customerID).then(setCustomer)
-        DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
-    }, [])
+        if (order?.id) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order item ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
+
+            DataStore.query(Customer, order.customerID).then(setCustomer)
+            DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
+        }
+    }, [order])
 
     return (
-        restaurant && restaurant.hasOwnProperty('image') && (
+        restaurant?.image && (
             <Pressable style={{
                 flexDirection: "row",
                 margin: 10,
@@ -40,11 +44,11 @@ const OrderItem = ({order}) => {
                     <Text style={{fontSize: 18, fontWeight: "500"}}>
                         {restaurant.name}
                     </Text>
-                    <Text style={{color: "grey"}}>{restaurant.Location.address}</Text>
+                    <Text style={{color: "grey"}}>{restaurant.location.address}</Text>
 
                     <Text style={{marginTop: 10}}>Delivery Details:</Text>
                     <Text style={{color: "grey"}}>{customer?.name}</Text>
-                    <Text style={{color: "grey"}}>{customer?.Location.address}</Text>
+                    <Text style={{color: "grey"}}>{customer?.location.address}</Text>
                 </View>
                 <View
                     style={{
@@ -65,7 +69,7 @@ const OrderItem = ({order}) => {
                 </View>
             </Pressable>
 
-        ));
+        ))
 }
 
 export default OrderItem;

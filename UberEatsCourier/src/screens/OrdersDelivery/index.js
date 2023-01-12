@@ -4,7 +4,7 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import {ActivityIndicator, Text, useWindowDimensions, View, Pressable} from "react-native";
 import {FontAwesome5, Fontisto} from '@expo/vector-icons';
 import styles from "./styles";
-import MapView, {Marker} from "react-native-maps";
+import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import * as Location from "expo-location";
 import {Entypo, MaterialIcons, Ionicons} from "@expo/vector-icons";
 import MapViewDirections from "react-native-maps-directions";
@@ -33,17 +33,18 @@ const OrdersDelivery = () => {
     const [isDriverClose, setIsDriverClose] = useState(false)
 
 
-    const bottomSheetRef = useRef(null);
+    const bottomSheetRef = useRef(null)
     const mapRef = useRef(null)
-    const {width, height} = useWindowDimensions();
+    const {width, height} = useWindowDimensions()
 
     const snapPoints = useMemo(() => ["12%", "95%"], [])
-    const navigation = useNavigation();
-    const route = useRoute();
-    const id = route.params?.id;
+    const navigation = useNavigation()
+    const route = useRoute()
+    const id = route.params?.id
+
 
     useEffect(() => {
-        fetchOrder(id);
+        fetchOrder(id)
     }, [id])
     //
     useEffect(() => {
@@ -73,21 +74,21 @@ const OrdersDelivery = () => {
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             });
-        })();
+        })()
 
         const foregroundSubscription = Location.watchPositionAsync(
             {
                 accuracy: Location.Accuracy.High,
                 distanceInterval: 100,
             },
-            (updatedLocation) => {
+            ({coords}) => {
                 setDriverLocation({
-                    latitude: updatedLocation.coords.latitude,
-                    longitude: updatedLocation.coords.longitude,
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
                 });
             }
         );
-        return foregroundSubscription;
+        // return foregroundSubscription;
     }, []);
 //     useEffect(() => {
 //
@@ -129,7 +130,7 @@ const OrdersDelivery = () => {
                 longitude: driverLocation.longitude,
                 latitudeDelta: 0.01,
                 longitudeDelta: 0.01
-            });
+            })
             acceptOrder();
         }
             if (order.status ==="ACCEPTED") {
@@ -169,10 +170,10 @@ const OrdersDelivery = () => {
         }
         return true;
     }
-    const restaurantLocation = {latitude: restaurant?.Location.lat, longitude: restaurant?.Location.lng}
-    const deliveryLocation = {latitude: customer?.Location.lat, longitude: customer?.Location.lng}
+    const restaurantLocation = {latitude: restaurant?.location.lat, longitude: restaurant?.location.lng}
+    const deliveryLocation = {latitude: customer?.location.lat, longitude: customer?.location.lng}
 
-    if (!order || !driverLocation || !restaurant || !customer || !orderDishes) {
+    if (!order || !driverLocation || !restaurant || !customer ) {
         return <ActivityIndicator size={"large"} color="gray"/>;
     }
 
@@ -181,13 +182,14 @@ const OrdersDelivery = () => {
             <MapView
                 ref={mapRef}
                 style={{width, height}}
-                showsCustomerLocation
-                followCusomerLocation
-                intitalRegion={{
+                provider={PROVIDER_GOOGLE}
+                showsUserLocation={true}
+                followUserLocation={true}
+                initialRegion={{
                     latitude: driverLocation.latitude,
                     longitude: driverLocation.longitude,
-                    latitudeDelta: 0.07,
-                    longitudeDelta: 0.07
+                    latitudeDelta: 0.015,
+                    longitudeDelta: 0.015
                 }}
             >
                 <MapViewDirections
@@ -204,9 +206,9 @@ const OrdersDelivery = () => {
                     }}
                 />
                 <Marker
-                    coordinate={{latitude: restaurant?.Location.lat, longitude: restaurant?.Location.lng}}
+                    coordinate={{latitude: restaurant?.location.lat, longitude: restaurant?.location.lng}}
                     title={restaurant?.name}
-                    description={restaurant?.Location.address}
+                    description={restaurant?.location.address}
                 >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <Entypo name="shop" size={30} color="white"/>
@@ -215,7 +217,7 @@ const OrdersDelivery = () => {
                 <Marker
                     coordinate={deliveryLocation}
                     title={customer?.name}
-                    description={customer?.Location.address}
+                    description={customer?.location.address}
                 >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <MaterialIcons name="restaurant" size={30} color="white"/>
@@ -242,16 +244,16 @@ const OrdersDelivery = () => {
                     <Text style={styles.restaurantName}>{restaurant?.name}</Text>
                     <View style={styles.addressContainer}>
                         <Fontisto name="shopping-store" size={22} color="grey"/>
-                        <Text style={styles.addressText}>{restaurant?.Location.address}</Text>
+                        <Text style={styles.addressText}>{restaurant?.location.address}</Text>
                     </View>
                     <View style={styles.addressContainer}>
                         <FontAwesome5 name="map-marker-alt" size={30} color="grey"/>
-                        <Text style={styles.addressText}>{customer?.Location.address}</Text>
+                        <Text style={styles.addressText}>{customer?.location.address}</Text>
                     </View>
 
                     <View style={styles.orderDetailsContainer}>
                         {dishes?.map(dish => {
-                            dishes?.find(d => d.id === dish.orderID)
+                            // dishes?.find(d => d.id === dish.orderID)
                             return <Text style={styles.orderItemText}
                                          key={dish.id}>{dish?.name} x{dish?.quantity}</Text>
                         })}

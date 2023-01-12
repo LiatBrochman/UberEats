@@ -1,7 +1,7 @@
 import {View, Text, TextInput, StyleSheet, Button, Pressable, Alert} from "react-native";
 import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Auth, DataStore} from "aws-amplify";
+import {Amplify, Auth, DataStore} from "aws-amplify";
 import {Courier, TransportationModes} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
@@ -16,9 +16,6 @@ const Profile = () => {
     const {driverLocation} = useOrderContext()
     const [name, setName] = useState(dbCourier?.name || "");
     const [transportationMode, setTransportationMode] = useState(TransportationModes.DRIVING);
-    //const [address, setAddress] = useState(dbCourier?.location?.address || "");
-    //const [lat, setLat] = useState(dbCourier?.location?.lat + "" || "0");
-    //const [lng, setLng] = useState(dbCourier?.location?.lng + "" || "0");
 
     const navigation = useNavigation()
 
@@ -111,7 +108,9 @@ const Profile = () => {
                 Sign out
             </Text>
             <Button onPress={onSave} title="Save"/>
-
+            <Button
+                onPress={async () => await Amplify.DataStore.clear().then(async () => await Amplify.DataStore.start())}
+                title="Amplify.DataStore.clear()"/>
 
         </SafeAreaView>
     );
