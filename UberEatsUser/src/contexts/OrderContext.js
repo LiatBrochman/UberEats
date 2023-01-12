@@ -76,6 +76,8 @@ const OrderContextProvider = ({children}) => {
                 customerID: dbCustomer.id,
                 restaurantID: restaurant.id,
                 dishes: basketDishes,
+                courierID:"null",
+
             })).then(async newOrder => {
 
                 /**
