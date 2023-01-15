@@ -1,16 +1,11 @@
-import {StyleSheet, Text, View, Image, Pressable} from "react-native";
+import {Image, Pressable, Text, View} from "react-native";
 import {Entypo} from "@expo/vector-icons";
 import {useNavigation} from '@react-navigation/native'
-import {useState, useEffect} from "react";
-import {DataStore} from "aws-amplify";
-import {Order, Restaurant, Customer, Dish} from '../../models';
 import {useOrderContext} from "../../contexts/OrderContext";
 
 
-const OrderItem = ({order, restaurant, customer ,dishes}) => {
-    // const [customer, setCustomer] = useState(null)
-    // const [restaurant, setRestaurant] = useState(null)
-    // const [dishes,setDishes] = useState(null)
+const OrderItem = ({order, restaurant, customer, dishes}) => {
+
     const {
         setCustomer,
         setRestaurant,
@@ -19,16 +14,6 @@ const OrderItem = ({order, restaurant, customer ,dishes}) => {
     } = useOrderContext()
     const navigation = useNavigation()
 
-    // useEffect(() => {
-    //     if (order?.id) {
-    //         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order item ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
-    //
-    //         DataStore.query(Customer, order.customerID).then(setCustomer)
-    //         DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
-    //         DataStore.query(Dish, d => d.and(d => [d.isDeleted(false), d.orderID.eq(order.id)])).then(setDishes)
-    //
-    //     }
-    // }, [order])
 
     return (
         restaurant?.image && (
@@ -44,9 +29,8 @@ const OrderItem = ({order, restaurant, customer ,dishes}) => {
                            setDishes(dishes)
                            setCustomer(customer)
                            setRestaurant(restaurant)
-                           navigation.navigate('OrdersDeliveryScreen', {id: order.id})
-                       }
-                       }
+                           navigation.navigate('OrdersDeliveryScreen')
+                       }}
             >
                 <Image
                     source={{uri: restaurant.image}}
@@ -91,10 +75,3 @@ const OrderItem = ({order, restaurant, customer ,dishes}) => {
 
 export default OrderItem;
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        justifyContent: "center",
-    },
-});

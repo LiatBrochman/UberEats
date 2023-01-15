@@ -1,6 +1,6 @@
-import {createContext, useState, useContext, useEffect} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Order, Dish, Restaurant, Customer} from "../models";
+import {Customer, Dish, Order, Restaurant} from "../models";
 import {useAuthContext} from "./AuthContext";
 import * as Location from "expo-location";
 import {subscription} from "../screens/OrdersScreen";
@@ -57,10 +57,6 @@ const OrderContextProvider = ({children}) => {
                         }
                     }))
                 })
-                // order: order,
-                // restaurant: (async () => await DataStore.query(Restaurant, order.restaurantID))(),
-                // dishes: (async () => await DataStore.query(Dish, d => d.orderID.eq(order.id)))(),
-                // }))
 
                 Promise.allSettled(promises).then((results) => {
 
@@ -68,13 +64,6 @@ const OrderContextProvider = ({children}) => {
 
                 })
 
-
-                // setOrders_restaurants_dishes(items.map(async order => {
-                // const restaurant = await DataStore.query(Restaurant, order.restaurantID)
-                // const dishes = await DataStore.query(Dish, d => d.orderID.eq(order.id))
-                // return {order, restaurant, dishes}
-                // })
-                // )
             })
 
             startWatchingDriverLocation().then(sub => subscription.watchPosition = sub)

@@ -1,14 +1,12 @@
-import {View, Text, TextInput, StyleSheet, Button, Pressable, Alert} from "react-native";
-import React, {useEffect, useState} from "react";
+import {Alert, Button, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
+import React, {useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Amplify, Auth, DataStore} from "aws-amplify";
 import {Courier, TransportationModes} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
-import {MaterialIcons, FontAwesome5} from "@expo/vector-icons";
-import * as Location from "expo-location";
+import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
-
 
 
 const Profile = () => {
@@ -32,8 +30,8 @@ const Profile = () => {
         const courier = await DataStore.save(
             Courier.copyOf(dbCourier, (updated) => {
                 updated.name = name;
-                updated.isDeleted=false;
-                updated.isActive= false;
+                updated.isDeleted = false;
+                updated.isActive = false;
                 updated.transportationMode = transportationMode;
                 updated.location = {
                     address: null,
@@ -52,7 +50,7 @@ const Profile = () => {
                     sub: sub,
                     name: name,
                     transportationMode,
-                    location:{
+                    location: {
                         lat: parseFloat(driverLocation.latitude),
                         lng: parseFloat(driverLocation.longitude),
                     },
@@ -61,7 +59,7 @@ const Profile = () => {
                 })
             );
             setDbCourier(courier)
-            console.log(  "\n\n success creating courier profile"  )
+            console.log("\n\n success creating courier profile")
         } catch (e) {
             Alert.alert("Error", e.message);
         }
@@ -80,25 +78,25 @@ const Profile = () => {
                 <Pressable
                     onPress={() => setTransportationMode(TransportationModes.BICYCLING)}
                     style={{
-                    backgroundColor: transportationMode === TransportationModes.BICYCLING ?  "#3FC060": "white",
-                    margin: 10,
-                    padding: 10,
-                    borderWidth: 1,
-                    borderColor: 'grey',
-                    borderRadius: 10
-                }}>
+                        backgroundColor: transportationMode === TransportationModes.BICYCLING ? "#3FC060" : "white",
+                        margin: 10,
+                        padding: 10,
+                        borderWidth: 1,
+                        borderColor: 'grey',
+                        borderRadius: 10
+                    }}>
                     <MaterialIcons name="pedal-bike" size={40} color="black"/>
                 </Pressable>
                 <Pressable
                     onPress={() => setTransportationMode(TransportationModes.DRIVING)}
                     style={{
-                    backgroundColor: transportationMode === TransportationModes.DRIVING ?  "#3FC060": "white",
-                    margin: 10,
-                    padding: 10,
-                    borderWidth: 1,
-                    borderColor: 'grey',
-                    borderRadius: 10
-                }}>
+                        backgroundColor: transportationMode === TransportationModes.DRIVING ? "#3FC060" : "white",
+                        margin: 10,
+                        padding: 10,
+                        borderWidth: 1,
+                        borderColor: 'grey',
+                        borderRadius: 10
+                    }}>
                     <FontAwesome5 name="car" size={40} color="black"/>
                 </Pressable>
             </View>
@@ -111,6 +109,15 @@ const Profile = () => {
             <Button
                 onPress={async () => await Amplify.DataStore.clear().then(async () => await Amplify.DataStore.start())}
                 title="Amplify.DataStore.clear()"/>
+
+
+                <Text
+                    onPress={() => navigation.navigate("OrdersScreen")}
+                    style={{textAlign: "center", color: 'black', margin: 10}}>
+                    return without save
+                </Text>
+
+
 
         </SafeAreaView>
     );
