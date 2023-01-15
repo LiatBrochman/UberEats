@@ -12,70 +12,22 @@ import {useOrderContext} from "../../contexts/OrderContext";
 export var subscription = {}
 
 const OrdersScreen = () => {
-    const {driverLocation, orders_restaurants_dishes} = useOrderContext()
+    const {driverLocation, ORCD} = useOrderContext()
     const bottomSheetRef = useRef({})
     const {width, height} = useWindowDimensions()
     const snapPoints = useMemo(() => ["12%", "95%"], [])
-
-    const [orders,setOrders] = useState([])
-    const[ restaurant,setRestaurant] =useState({})
+     const [orders, setOrders] = useState([])
+     const [restaurants, setRestaurants] = useState([])
 
     useEffect(()=>{
-        if(orders_restaurants_dishes && orders_restaurants_dishes?.length > 0 ){
-            setOrders(orders_restaurants_dishes.map(i => i.orders))
-            setRestaurant(orders_restaurants_dishes[0].restaurant)
+        if(ORCD && ORCD?.length > 0){
+            setOrders(ORCD.map(all=>all.order))
+            setRestaurants(ORCD.map(all=>all.restaurant))
         }
-    },[orders_restaurants_dishes])
-
-    // const markers = orders_restaurants_dishes?.map(
-    //     ({order, restaurant, dishes}) =>
-    //     <Marker
-    //         key={order.id}
-    //         title={restaurant.name}
-    //         description={restaurant.location.address}
-    //         coordinate={{
-    //             latitude: restaurant.location.lat,
-    //             longitude: restaurant.location.lng
-    //         }}>
-    //         <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
-    //             <Entypo name="shop" size={24} color="white"/>
-    //         </View>
-    //     </Marker>
-    // )
-
-    // useEffect(() => {
-    //
-    //
-    //         setMarkers(orders?.map(async order => {
-    //             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ found order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
-    //
-    //             // const restaurant = await DataStore.query(Restaurant,order?.restaurantID)
-    //             const restaurant = restaurants.find(restaurant => restaurant.id === order.restaurantID)
-    //
-    //
-    //             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant, null, 4))
-    //
-    //             return restaurant?.id &&
-    //                 (
-    //                     <Marker
-    //                         key={order.id}
-    //                         title={restaurant.name}
-    //                         description={restaurant.location.address}
-    //                         coordinate={{
-    //                             latitude: restaurant.location.lat,
-    //                             longitude: restaurant.location.lng
-    //                         }}>
-    //                         <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
-    //                             <Entypo name="shop" size={24} color="white"/>
-    //                         </View>
-    //                     </Marker>
-    //                 )
-    //         }))
-    // }, [orders])
-
+    },[ORCD])
     return (
         <>
-            {driverLocation?.latitude && orders_restaurants_dishes?.[0]?.restaurant?.id &&
+            {ORCD?.length>0 && typeof ORCD[0].restaurant.location.lat ==='number' &&
             <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
                 <MapView
                     initialRegion={{
@@ -89,19 +41,20 @@ const OrdersScreen = () => {
                     showsUserLocation={true}
                     followUserLocation={true}
                 >
-
-                    <Marker
-                        title={restaurant.name}
-                        description={restaurant.location.address}
-                        coordinate={{
-                            latitude: restaurant.location.lat,
-                            longitude: restaurant.location.lng
-                        }}>
-                        <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
-                            <Entypo name="shop" size={24} color="white"/>
-                        </View>
-                    </Marker>
-
+                    {restaurants.map(restaurant =>
+                        <Marker
+                            key={restaurant.id}
+                            title={restaurant.name}
+                            description={restaurant.location.address}
+                            coordinate={{
+                                latitude: restaurant.location.lat,
+                                longitude: restaurant.location.lng
+                            }}>
+                            <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
+                                <Entypo name="shop" size={24} color="white"/>
+                            </View>
+                        </Marker>)
+                    }
 
                 </MapView>
                 <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
@@ -129,7 +82,7 @@ const OrdersScreen = () => {
             </GestureHandlerRootView>
             }
         </>
-    );
-};
+    )
+}
 
 export default OrdersScreen;

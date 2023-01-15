@@ -208,7 +208,7 @@ const OrdersDelivery = () => {
                 <Marker
                     coordinate={{latitude: restaurant?.location.lat, longitude: restaurant?.location.lng}}
                     title={restaurant?.name}
-                    description={restaurant?.location.address}
+                    description={restaurant?.location?.address}
                 >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <Entypo name="shop" size={30} color="white"/>
@@ -217,7 +217,7 @@ const OrdersDelivery = () => {
                 <Marker
                     coordinate={deliveryLocation}
                     title={customer?.name}
-                    description={customer?.location.address}
+                    description={customer?.location?.address}
                 >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <MaterialIcons name="restaurant" size={30} color="white"/>
@@ -244,11 +244,11 @@ const OrdersDelivery = () => {
                     <Text style={styles.restaurantName}>{restaurant?.name}</Text>
                     <View style={styles.addressContainer}>
                         <Fontisto name="shopping-store" size={22} color="grey"/>
-                        <Text style={styles.addressText}>{restaurant?.location.address}</Text>
+                        <Text style={styles.addressText}>{restaurant?.location?.address}</Text>
                     </View>
                     <View style={styles.addressContainer}>
                         <FontAwesome5 name="map-marker-alt" size={30} color="grey"/>
-                        <Text style={styles.addressText}>{customer?.location.address}</Text>
+                        <Text style={styles.addressText}>{customer?.location?.address}</Text>
                     </View>
 
                     <View style={styles.orderDetailsContainer}>

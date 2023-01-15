@@ -7,21 +7,21 @@ import {Order, Restaurant, Customer} from '../../models';
 
 
 const OrderItem = ({order}) => {
-    const [customer, setCustomer] = useState(null)
-    const [restaurant, setRestaurant] = useState(null)
     const navigation = useNavigation()
+    const [customer, setCustomer] = useState({})
+    const [restaurant, setRestaurant] = useState({})
 
-    useEffect(() => {
-        if (order?.id) {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order item ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
-
-            DataStore.query(Customer, order.customerID).then(setCustomer)
-            DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
-        }
-    }, [order])
+    // useEffect(() => {
+    //     if (order.id) {
+    //        // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order item ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
+    //
+    //         DataStore.query(Customer, order.customerID).then(setCustomer)
+    //         DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
+    //     }
+    // }, [order])
 
     return (
-        restaurant?.image && (
+        restaurant.image && (
             <Pressable style={{
                 flexDirection: "row",
                 margin: 10,
@@ -29,7 +29,9 @@ const OrderItem = ({order}) => {
                 borderWidth: 2,
                 borderRadius: 12,
             }}
-                       onPress={() => navigation.navigate('OrdersDeliveryScreen', {id: order.id})}
+                       onPress={() => {
+                           navigation.navigate('OrdersDeliveryScreen', {id: order.id})
+                       }}
             >
                 <Image
                     source={{uri: restaurant.image}}
@@ -47,8 +49,8 @@ const OrderItem = ({order}) => {
                     <Text style={{color: "grey"}}>{restaurant.location.address}</Text>
 
                     <Text style={{marginTop: 10}}>Delivery Details:</Text>
-                    <Text style={{color: "grey"}}>{customer?.name}</Text>
-                    <Text style={{color: "grey"}}>{customer?.location.address}</Text>
+                    <Text style={{color: "grey"}}>{customer.name}</Text>
+                    <Text style={{color: "grey"}}>{customer.location.address}</Text>
                 </View>
                 <View
                     style={{

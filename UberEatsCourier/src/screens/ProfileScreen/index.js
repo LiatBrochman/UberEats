@@ -4,9 +4,7 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import {Amplify, Auth, DataStore} from "aws-amplify";
 import {Courier, TransportationModes} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
-import {useNavigation} from "@react-navigation/native";
 import {MaterialIcons, FontAwesome5} from "@expo/vector-icons";
-import * as Location from "expo-location";
 import {useOrderContext} from "../../contexts/OrderContext";
 
 
@@ -17,15 +15,12 @@ const Profile = () => {
     const [name, setName] = useState(dbCourier?.name || "");
     const [transportationMode, setTransportationMode] = useState(TransportationModes.DRIVING);
 
-    const navigation = useNavigation()
-
     const onSave = async () => {
         if (dbCourier) {
             await updateCourier();
         } else {
             await createCourier();
         }
-        //navigation.navigate('OrdersScreen')
     };
 
     const updateCourier = async () => {

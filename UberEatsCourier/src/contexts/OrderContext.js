@@ -15,23 +15,23 @@ const OrderContextProvider = ({children}) => {
     const [customer, setCustomer] = useState({})
     const [restaurant, setRestaurant] = useState({})
     const [driverLocation, setDriverLocation] = useState({})
-    const [orders_restaurants_dishes, setOrders_restaurants_dishes] = useState([])
+    const [ORCD, setORCD] = useState([])
 
 
     useEffect(() => {
 
-        if (dbCourier?.id) {
+        if (dbCourier) {
 
-            subscription.orders_restaurants_dishes = DataStore.observeQuery(Order, o => o.and(o => [
+            subscription.ORCD = DataStore.observeQuery(Order, o => o.and(o => [
                     o.courierID.eq('null'),
                     o.isDeleted.eq(false)
                 ]
             )).subscribe(({items}) => {
 
                 /** explanation:
-                 * orders_restaurants_dishes =
+                 * ORCD =
                  * [
-                 *      { "order":{}, "restaurant":{}, "dishes":[] },
+                 *      { "order":{}, "restaurant":{}, "customer"={}, "dishes":[] ,},
                  *      {...},
                  *      {...},
                  *      {...}
@@ -44,37 +44,37 @@ const OrderContextProvider = ({children}) => {
 
                     promises.push(new Promise(async (resolve, reject) => {
 
+                        if (!order) {
+                            console.error("REJECTED!!!")
+                            reject("couldn't find order", order)
+                        }
+
                         const restaurant = await DataStore.query(Restaurant, order.restaurantID)
                         const dishes = await DataStore.query(Dish, d => d.orderID.eq(order.id))
+                        const customer = await DataStore.query(Customer, order.customerID)
 
-                        if (restaurant && dishes) {
+                        if (restaurant && dishes && customer) {
 
-                            resolve({order, restaurant, dishes})
+                            resolve({order, restaurant, customer, dishes})
 
                         } else {
                             console.error("REJECTED!!!")
-                            reject("couldn't find restaurant or dishes:", restaurant, dishes)
+                            reject("couldn't find restaurant / dishes / customer:", restaurant, dishes, customer)
                         }
                     }))
                 })
-                // order: order,
-                // restaurant: (async () => await DataStore.query(Restaurant, order.restaurantID))(),
-                // dishes: (async () => await DataStore.query(Dish, d => d.orderID.eq(order.id)))(),
-                // }))
 
-                Promise.allSettled(promises).then((results) => {
+                Promise.allSettled(promises).then(results => {
 
-                    setOrders_restaurants_dishes(results.map(res => res?.value && res.value))
+                    console.log(results)
+
+                    if (results.every(result => result.status === "fulfilled")) {
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setORCD(results.map(res => res.value)) ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(setORCD(results.map(res => res.value)), null, 4))
+                    }
 
                 })
 
 
-                // setOrders_restaurants_dishes(items.map(async order => {
-                // const restaurant = await DataStore.query(Restaurant, order.restaurantID)
-                // const dishes = await DataStore.query(Dish, d => d.orderID.eq(order.id))
-                // return {order, restaurant, dishes}
-                // })
-                // )
             })
 
             startWatchingDriverLocation().then(sub => subscription.watchPosition = sub)
@@ -82,7 +82,7 @@ const OrderContextProvider = ({children}) => {
         }
 
         return () => {
-            subscription?.orders_restaurants_dishes?.unsubscribe()
+            subscription?.ORCD?.unsubscribe()
             subscription?.watchPosition?.remove()
         }
 
@@ -146,7 +146,7 @@ const OrderContextProvider = ({children}) => {
             customer,
             restaurant,
             driverLocation,
-            orders_restaurants_dishes,
+            ORCD,
 
             setOrder,
             setDishes,
