@@ -5,6 +5,7 @@ import {useAuthContext} from "./AuthContext";
 import * as Location from "expo-location";
 import {subscription} from "../screens/OrdersScreen";
 
+
 const OrderContext = createContext({})
 
 const OrderContextProvider = ({children}) => {
@@ -46,14 +47,14 @@ const OrderContextProvider = ({children}) => {
 
                         const restaurant = await DataStore.query(Restaurant, order.restaurantID)
                         const dishes = await DataStore.query(Dish, d => d.orderID.eq(order.id))
-                        const customer = await DataStore.query(Customer,order.customerID)
-                        if (restaurant && dishes && customer ) {
+                        const customer = await DataStore.query(Customer, order.customerID)
+                        if (restaurant && dishes && customer) {
 
-                            resolve({order, restaurant, dishes , customer})
+                            resolve({order, restaurant, dishes, customer})
 
                         } else {
                             console.error("REJECTED!!!")
-                            reject("couldn't find restaurant or dishes or customer:", restaurant, dishes , customer)
+                            reject("couldn't find restaurant or dishes or customer:", restaurant, dishes, customer)
                         }
                     }))
                 })
@@ -79,17 +80,28 @@ const OrderContextProvider = ({children}) => {
     }, [dbCourier])
 
     const startWatchingDriverLocation = async () => {
-        return await Location.watchPositionAsync(
-            {
-                accuracy: Location.Accuracy.High,
-                distanceInterval: 100,
-            },
-            ({coords}) => {
-                setDriverLocation({
-                    latitude: coords.latitude,
-                    longitude: coords.longitude,
-                })
-            })
+
+        let {status} = await Location.requestForegroundPermissionsAsync()
+
+        switch (status === "granted") {
+
+            case true:
+                return await Location.watchPositionAsync(
+                    {
+                        accuracy: Location.Accuracy.High,
+                        distanceInterval: 100,
+                    },
+                    ({coords}) => {
+                        setDriverLocation({
+                            latitude: coords.latitude,
+                            longitude: coords.longitude,
+                        })
+                    })
+
+            case false:
+                console.error('Permission to access location was denied, please try again')
+                return await startWatchingDriverLocation()
+        }
     }
 
     const acceptOrder = async ({order}) => {

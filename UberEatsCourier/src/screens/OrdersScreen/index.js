@@ -24,6 +24,8 @@ const OrdersScreen = () => {
     const [orders,setOrders] = useState([])
     const [restaurants,setRestaurants] =useState([])
 
+
+
     useEffect(()=>{
         if(ORCD && ORCD?.length > 0 ){
             setOrders(ORCD.map(i => i.order))
@@ -68,7 +70,7 @@ const OrdersScreen = () => {
                     )}
                 </MapView>
                 <Ionicons
-                    onPress={() => navigation.navigate('Profile',{toggle:true})}
+                    onPress={() => navigation.navigate('Profile')}
                     name="arrow-back-circle"
                     size={45}
                     color="black"
