@@ -15,21 +15,21 @@ const OrderContextProvider = ({children}) => {
     const [customer, setCustomer] = useState({})
     const [restaurant, setRestaurant] = useState({})
     const [driverLocation, setDriverLocation] = useState({})
-    const [orders_restaurants_dishes, setOrders_restaurants_dishes] = useState([])
+    const [ORCD, setORCD] = useState([])
 
 
     useEffect(() => {
 
         if (dbCourier?.id) {
 
-            subscription.orders_restaurants_dishes = DataStore.observeQuery(Order, o => o.and(o => [
+            subscription.ORCD = DataStore.observeQuery(Order, o => o.and(o => [
                     o.courierID.eq('null'),
                     o.isDeleted.eq(false)
                 ]
             )).subscribe(({items}) => {
 
                 /** explanation:
-                 * orders_restaurants_dishes =
+                 * ORCD =
                  * [
                  *      { "order":{}, "restaurant":{}, "dishes":[] },
                  *      {...},
@@ -46,14 +46,14 @@ const OrderContextProvider = ({children}) => {
 
                         const restaurant = await DataStore.query(Restaurant, order.restaurantID)
                         const dishes = await DataStore.query(Dish, d => d.orderID.eq(order.id))
+                        const customer = await DataStore.query(Customer,order.customerID)
+                        if (restaurant && dishes && customer ) {
 
-                        if (restaurant && dishes) {
-
-                            resolve({order, restaurant, dishes})
+                            resolve({order, restaurant, dishes , customer})
 
                         } else {
                             console.error("REJECTED!!!")
-                            reject("couldn't find restaurant or dishes:", restaurant, dishes)
+                            reject("couldn't find restaurant or dishes or customer:", restaurant, dishes , customer)
                         }
                     }))
                 })
@@ -64,7 +64,7 @@ const OrderContextProvider = ({children}) => {
 
                 Promise.allSettled(promises).then((results) => {
 
-                    setOrders_restaurants_dishes(results.map(res => res?.value && res.value))
+                    setORCD(results.map(res => res?.value && res.value))
 
                 })
 
@@ -82,7 +82,7 @@ const OrderContextProvider = ({children}) => {
         }
 
         return () => {
-            subscription?.orders_restaurants_dishes?.unsubscribe()
+            subscription?.ORCD?.unsubscribe()
             subscription?.watchPosition?.remove()
         }
 
@@ -146,7 +146,7 @@ const OrderContextProvider = ({children}) => {
             customer,
             restaurant,
             driverLocation,
-            orders_restaurants_dishes,
+            ORCD,
 
             setOrder,
             setDishes,

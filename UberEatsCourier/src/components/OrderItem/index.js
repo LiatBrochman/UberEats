@@ -3,22 +3,32 @@ import {Entypo} from "@expo/vector-icons";
 import {useNavigation} from '@react-navigation/native'
 import {useState, useEffect} from "react";
 import {DataStore} from "aws-amplify";
-import {Order, Restaurant, Customer} from '../../models';
+import {Order, Restaurant, Customer, Dish} from '../../models';
+import {useOrderContext} from "../../contexts/OrderContext";
 
 
-const OrderItem = ({order}) => {
-    const [customer, setCustomer] = useState(null)
-    const [restaurant, setRestaurant] = useState(null)
+const OrderItem = ({order, restaurant, customer ,dishes}) => {
+    // const [customer, setCustomer] = useState(null)
+    // const [restaurant, setRestaurant] = useState(null)
+    // const [dishes,setDishes] = useState(null)
+    const {
+        setCustomer,
+        setRestaurant,
+        setDishes,
+        setOrder
+    } = useOrderContext()
     const navigation = useNavigation()
 
-    useEffect(() => {
-        if (order?.id) {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order item ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
-
-            DataStore.query(Customer, order.customerID).then(setCustomer)
-            DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
-        }
-    }, [order])
+    // useEffect(() => {
+    //     if (order?.id) {
+    //         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order item ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
+    //
+    //         DataStore.query(Customer, order.customerID).then(setCustomer)
+    //         DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)
+    //         DataStore.query(Dish, d => d.and(d => [d.isDeleted(false), d.orderID.eq(order.id)])).then(setDishes)
+    //
+    //     }
+    // }, [order])
 
     return (
         restaurant?.image && (
@@ -29,7 +39,14 @@ const OrderItem = ({order}) => {
                 borderWidth: 2,
                 borderRadius: 12,
             }}
-                       onPress={() => navigation.navigate('OrdersDeliveryScreen', {id: order.id})}
+                       onPress={() => {
+                           setOrder(order)
+                           setDishes(dishes)
+                           setCustomer(customer)
+                           setRestaurant(restaurant)
+                           navigation.navigate('OrdersDeliveryScreen', {id: order.id})
+                       }
+                       }
             >
                 <Image
                     source={{uri: restaurant.image}}

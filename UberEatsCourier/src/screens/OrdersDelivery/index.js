@@ -11,6 +11,7 @@ import MapViewDirections from "react-native-maps-directions";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
 import {useOrderContext} from "../../contexts/OrderContext";
+import {subscription} from "../OrdersScreen";
 
 
 const OrdersDelivery = () => {
@@ -19,14 +20,15 @@ const OrdersDelivery = () => {
         customer,
         restaurant,
         acceptOrder,
+        driverLocation,
         fetchOrder,
         fetchCustomer,
         completeOrder,
-        pickupOrder
+        pickupOrder,
+        dishes
     } = useOrderContext();
-    const [dishes, setDishes] = useState([]);
 
-    const [driverLocation, setDriverLocation] = useState(null)
+    // const [driverLocation, setDriverLocation] = useState(null)
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)
 
@@ -43,13 +45,13 @@ const OrdersDelivery = () => {
     const id = route.params?.id
 
 
-    useEffect(() => {
-        fetchOrder(id)
-    }, [id])
-    //
-    useEffect(() => {
-        fetchCustomer(order)
-    }, [order])
+    // useEffect(() => {
+    //     fetchOrder(id)
+    // }, [id])
+    // //
+    // useEffect(() => {
+    //     fetchCustomer(order)
+    // }, [order])
 
 
     // useEffect(() => {
@@ -61,35 +63,39 @@ const OrdersDelivery = () => {
     //     }
     // }, [dishes])
 
-    useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== "granted") {
-                console.log("Nonono");
-                return;
-            }
+    // useEffect(() => {
 
-            let location = await Location.getCurrentPositionAsync();
-            setDriverLocation({
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-            });
-        })()
+        // (async () => {
+        //     let {status} = await Location.requestForegroundPermissionsAsync()
+        //     if (status !== "granted") {
+        //         console.log("Nonono");
+        //         return;
+        //     }
 
-        const foregroundSubscription = Location.watchPositionAsync(
-            {
-                accuracy: Location.Accuracy.High,
-                distanceInterval: 100,
-            },
-            ({coords}) => {
-                setDriverLocation({
-                    latitude: coords.latitude,
-                    longitude: coords.longitude,
-                });
-            }
-        );
-        // return foregroundSubscription;
-    }, []);
+            // let location = await Location.getCurrentPositionAsync()
+            // setDriverLocation({
+            //     latitude: location.coords.latitude,
+            //     longitude: location.coords.longitude,
+            // })
+        // })()
+
+    //     Location.watchPositionAsync(
+    //         {
+    //             accuracy: Location.Accuracy.High,
+    //             distanceInterval: 100,
+    //         },
+    //         ({coords}) => {
+    //             setDriverLocation({
+    //                 latitude: coords.latitude,
+    //                 longitude: coords.longitude,
+    //             });
+    //         }
+    //     ).then(res => subscription.foregroundSubscription = res)
+    //
+    //     return () => {
+    //         subscription?.foregroundSubscription?.remove()
+    //     }
+    // }, [])
 //     useEffect(() => {
 //
 //         (async () => {
@@ -123,7 +129,7 @@ const OrdersDelivery = () => {
 
 
     const onButtonPressed = async () => {
-            if (order.status === "READY_FOR_PICKUP") {
+        if (order.status === "READY_FOR_PICKUP") {
             bottomSheetRef.current?.collapse();
             mapRef.current.animateToRegion({
                 latitude: driverLocation.latitude,
@@ -133,18 +139,18 @@ const OrdersDelivery = () => {
             })
             acceptOrder();
         }
-            if (order.status ==="ACCEPTED") {
+        if (order.status === "ACCEPTED") {
             bottomSheetRef.current?.collapse();
             pickupOrder();
 
         }
-            if (order.status === "PICKED_UP") {
-                await completeOrder();
+        if (order.status === "PICKED_UP") {
+            await completeOrder();
             bottomSheetRef.current?.collapse();
-           navigation.goBack()
+            navigation.goBack()
 
         }
-    };
+    }
 
     const renderButtonTitle = () => {
         if (order.status === "READY_FOR_PICKUP") {
@@ -173,7 +179,7 @@ const OrdersDelivery = () => {
     const restaurantLocation = {latitude: restaurant?.location.lat, longitude: restaurant?.location.lng}
     const deliveryLocation = {latitude: customer?.location.lat, longitude: customer?.location.lng}
 
-    if (!order || !driverLocation || !restaurant || !customer ) {
+    if (!order || !driverLocation || !restaurant || !customer) {
         return <ActivityIndicator size={"large"} color="gray"/>;
     }
 
