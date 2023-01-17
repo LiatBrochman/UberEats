@@ -8,7 +8,8 @@ export enum OrderStatus {
   READY_FOR_PICKUP = "READY_FOR_PICKUP",
   PICKED_UP = "PICKED_UP",
   COMPLETED = "COMPLETED",
-  ACCEPTED = "ACCEPTED"
+  ACCEPTED = "ACCEPTED",
+  DECLINED = "DECLINED"
 }
 
 export enum TransportationModes {
@@ -146,7 +147,7 @@ type EagerOrder = {
   readonly isDeleted: boolean;
   readonly Dishes?: (Dish | null)[] | null;
   readonly customerID: string;
-  readonly courierID?: string | null;
+  readonly courierID: string;
   readonly restaurantID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
@@ -166,7 +167,7 @@ type LazyOrder = {
   readonly isDeleted: boolean;
   readonly Dishes: AsyncCollection<Dish>;
   readonly customerID: string;
-  readonly courierID?: string | null;
+  readonly courierID: string;
   readonly restaurantID: string;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;

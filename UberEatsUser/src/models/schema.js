@@ -413,7 +413,7 @@ export const schema = {
                     "name": "courierID",
                     "isArray": false,
                     "type": "ID",
-                    "isRequired": false,
+                    "isRequired": true,
                     "attributes": []
                 },
                 "restaurantID": {
@@ -837,7 +837,8 @@ export const schema = {
                 "READY_FOR_PICKUP",
                 "PICKED_UP",
                 "COMPLETED",
-                "ACCEPTED"
+                "ACCEPTED",
+                "DECLINED"
             ]
         },
         "TransportationModes": {
@@ -877,5 +878,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.3.2",
-    "version": "d5600c9d053798199ebf3289fec06d53"
+    "version": "55fdf130c7dafe723b53b582b8a9e810"
 };

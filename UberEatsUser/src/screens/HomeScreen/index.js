@@ -14,16 +14,6 @@ export var subscription = {}
 
 export default function HomeScreen() {
     const {restaurants} = useRestaurantContext()
-    // const [restaurants, setRestaurants] = useState([])
-    //
-    //
-    // useEffect(() => {
-    //     subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).subscribe(({items}) => {
-    //         if (items?.length) {
-    //             setRestaurants(items)
-    //         }
-    //     })
-    // }, [])
 
 
     return (
@@ -33,37 +23,7 @@ export default function HomeScreen() {
                 renderItem={({item}) => <RestaurantItem restaurant={item}/>}
                 showsVerticalScrollIndicator={false}
             />
-            <Pressable
-                style={{
-
-                    backgroundColor: "black",
-                    marginBottom: "auto",
-                    padding: 20,
-                    alignItems: "center",
-                    margin: 10,
-
-
-                }}
-                onPress={async () => {
-
-                    await Amplify.DataStore.delete(Basket, Predicates.ALL)
-                    await Amplify.DataStore.delete(Dish, d => d?.quantity.lt(99))
-                    await DataStore.clear().then(async () => await DataStore.start()
-                        .then(() => sleep(5000).then(async () => await Updates.reloadAsync())))
-
-                }}
-
-            >
-                <Text style={{
-
-                    color: "white",
-                    fontWeight: "600",
-                    fontSize: 18,
-
-                }}>del basket</Text>
-            </Pressable>
         </View>
-
     );
 }
 

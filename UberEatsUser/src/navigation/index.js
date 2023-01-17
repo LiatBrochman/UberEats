@@ -7,6 +7,7 @@ import Basket from "../screens/Basket";
 import OrdersScreen from "../screens/OrdersScreen";
 import OrderDetails from "../screens/OrderDetails";
 import ProfileScreen from "../screens/ProfileScreen";
+import Map from "../screens/Map"
 import {useAuthContext} from "../contexts/AuthContext";
 
 import { Foundation, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
@@ -42,6 +43,13 @@ const HomeTabs = () => {
                         <Foundation name="home" size={24} color={color}/>),
                 }}/>
             <Tab.Screen
+                name="Map"
+                component={Map}
+                options={{
+                    tabBarIcon: ({color}) => (
+                        <Foundation name="map" size={24} color={color}/>),
+                }}/>
+            <Tab.Screen
                 name="Orders"
                 component={OrderStackNavigator}
                 options={{
@@ -56,8 +64,8 @@ const HomeTabs = () => {
                         <FontAwesome5 name="user-alt" size={24} color={color}/>),
                 }}/>
         </Tab.Navigator>
-    );
-};
+    )
+}
 
 const HomeStack = createNativeStackNavigator();
 
@@ -69,8 +77,8 @@ const HomeStackNavigator = () => {
             <HomeStack.Screen name="Dish" component={DishDetailsScreen}/>
             <HomeStack.Screen name="Basket" component={Basket}/>
         </HomeStack.Navigator>
-    );
-};
+    )
+}
 
 const OrdersStack = createNativeStackNavigator();
 

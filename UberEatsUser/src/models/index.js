@@ -8,7 +8,8 @@ const OrderStatus = {
   "READY_FOR_PICKUP": "READY_FOR_PICKUP",
   "PICKED_UP": "PICKED_UP",
   "COMPLETED": "COMPLETED",
-  "ACCEPTED": "ACCEPTED"
+  "ACCEPTED": "ACCEPTED",
+  "DECLINED": "DECLINED"
 };
 
 const TransportationModes = {

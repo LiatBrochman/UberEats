@@ -7,22 +7,8 @@ import {subscription} from "../screens/HomeScreen";
 const RestaurantContext = createContext({})
 const RestaurantContextProvider = ({children}) => {
 
-    const getRestaurant_ByID = async id => {
-        // const res =
-        return await DataStore.query(Restaurant, id)
-            .then(result => {
-                if (!result) return null
-                if (result instanceof Array) {
-                    return result.filter(entity => entity.isDeleted === false)
-                } else {
-                    return result
-                }
-            })
-
-        // return (res instanceof Array ? [res] : res)
-    }
     const {dbCustomer} = useAuthContext({})
-    const [restaurants, setRestaurants] = useState([]);
+    const [restaurants, setRestaurants] = useState([])
     const [restaurant, setRestaurant] = useState({})
     const [restaurantDishes, setRestaurantDishes] = useState([])
 
@@ -51,7 +37,6 @@ const RestaurantContextProvider = ({children}) => {
 
     return (<RestaurantContext.Provider
             value={{
-                getRestaurant_ByID,
                 restaurant,
                 restaurants,
                 setRestaurant,
@@ -62,11 +47,10 @@ const RestaurantContextProvider = ({children}) => {
             {children}
         </RestaurantContext.Provider>
     )
-
 }
 
 
 export default RestaurantContextProvider;
-export const useRestaurantContext = () => useContext(RestaurantContext);
+export const useRestaurantContext = () => useContext(RestaurantContext)
 
 
