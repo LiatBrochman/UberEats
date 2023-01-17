@@ -47,16 +47,16 @@ const OrdersDelivery = () => {
                         latitudeDelta: 0.01,
                         longitudeDelta: 0.01
                     })
-                    await acceptOrder()
+                    await acceptOrder({order})
                     break;
 
                 case "ACCEPTED":
                     bottomSheetRef.current?.collapse()
-                    await pickupOrder()
+                    await pickupOrder({order})
                     break;
 
                 case "PICKED_UP":
-                    await completeOrder()
+                    await completeOrder({order})
                     bottomSheetRef.current?.collapse()
                     navigation.goBack()
                     break;

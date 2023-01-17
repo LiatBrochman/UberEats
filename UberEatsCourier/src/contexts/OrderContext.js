@@ -1,6 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Customer, Dish, Order, Restaurant} from "../models";
+import {Courier, Customer, Dish, Order, Restaurant} from "../models";
 import {useAuthContext} from "./AuthContext";
 import * as Location from "expo-location";
 import {subscription} from "../screens/OrdersScreen";
@@ -10,7 +10,7 @@ const OrderContext = createContext({})
 
 const OrderContextProvider = ({children}) => {
 
-    const {dbCourier} = useAuthContext({})
+    const {dbCourier,setDbCourier} = useAuthContext({})
     const [order, setOrder] = useState({})
     const [dishes, setDishes] = useState([])
     const [customer, setCustomer] = useState({})
@@ -21,7 +21,7 @@ const OrderContextProvider = ({children}) => {
 
     useEffect(() => {
 
-        if (dbCourier?.id) {
+        if (dbCourier?.id && !subscription?.ORCD) {
 
             subscription.ORCD = DataStore.observeQuery(Order, o => o.and(o => [
                     o.courierID.eq('null'),
@@ -79,6 +79,20 @@ const OrderContextProvider = ({children}) => {
 
     }, [dbCourier])
 
+    useEffect(() => {
+        /**
+         * send driver location to DB every 100meters
+         */
+       if( order.status==="PICKED_UP" && driverLocation?.latitude){
+
+           DataStore.save(Courier.copyOf(dbCourier, updated => {
+                   updated.location = driverLocation
+               })).then(()=>setDbCourier({...dbCourier,location:driverLocation}))
+
+       }
+    }, [driverLocation])
+
+
     const startWatchingDriverLocation = async () => {
 
         let {status} = await Location.requestForegroundPermissionsAsync()
@@ -104,11 +118,43 @@ const OrderContextProvider = ({children}) => {
         }
     }
 
+    // const startSendingDriverLocation = async () => {
+    //
+    //     let {status} = await Location.requestForegroundPermissionsAsync()
+    //
+    //     switch (status === "granted") {
+    //
+    //         case true:
+    //             return await Location.watchPositionAsync(
+    //                 {
+    //                     accuracy: Location.Accuracy.High,
+    //                     distanceInterval: 100,
+    //                 },
+    //                 ({coords}) => {
+    //                     setDriverLocation({
+    //                         latitude: coords.latitude,
+    //                         longitude: coords.longitude,
+    //                     })
+    //
+    //                     DataStore.save(Courier.copyOf(dbCourier, updated => {
+    //                             updated.location = driverLocation
+    //                         })
+    //                     )
+    //                 })
+    //
+    //         case false:
+    //             console.error('Permission to access location was denied, please try again')
+    //             return await startWatchingDriverLocation()
+    //     }
+    // }
+
+
     const acceptOrder = async ({order}) => {
         return await DataStore.save(
             Order.copyOf(order, (updated) => {
                 updated.courierID = dbCourier.id
                 updated.Courier = dbCourier
+                updated.status = "PICKED_UP"
             })
         )
     }
@@ -125,7 +171,7 @@ const OrderContextProvider = ({children}) => {
             Order.copyOf(order, (updated) => {
                 updated.status = "PICKED_UP"
                 updated.Courier = dbCourier
-
+                updated.courierID = dbCourier.id
             })
         )
     }
