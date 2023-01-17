@@ -10,10 +10,14 @@ import {useNavigation} from "@react-navigation/native";
 
 const Map = () => {
     const {width, height} = useWindowDimensions()
-    const {restaurants} = useRestaurantContext()
+    const {restaurants,setRestaurant} = useRestaurantContext()
     const [customerLocation, setCustomerLocation] = useState()
     const navigation = useNavigation()
 
+    const onCalloutPress = (restaurant) => {
+        setRestaurant(restaurant)
+        navigation.navigate("Restaurant")
+    }
 
     useEffect(() => {
 
@@ -75,7 +79,9 @@ const Map = () => {
                     coordinate={{
                         latitude: restaurant.location.lat,
                         longitude: restaurant.location.lng
-                    }}>
+                    }}
+                    onCalloutPress={()=>onCalloutPress(restaurant)}
+                >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <Entypo name="shop" size={24} color="white"/>
                     </View>

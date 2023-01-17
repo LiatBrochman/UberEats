@@ -11,7 +11,7 @@ const RestaurantItem = ({restaurant}) => {
     const onPress = () => {
         setRestaurant(restaurant)
         navigation.navigate("Restaurant", { id: restaurant?.id });
-    };
+    }
     return (
         <Pressable onPress={onPress}  style={styles.restaurantContainer}>
             <Image
