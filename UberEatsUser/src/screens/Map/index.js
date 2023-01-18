@@ -1,18 +1,24 @@
 import * as Location from "expo-location";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {useState, useEffect} from "react";
+import {useEffect, useState} from "react";
 import {subscription} from "../HomeScreen";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import {Entypo, Ionicons} from "@expo/vector-icons";
-import {Button, Text, useWindowDimensions, View} from 'react-native';
+import {Entypo} from "@expo/vector-icons";
+import {useWindowDimensions, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
+import {useOrderContext} from "../../contexts/OrderContext";
+import {useCourierContext} from "../../contexts/CourierContext";
+import {Icon} from "@react-native-material/core";
 
 
 const Map = () => {
+
     const {width, height} = useWindowDimensions()
-    const {restaurants,setRestaurant} = useRestaurantContext()
+    const {restaurants, setRestaurant} = useRestaurantContext()
+    const {orders} = useOrderContext()
     const [customerLocation, setCustomerLocation] = useState()
     const navigation = useNavigation()
+    const {courier} = useCourierContext()
 
     const onCalloutPress = (restaurant) => {
         setRestaurant(restaurant)
@@ -25,6 +31,12 @@ const Map = () => {
 
         return subscription?.watchPosition?.remove()
     }, [])
+
+    useEffect(() => {
+        if (courier?.length > 0) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier, null, 4))
+        }
+    }, [courier])
 
 
     const startWatchingCustomerLocation = async () => {
@@ -80,13 +92,29 @@ const Map = () => {
                         latitude: restaurant.location.lat,
                         longitude: restaurant.location.lng
                     }}
-                    onCalloutPress={()=>onCalloutPress(restaurant)}
+                    onCalloutPress={() => onCalloutPress(restaurant)}
                 >
                     <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
                         <Entypo name="shop" size={24} color="white"/>
                     </View>
                 </Marker>
             )}
+            {courier &&
+            <Marker
+                key={courier.id}
+                title={courier.name}
+                description={courier.transportationMode}
+                coordinate={{
+                    latitude: courier.location.lat,
+                    longitude: courier.location.lng
+                }}>
+                <View style={{padding: 5, borderRadius: 20}}>
+                    {courier?.transportationMode === "DRIVING" && <Icon name="car" size={30} color="black"/>}
+                    {courier?.transportationMode==="BICYCLING"&& <Icon name="bicycle" size={30} color="black"/>}
+                </View>
+            </Marker>
+            }
+
         </MapView>
     )
 }

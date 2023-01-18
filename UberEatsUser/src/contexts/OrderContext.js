@@ -1,4 +1,4 @@
-import {createContext, useContext, useState, useEffect} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Dish, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
@@ -30,6 +30,9 @@ const OrderContextProvider = ({children}) => {
         ).subscribe(({items}) => {
             setOrders(items)
         })
+
+        // return subscription?.orders?.unsubscribe()
+
     },[dbCustomer])
 
     /**
@@ -46,6 +49,8 @@ const OrderContextProvider = ({children}) => {
                 setOrderDishes(items)
             })
         }
+        // return subscription?.order?.unsubscribe()
+
     },[order])
 
     function checkIfPriceIsValid({totalPrice}) {

@@ -9,23 +9,30 @@ import AuthContextProvider from "./src/contexts/AuthContext";
 import BasketContextProvider from "./src/contexts/BasketContext";
 import OrderContextProvider from "./src/contexts/OrderContext";
 import RestaurantContextProvider from "./src/contexts/RestaurantContext";
+import CourierContextProvider from "./src/contexts/CourierContext";
+import {IconComponentProvider} from "@react-native-material/core";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 Amplify.configure({...config, Analytics: {disabled: true,},})
 
 function App() {
     return (
-        <NavigationContainer>
-            <AuthContextProvider>
-                <RestaurantContextProvider>
-                    <BasketContextProvider>
-                        <OrderContextProvider>
-                            <RootNavigator/>
-                        </OrderContextProvider>
-                    </BasketContextProvider>
-                </RestaurantContextProvider>
-            </AuthContextProvider>
-            <StatusBar style="light"/>
-        </NavigationContainer>
+        <IconComponentProvider IconComponent={MaterialCommunityIcons}>
+            <NavigationContainer>
+                <AuthContextProvider>
+                    <RestaurantContextProvider>
+                        <BasketContextProvider>
+                            <OrderContextProvider>
+                                <CourierContextProvider>
+                                    <RootNavigator/>
+                                </CourierContextProvider>
+                            </OrderContextProvider>
+                        </BasketContextProvider>
+                    </RestaurantContextProvider>
+                </AuthContextProvider>
+                <StatusBar style="light"/>
+            </NavigationContainer>
+        </IconComponentProvider>
     );
 }
 

@@ -10,7 +10,7 @@ import ProfileScreen from "../screens/ProfileScreen";
 import Map from "../screens/Map"
 import {useAuthContext} from "../contexts/AuthContext";
 
-import { Foundation, FontAwesome5, MaterialIcons } from "@expo/vector-icons";
+import {FontAwesome5, Foundation, MaterialIcons} from "@expo/vector-icons";
 
 const Stack = createNativeStackNavigator();
 

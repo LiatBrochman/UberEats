@@ -1,9 +1,5 @@
-import {useState, useEffect} from "react";
-import {StyleSheet, FlatList, View, Pressable, Text} from "react-native";
+import {FlatList, StyleSheet, View} from "react-native";
 import RestaurantItem from "../../components/RestaurantItem";
-import {Amplify, DataStore, Predicates} from "aws-amplify";
-import {Dish, Basket, Restaurant} from "../../models";
-import * as Updates from 'expo-updates';
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 function sleep(time) {

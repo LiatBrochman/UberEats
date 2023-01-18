@@ -1,4 +1,4 @@
-import {FlatList, ActivityIndicator, Text} from "react-native";
+import {ActivityIndicator, FlatList, Text} from "react-native";
 import BasketDishItem from "../../components/BasketDishItem";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useEffect, useState} from "react";

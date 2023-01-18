@@ -1,4 +1,4 @@
-import {View, Text, StyleSheet, FlatList, Pressable} from "react-native";
+import {FlatList, Pressable, StyleSheet, Text, View} from "react-native";
 import BasketDishItem from "../../components/BasketDishItem";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useOrderContext} from "../../contexts/OrderContext";

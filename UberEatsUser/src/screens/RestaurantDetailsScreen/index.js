@@ -1,15 +1,9 @@
-import {
-    View,
-    FlatList,
-    ActivityIndicator,
-    Pressable,
-    Text,
-} from "react-native";
+import {ActivityIndicator, FlatList, Pressable, Text, View,} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import DishListItem from "../../components/DishListItem";
 import Header from "./Header";
 import styles from "./styles";
-import { useNavigation} from "@react-navigation/native";
+import {useNavigation} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 

@@ -1,11 +1,5 @@
-import {useState, useEffect} from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    Pressable,
-    ActivityIndicator,
-} from "react-native";
+import {useEffect, useState} from "react";
+import {ActivityIndicator, Pressable, StyleSheet, Text, View,} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";

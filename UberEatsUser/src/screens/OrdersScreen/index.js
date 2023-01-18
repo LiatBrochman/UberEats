@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text, FlatList } from "react-native";
+import {FlatList, StyleSheet, View} from "react-native";
 import OrderListItem from "../../components/OrderListItem";
 import {useOrderContext} from "../../contexts/OrderContext";
 

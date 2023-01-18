@@ -1,6 +1,6 @@
 import {DataStore} from "aws-amplify";
 import {Dish, Restaurant} from "../models";
-import {createContext, useState, useEffect, useContext} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {useAuthContext} from "./AuthContext";
 import {subscription} from "../screens/HomeScreen";
 
@@ -17,6 +17,8 @@ const RestaurantContextProvider = ({children}) => {
         subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).subscribe(({items}) => {
                 setRestaurants(items)
         })
+        // return subscription?.restaurants?.unsubscribe()
+
     }, [dbCustomer])
 
 
@@ -31,6 +33,7 @@ const RestaurantContextProvider = ({children}) => {
             )).subscribe(({items}) => {
                setRestaurantDishes(items)
             })
+        // return subscription?.restaurantDishes?.unsubscribe()
 
     }, [restaurant])
 

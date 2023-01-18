@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, Image, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import {Image, Pressable, StyleSheet, Text, View} from "react-native";
+import {useNavigation} from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 const DEFAULT_IMAGE =

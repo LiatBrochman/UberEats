@@ -1,15 +1,9 @@
-import {createContext, useState, useEffect, useContext} from "react";
-import { DataStore} from "aws-amplify";
+import {createContext, useContext, useEffect, useState} from "react";
+import {DataStore} from "aws-amplify";
 import {Basket, Dish} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {useRestaurantContext} from "./RestaurantContext";
-import {
-    getBasket_DB,
-    getDishes_ByBasket,
-    getDish_ByID,
-    createNewBasket_DB,
-
-} from "./Queries";
+import {createNewBasket_DB, getBasket_DB, getDish_ByID, getDishes_ByBasket,} from "./Queries";
 
 import {subscription} from "../screens/HomeScreen";
 
@@ -38,8 +32,9 @@ const BasketContextProvider = ({children}) => {
                         b.isDeleted.eq(false)
                     ])
                 ).subscribe(({items}) => {
-                   setBasket(items[0])
+                    setBasket(items[0])
                 })
+            // return subscription?.basket?.unsubscribe()
 
         }, [restaurant])
 
@@ -56,12 +51,13 @@ const BasketContextProvider = ({children}) => {
                     ]
                 )).subscribe(({items}) => {
 
-                        setBasketDishes(items)
-                        setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-                        setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
+                    setBasketDishes(items)
+                    setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
+                    setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
 
                 })
 
+            // return subscription?.basketDishes?.unsubscribe()
         }, [basket])
 
         const checkIfDishAlreadyExists = async ({dish, basket}) => {
@@ -162,12 +158,12 @@ const BasketContextProvider = ({children}) => {
                 ]
             )).subscribe(({items}) => {
 
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~on add subscription?.basketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription?.basketDishes,null,4))
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ items ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~on add subscription?.basketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription?.basketDishes, null, 4))
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ items ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items, null, 4))
 
-                    setBasketDishes(items)
-                    setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-                    setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
+                setBasketDishes(items)
+                setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
+                setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
 
             })
         }
@@ -181,7 +177,7 @@ const BasketContextProvider = ({children}) => {
                     case true:
                         subscription.basket = DataStore.observeQuery(Basket, b => b.id.eq(existingBasket.id))
                             .subscribe(({items}) => {
-                               setBasket(items[0])
+                                setBasket(items[0])
                             })
                         return existingBasket
 
@@ -227,13 +223,13 @@ const BasketContextProvider = ({children}) => {
                     ]
                 )).subscribe(({items}) => {
 
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setBasketDishes items:~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
-                        setBasketDishes(items)
-                        setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-                        setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setBasketDishes items:~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items, null, 4))
+                    setBasketDishes(items)
+                    setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
+                    setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
 
                 })
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ removed Dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(removedDish,null,4))
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ removed Dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(removedDish, null, 4))
 
             })
         }

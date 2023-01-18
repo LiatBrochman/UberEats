@@ -1,6 +1,7 @@
-import { createContext, useEffect, useState, useContext } from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {Auth, DataStore} from "aws-amplify";
 import {Customer} from "../models";
+import {subscription} from "../screens/HomeScreen";
 
 const AuthContext = createContext({});
 
@@ -10,22 +11,23 @@ const AuthContextProvider = ({children}) => {
     const sub = authUser?.attributes?.sub;
 
 
-
     useEffect(() => {
         Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser);
     }, []);
 
     useEffect(() => {
 
-        DataStore.observeQuery(Customer, c=> c.sub.eq(sub))
+        subscription.customer = DataStore.observeQuery(Customer, c => c.sub.eq(sub))
             .subscribe(({items}) => {
                 setDbCustomer(items[0])
             })
+        // return subscription?.customer?.unsubscribe()
+
     }, [sub]);
 
 
     return (
-        <AuthContext.Provider value={{ authUser, dbCustomer, sub, setDbCustomer }}>
+        <AuthContext.Provider value={{authUser, dbCustomer, sub, setDbCustomer}}>
             {children}
         </AuthContext.Provider>
     );
