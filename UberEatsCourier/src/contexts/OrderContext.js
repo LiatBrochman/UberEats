@@ -22,7 +22,7 @@ const OrderContextProvider = ({children}) => {
     useEffect(() => {
 
         if (dbCourier?.id && !(subscription?.ORCD)) {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~FIRST SUBSCRIPTION: subscription.ORCD ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription.ORCD,null,4))
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~FIRST SUBSCRIPTION: subscription.ORCD ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription.ORCD, null, 4))
 
 
             subscription.ORCD = DataStore.observeQuery(Order, o => o.and(o => [
@@ -89,14 +89,21 @@ const OrderContextProvider = ({children}) => {
         /**
          * update driver location in the DB every 100meters
          */
-            if(dbCourier?.id && driverLocation?.latitude && driverLocation?.longitude){
-            const newLocation = {address: driverLocation?.address || "null", lat: driverLocation.latitude, lng: driverLocation.longitude}
-            DataStore.save(Courier.copyOf(dbCourier, updated => {
-                updated.location = newLocation
-            })).then(updatedCourier => {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
-                setDbCourier(updatedCourier)
+        if (dbCourier?.id && driverLocation?.latitude && driverLocation?.longitude) {
+            const newLocation = {
+                address: driverLocation?.address || "null",
+                lat: driverLocation.latitude,
+                lng: driverLocation.longitude
+            }
+            DataStore.query(Courier, dbCourier.id).then(dbCourier => {
+                DataStore.save(Courier.copyOf(dbCourier, updated => {
+                    updated.location = newLocation
+                })).then(updatedCourier => {
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
+                    setDbCourier(updatedCourier)
+                })
             })
+
 
         }
     }, [driverLocation])
@@ -109,7 +116,10 @@ const OrderContextProvider = ({children}) => {
         switch (status === "granted") {
 
             case true:
-               Location.getCurrentPositionAsync().then(({coords})=>setDriverLocation({ latitude: coords.latitude, longitude: coords.longitude}))
+                Location.getCurrentPositionAsync().then(({coords}) => setDriverLocation({
+                    latitude: coords.latitude,
+                    longitude: coords.longitude
+                }))
                 return await Location.watchPositionAsync(
                     {
                         accuracy: Location.Accuracy.High,
