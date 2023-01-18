@@ -10,7 +10,7 @@ const OrderContext = createContext({})
 
 const OrderContextProvider = ({children}) => {
 
-    const {dbCourier,setDbCourier} = useAuthContext({})
+    const {dbCourier, setDbCourier} = useAuthContext({})
     const [order, setOrder] = useState({})
     const [dishes, setDishes] = useState([])
     const [customer, setCustomer] = useState({})
@@ -21,11 +21,16 @@ const OrderContextProvider = ({children}) => {
 
     useEffect(() => {
 
-        if (dbCourier?.id && !subscription?.ORCD) {
+        if (dbCourier?.id && !(subscription?.ORCD)) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~FIRST SUBSCRIPTION: subscription.ORCD ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription.ORCD,null,4))
+
 
             subscription.ORCD = DataStore.observeQuery(Order, o => o.and(o => [
-                    o.courierID.eq('null'),
-                    o.isDeleted.eq(false)
+                    o.isDeleted.eq(false),
+                    o.or(o => [
+                        o.courierID.eq(dbCourier.id),
+                        o.courierID.eq('null')
+                    ])
                 ]
             )).subscribe(({items}) => {
 
@@ -71,25 +76,29 @@ const OrderContextProvider = ({children}) => {
 
         }
 
-        return () => {
-            subscription?.ORCD?.unsubscribe()
-            subscription?.watchPosition?.remove()
-        }
+        // return () => {
+        //     subscription?.ORCD?.unsubscribe()
+        //     subscription?.watchPosition?.remove()
+        // }
 
 
     }, [dbCourier])
 
+
     useEffect(() => {
         /**
-         * send driver location to DB every 100meters
+         * update driver location in the DB every 100meters
          */
-       if( order.status==="PICKED_UP" && driverLocation?.latitude){
+            if(dbCourier?.id && driverLocation?.latitude && driverLocation?.longitude){
+            const newLocation = {address: driverLocation?.address || "null", lat: driverLocation.latitude, lng: driverLocation.longitude}
+            DataStore.save(Courier.copyOf(dbCourier, updated => {
+                updated.location = newLocation
+            })).then(updatedCourier => {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
+                setDbCourier(updatedCourier)
+            })
 
-           DataStore.save(Courier.copyOf(dbCourier, updated => {
-                   updated.location = driverLocation
-               })).then(()=>setDbCourier({...dbCourier,location:driverLocation}))
-
-       }
+        }
     }, [driverLocation])
 
 
@@ -100,6 +109,7 @@ const OrderContextProvider = ({children}) => {
         switch (status === "granted") {
 
             case true:
+               Location.getCurrentPositionAsync().then(({coords})=>setDriverLocation({ latitude: coords.latitude, longitude: coords.longitude}))
                 return await Location.watchPositionAsync(
                     {
                         accuracy: Location.Accuracy.High,
@@ -110,6 +120,7 @@ const OrderContextProvider = ({children}) => {
                             latitude: coords.latitude,
                             longitude: coords.longitude,
                         })
+
                     })
 
             case false:
@@ -175,7 +186,6 @@ const OrderContextProvider = ({children}) => {
             })
         )
     }
-
     const completeOrder = async ({order}) => {
         return await DataStore.save(
             Order.copyOf(order, (updated) => {

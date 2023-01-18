@@ -24,9 +24,10 @@ type Dish @model @auth(rules: [{allow: public}]) {
   quantity: Int!
   isActive: Boolean!
   isDeleted: Boolean!
-  orderID: ID! @index(name: "byOrder")
+  orderID: ID @index(name: "byOrder")
   restaurantID: ID! @index(name: "byRestaurant")
-  basketID: ID! @index(name: "byBasket")
+  basketID: ID @index(name: "byBasket")
+  originalID: String!
 }
 
 type Customer @model @auth(rules: [{allow: public}]) {
@@ -46,18 +47,20 @@ enum OrderStatus {
   PICKED_UP
   COMPLETED
   ACCEPTED
+  DECLINED
 }
 
 type Order @model @auth(rules: [{allow: public}]) {
   id: ID!
   status: OrderStatus!
-  total: Float!
-  restaurantLocation: Location!
+  totalQuantity: Int!
+  totalPrice: Float!
   customerLocation: Location!
+  restaurantLocation: Location!
   isDeleted: Boolean!
-  courierID: ID! @index(name: "byCourier")
   Dishes: [Dish] @hasMany(indexName: "byOrder", fields: ["id"])
   customerID: ID! @index(name: "byCustomer")
+  courierID: ID! @index(name: "byCourier")
   restaurantID: ID! @index(name: "byRestaurant")
 }
 
@@ -90,3 +93,4 @@ type Courier @model @auth(rules: [{allow: public}]) {
   isDeleted: Boolean!
   isActive: Boolean!
 }
+ 

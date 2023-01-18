@@ -837,7 +837,8 @@ export const schema = {
                 "READY_FOR_PICKUP",
                 "PICKED_UP",
                 "COMPLETED",
-                "ACCEPTED"
+                "ACCEPTED",
+                "DECLINED"
             ]
         },
         "TransportationModes": {

@@ -20,7 +20,7 @@ function App() {
             </AuthContextProvider>
                 <StatusBar style="auto"/>
         </NavigationContainer>
-    );
-};
+    )
+}
 
-export default withAuthenticator(App);
+export default withAuthenticator(App)

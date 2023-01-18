@@ -33,9 +33,9 @@ function App() {
                 <StatusBar style="light"/>
             </NavigationContainer>
         </IconComponentProvider>
-    );
+    )
 }
 
-export default withAuthenticator(App);
+export default withAuthenticator(App)
 
 
