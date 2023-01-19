@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {Auth, DataStore} from "aws-amplify";
 import {Customer} from "../models";
-import {subscription} from "../screens/HomeScreen";
+
 
 const AuthContext = createContext({});
 

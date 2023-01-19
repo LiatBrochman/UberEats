@@ -17,9 +17,10 @@ const TransportationModes = {
   "BICYCLING": "BICYCLING"
 };
 
-const { Restaurant, Dish, Order, Basket, Customer, Courier, Location } = initSchema(schema);
+const { Owner, Restaurant, Dish, Order, Basket, Customer, Courier, Location } = initSchema(schema);
 
 export {
+  Owner,
   Restaurant,
   Dish,
   Order,

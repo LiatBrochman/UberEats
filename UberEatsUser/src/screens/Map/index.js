@@ -1,7 +1,6 @@
 import * as Location from "expo-location";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import {useEffect, useState} from "react";
-import {subscription} from "../HomeScreen";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {Entypo} from "@expo/vector-icons";
 import {useWindowDimensions, View} from 'react-native';
@@ -99,7 +98,7 @@ const Map = () => {
                     </View>
                 </Marker>
             )}
-            {courier &&
+            {courier && courier?.location &&
             <Marker
                 key={courier.id}
                 title={courier.name}
@@ -110,7 +109,7 @@ const Map = () => {
                 }}>
                 <View style={{padding: 5, borderRadius: 20}}>
                     {courier?.transportationMode === "DRIVING" && <Icon name="car" size={30} color="black"/>}
-                    {courier?.transportationMode==="BICYCLING"&& <Icon name="bicycle" size={30} color="black"/>}
+                    {courier?.transportationMode === "BICYCLING" && <Icon name="bicycle" size={30} color="black"/>}
                 </View>
             </Marker>
             }

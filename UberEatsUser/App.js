@@ -1,6 +1,5 @@
 import {StatusBar} from 'expo-status-bar';
 import RootNavigator from "./src/navigation";
-
 import {NavigationContainer} from '@react-navigation/native';
 import {Amplify} from 'aws-amplify';
 import {withAuthenticator} from "aws-amplify-react-native";
@@ -14,6 +13,7 @@ import {IconComponentProvider} from "@react-native-material/core";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 Amplify.configure({...config, Analytics: {disabled: true,},})
+global.subscription = {}
 
 function App() {
     return (

@@ -5,9 +5,9 @@ import {useAuthContext} from "./AuthContext";
 import {useRestaurantContext} from "./RestaurantContext";
 import {createNewBasket_DB, getBasket_DB, getDish_ByID, getDishes_ByBasket,} from "./Queries";
 
-import {subscription} from "../screens/HomeScreen";
 
-const BasketContext = createContext({});
+
+const BasketContext = createContext({})
 
 const BasketContextProvider = ({children}) => {
 
@@ -278,8 +278,8 @@ const BasketContextProvider = ({children}) => {
             </BasketContext.Provider>
         );
     }
-;
 
-export default BasketContextProvider;
 
-export const useBasketContext = () => useContext(BasketContext);
+export default BasketContextProvider
+
+export const useBasketContext = () => useContext(BasketContext)
