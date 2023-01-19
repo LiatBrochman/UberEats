@@ -15,27 +15,14 @@ export var subscription = {}
 
 const OrdersScreen = () => {
     const navigation = useNavigation()
-    const {dbCourier} = useAuthContext()
     const {driverLocation, ORCD} = useOrderContext()
     const bottomSheetRef = useRef({})
     const {width, height} = useWindowDimensions()
     const snapPoints = useMemo(() => ["12%", "95%"], [])
 
-    const [orders,setOrders] = useState([])
-    const [restaurants,setRestaurants] =useState([])
-
-
-
-    useEffect(()=>{
-        if(ORCD && ORCD?.length > 0 ){
-            setOrders(ORCD.map(i => i.order))
-            setRestaurants(ORCD.map(i => i.restaurant))
-        }
-    },[ORCD])
-
     return (
         <>
-            {driverLocation?.latitude && ORCD?.[0]?.restaurant?.id &&
+            {
             <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
 
                 <MapView
@@ -48,13 +35,14 @@ const OrdersScreen = () => {
                     pitchEnabled={true}
                     scrollEnabled={true}
                     initialRegion={{
-                        latitude: driverLocation.latitude,
-                        longitude: driverLocation.longitude,
+                        latitude: driverLocation?.latitude || 32.1722383,
+                        longitude: driverLocation?.longitude || 34.869715,
                         latitudeDelta: 0.12,
                         longitudeDelta: 0.12
                     }}
                 >
-                    {restaurants.map(restaurant=>
+                    {ORCD?.[0]?.restaurant?.id &&
+                    ORCD.map(({restaurant})=>
                         <Marker
                             key={restaurant.id}
                             title={restaurant.name}
@@ -76,24 +64,26 @@ const OrdersScreen = () => {
                     color="black"
                     style={{top: 40, left: 15, position: 'absolute'}}
                 />
-                <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
-                    <View style={{alignItems: 'center', marginBottom: 30}}>
-                        <Text style={{
-                            fontSize: 20, fontWeight: '600', letterSpacing: 0.5, paddingBottom: 5
-                        }}>You're Online</Text>
-                        <Text style={{letterSpacing: 0.5, color: 'gray'}}>Available Orders: {orders.length}</Text>
-                    </View>
-                    <BottomSheetFlatList
-                        data={ORCD}
-                        renderItem={({item}) =>
-                            <OrderItem
-                                order={item.order}
-                                restaurant ={item.restaurant}
-                                customer={item.customer}
-                                dishes={item.dishes}
-                            />}
-                    />
-                </BottomSheet>
+                {ORCD?.[0]?.restaurant?.id &&
+                    <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
+                        <View style={{alignItems: 'center', marginBottom: 30}}>
+                            <Text style={{
+                                fontSize: 20, fontWeight: '600', letterSpacing: 0.5, paddingBottom: 5
+                            }}>You're Online</Text>
+                            <Text style={{letterSpacing: 0.5, color: 'gray'}}>Available Orders: {ORCD.length}</Text>
+                        </View>
+                        <BottomSheetFlatList
+                            data={ORCD}
+                            renderItem={({item}) =>
+                                <OrderItem
+                                    order={item.order}
+                                    restaurant={item.restaurant}
+                                    customer={item.customer}
+                                    dishes={item.dishes}
+                                />}
+                        />
+                    </BottomSheet>
+                }
                 <Button
                     onPress={async () => await Amplify.DataStore.clear().then(async () => await Amplify.DataStore.start())}
                     title="Amplify.DataStore.clear()"/>

@@ -51,11 +51,11 @@ const Profile = () => {
                     name: name,
                     transportationMode,
                     location: {
-                        lat: parseFloat(driverLocation.latitude),
-                        lng: parseFloat(driverLocation.longitude),
+                        lat: parseFloat(driverLocation?.latitude) || 32.19,
+                        lng: parseFloat(driverLocation?.longitude) || 34.86,
                     },
                     isDeleted: false,
-                    isActive: false,
+                    isActive: true,
                 })
             );
             setDbCourier(courier)
