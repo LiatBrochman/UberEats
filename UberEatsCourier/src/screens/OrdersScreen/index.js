@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useMemo, useRef} from "react";
 import {Button, Text, useWindowDimensions, View} from 'react-native';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
@@ -8,7 +8,6 @@ import {Entypo, Ionicons} from "@expo/vector-icons";
 import {Amplify, Auth} from "aws-amplify";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useNavigation} from "@react-navigation/native";
-import {useAuthContext} from "../../contexts/AuthContext";
 
 
 export var subscription = {}
