@@ -1,0 +1,104 @@
+type Owner @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  sub: String!
+  isDeleted: Boolean!
+  Restaurants: [Restaurant] @hasMany(indexName: "byOwner", fields: ["id"])
+}
+
+type Restaurant @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  image: String
+  deliveryFee: Float!
+  minDeliveryMinutes: Int
+  maxDeliveryMinutes: Int
+  rating: Float
+  location: Location!
+  isOpen: Boolean!
+  isDeleted: Boolean!
+  Dishes: [Dish] @hasMany(indexName: "byRestaurant", fields: ["id"])
+  Orders: [Order] @hasMany(indexName: "byRestaurant", fields: ["id"])
+  Baskets: [Basket] @hasMany(indexName: "byRestaurant", fields: ["id"])
+  ownerID: ID @index(name: "byOwner")
+}
+
+type Dish @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  image: String
+  description: String
+  price: Float!
+  extra: String
+  quantity: Int!
+  isActive: Boolean!
+  isDeleted: Boolean!
+  orderID: ID @index(name: "byOrder")
+  restaurantID: ID! @index(name: "byRestaurant")
+  basketID: ID @index(name: "byBasket")
+  originalID: String!
+}
+
+type Customer @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  location: Location!
+  sub: String!
+  isDeleted: Boolean!
+  Orders: [Order] @hasMany(indexName: "byCustomer", fields: ["id"])
+  Baskets: [Basket] @hasMany(indexName: "byCustomer", fields: ["id"])
+}
+
+enum OrderStatus {
+  NEW
+  COOKING
+  READY_FOR_PICKUP
+  PICKED_UP
+  COMPLETED
+  ACCEPTED
+  DECLINED
+}
+
+type Order @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  status: OrderStatus!
+  totalQuantity: Int!
+  totalPrice: Float!
+  customerLocation: Location!
+  restaurantLocation: Location!
+  isDeleted: Boolean!
+  Dishes: [Dish] @hasMany(indexName: "byOrder", fields: ["id"])
+  customerID: ID! @index(name: "byCustomer")
+  courierID: ID! @index(name: "byCourier")
+  restaurantID: ID! @index(name: "byRestaurant")
+}
+
+type Basket @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  isDeleted: Boolean!
+  customerID: ID! @index(name: "byCustomer")
+  Dishes: [Dish] @hasMany(indexName: "byBasket", fields: ["id"])
+  restaurantID: ID! @index(name: "byRestaurant")
+}
+
+type Location {
+  address: String
+  lat: Float!
+  lng: Float!
+}
+
+enum TransportationModes {
+  DRIVING
+  BICYCLING
+}
+
+type Courier @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  name: String!
+  sub: String
+  transportationMode: TransportationModes
+  location: Location!
+  Orders: [Order] @hasMany(indexName: "byCourier", fields: ["id"])
+  isDeleted: Boolean!
+  isActive: Boolean!
+}
+ 

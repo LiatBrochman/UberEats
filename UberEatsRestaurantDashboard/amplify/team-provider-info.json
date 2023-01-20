@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-woltclone-staging-103629-authRole",
+      "UnauthRoleArn": "arn:aws:iam::524236567812:role/amplify-woltclone-staging-103629-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::524236567812:role/amplify-woltclone-staging-103629-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-woltclone-staging-103629-deployment",
+      "UnauthRoleName": "amplify-woltclone-staging-103629-unauthRole",
+      "StackName": "amplify-woltclone-staging-103629",
+      "StackId": "arn:aws:cloudformation:us-east-1:524236567812:stack/amplify-woltclone-staging-103629/d67f08d0-7a08-11ed-a403-0ac64c0f9853",
+      "AmplifyAppId": "d3b4oscqeywnxb"
+    },
+    "categories": {
+      "auth": {
+        "WoltClone": {}
+      }
+    }
+  }
+}
