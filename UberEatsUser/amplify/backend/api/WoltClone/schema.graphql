@@ -1,3 +1,10 @@
+type Owner @model @auth(rules: [{allow: public}]) {
+  id: ID!
+  sub: String!
+  isDeleted: Boolean!
+  Restaurants: [Restaurant] @hasMany(indexName: "byOwner", fields: ["id"])
+}
+
 type Restaurant @model @auth(rules: [{allow: public}]) {
   id: ID!
   name: String!
@@ -12,6 +19,7 @@ type Restaurant @model @auth(rules: [{allow: public}]) {
   Dishes: [Dish] @hasMany(indexName: "byRestaurant", fields: ["id"])
   Orders: [Order] @hasMany(indexName: "byRestaurant", fields: ["id"])
   Baskets: [Basket] @hasMany(indexName: "byRestaurant", fields: ["id"])
+  ownerID: ID @index(name: "byOwner")
 }
 
 type Dish @model @auth(rules: [{allow: public}]) {

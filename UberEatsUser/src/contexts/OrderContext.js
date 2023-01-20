@@ -4,7 +4,7 @@ import {Dish, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {useBasketContext} from "./BasketContext";
 import {useRestaurantContext} from "./RestaurantContext";
-import {subscription} from "../screens/HomeScreen";
+
 
 const OrderContext = createContext({})
 
@@ -155,9 +155,9 @@ const OrderContextProvider = ({children}) => {
         }}>
             {children}
         </OrderContext.Provider>
-    );
+    )
 
-};
+}
 
 export default OrderContextProvider
 

@@ -33,6 +33,38 @@ export declare type Location = LazyLoading extends LazyLoadingDisabled ? EagerLo
 
 export declare const Location: (new (init: ModelInit<Location>) => Location)
 
+type EagerOwner = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Owner, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly sub: string;
+  readonly isDeleted: boolean;
+  readonly Restaurants?: (Restaurant | null)[] | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyOwner = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Owner, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly sub: string;
+  readonly isDeleted: boolean;
+  readonly Restaurants: AsyncCollection<Restaurant>;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type Owner = LazyLoading extends LazyLoadingDisabled ? EagerOwner : LazyOwner
+
+export declare const Owner: (new (init: ModelInit<Owner>) => Owner) & {
+  copyOf(source: Owner, mutator: (draft: MutableModel<Owner>) => MutableModel<Owner> | void): Owner;
+}
+
 type EagerRestaurant = {
   readonly [__modelMeta__]: {
     identifier: ManagedIdentifier<Restaurant, 'id'>;
@@ -51,6 +83,7 @@ type EagerRestaurant = {
   readonly Dishes?: (Dish | null)[] | null;
   readonly Orders?: (Order | null)[] | null;
   readonly Baskets?: (Basket | null)[] | null;
+  readonly ownerID?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -73,6 +106,7 @@ type LazyRestaurant = {
   readonly Dishes: AsyncCollection<Dish>;
   readonly Orders: AsyncCollection<Order>;
   readonly Baskets: AsyncCollection<Basket>;
+  readonly ownerID?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }

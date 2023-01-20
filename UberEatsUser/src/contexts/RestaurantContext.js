@@ -2,7 +2,7 @@ import {DataStore} from "aws-amplify";
 import {Dish, Restaurant} from "../models";
 import {createContext, useContext, useEffect, useState} from "react";
 import {useAuthContext} from "./AuthContext";
-import {subscription} from "../screens/HomeScreen";
+
 
 const RestaurantContext = createContext({})
 const RestaurantContextProvider = ({children}) => {

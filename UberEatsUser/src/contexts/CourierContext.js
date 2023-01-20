@@ -2,7 +2,7 @@ import {createContext, useContext, useEffect, useState} from "react";
 import {useOrderContext} from "./OrderContext";
 import {DataStore} from "aws-amplify";
 import {Courier} from "../models";
-import {subscription} from "../screens/HomeScreen";
+
 
 const CourierContext = createContext({})
 

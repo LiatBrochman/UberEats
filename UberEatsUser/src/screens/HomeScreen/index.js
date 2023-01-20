@@ -2,11 +2,8 @@ import {FlatList, StyleSheet, View} from "react-native";
 import RestaurantItem from "../../components/RestaurantItem";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
-function sleep(time) {
-    return new Promise((resolve) => setTimeout(resolve, time));
-}
 
-export var subscription = {}
+// export var subscription = {}
 
 export default function HomeScreen() {
     const {restaurants} = useRestaurantContext()

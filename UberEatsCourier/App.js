@@ -8,7 +8,8 @@ import AuthContextProvider from './src/contexts/AuthContext';
 import OrderContextProvider from './src/contexts/OrderContext';
 
 
-Amplify.configure({...awsconfig, Analytics: {disabled: true,}});
+Amplify.configure({...awsconfig, Analytics: {disabled: true}})
+global.subscription = {}
 
 function App() {
     return (
