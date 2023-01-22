@@ -1,6 +1,17 @@
 import { Layout, Image } from "antd";
 import SideMenu from '../src/components/SideMenu';
 import AppRoutes from "./components/AppRoutes";
+import {Amplify} from "aws-amplify";
+import awsExports from "./aws-exports";
+import { withAuthenticator } from '@aws-amplify/ui-react';
+
+Amplify.configure(awsExports)
+global.subscription = {
+    restaurant: {},
+    orders: {},
+    restaurantDishes: {},
+    orderDishes: {}
+}
 
 const { Sider, Content, Footer } = Layout;
 
@@ -26,4 +37,4 @@ function App() {
   );
 }
 
-export default App;
+export default withAuthenticator(App);
