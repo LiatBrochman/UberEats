@@ -5,8 +5,9 @@
  **************************************************************************/
 
 import * as React from "react";
-import { EscapeHatchProps } from "@aws-amplify/ui-react/internal";
-import { GridProps, SwitchFieldProps, TextFieldProps } from "@aws-amplify/ui-react";
+import {GridProps, SwitchFieldProps, TextFieldProps} from "@aws-amplify/ui-react";
+import {EscapeHatchProps} from "@aws-amplify/ui-react/internal";
+
 export declare type ValidationResponse = {
     hasError: boolean;
     errorMessage?: string;
@@ -20,11 +21,11 @@ export declare type OwnerCreateFormValidationValues = {
     sub?: ValidationFunction<string>;
     isDeleted?: ValidationFunction<boolean>;
 };
-export declare type FormProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
+export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type OwnerCreateFormOverridesProps = {
-    OwnerCreateFormGrid?: FormProps<GridProps>;
-    sub?: FormProps<TextFieldProps>;
-    isDeleted?: FormProps<SwitchFieldProps>;
+    OwnerCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
+    sub?: PrimitiveOverrideProps<TextFieldProps>;
+    isDeleted?: PrimitiveOverrideProps<SwitchFieldProps>;
 } & EscapeHatchProps;
 export declare type OwnerCreateFormProps = React.PropsWithChildren<{
     overrides?: OwnerCreateFormOverridesProps | undefined | null;
@@ -33,8 +34,7 @@ export declare type OwnerCreateFormProps = React.PropsWithChildren<{
     onSubmit?: (fields: OwnerCreateFormInputValues) => OwnerCreateFormInputValues;
     onSuccess?: (fields: OwnerCreateFormInputValues) => void;
     onError?: (fields: OwnerCreateFormInputValues, errorMessage: string) => void;
-    onCancel?: () => void;
     onChange?: (fields: OwnerCreateFormInputValues) => OwnerCreateFormInputValues;
     onValidate?: OwnerCreateFormValidationValues;
-}>;
+} & React.CSSProperties>;
 export default function OwnerCreateForm(props: OwnerCreateFormProps): React.ReactElement;

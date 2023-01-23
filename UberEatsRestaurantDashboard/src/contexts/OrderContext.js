@@ -1,7 +1,7 @@
-import {createContext, useState, useContext, useEffect} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Order, Dish, Restaurant, Customer} from "../models";
-import {useAuthContext} from "./AuthContext";
+import {Dish, Order} from "../models";
+import {useRestaurantContext} from "./RestaurantContext";
 //import {useAuthContext} from "./AuthContext";
 //import * as Location from "expo-location";
 //import {useNavigate} from "react-router-dom";
@@ -9,34 +9,39 @@ import {useAuthContext} from "./AuthContext";
 const OrderContext = createContext({});
 
 const OrderContextProvider = ({children}) => {
-
+    const {restaurant} = useRestaurantContext()
+    const [order, setOrder] = useState(null)
     const [orders, setOrders] = useState([])
-    const [order, setOrder] = useState({})
     const [orderDishes, setOrderDishes] = useState([])
-    const [restaurantDishes, setRestaurantDishes] = useState([])
-    const [restaurant, setRestaurant] = useState({})
-    const {dbOwner} = useAuthContext()
 
-    useEffect(() => {
-        if (dbOwner) {
-            // subscription.restaurant =
-                DataStore.observeQuery(Restaurant, r => r?.ownerID.eq(dbOwner.id))
-                .subscribe(({items}) => setRestaurant(items[0]))
-        }
-    }, [dbOwner])
 
     useEffect(() => {
         if (restaurant) {
-            // subscription.orders =
+            if (orders?.length === 0)
+                // subscription.orders =
+            {
                 DataStore.observeQuery(Order, o => o.restaurantID.eq(restaurant.id))
-                .subscribe(({items}) => setOrders(items))
-            // subscription.dishes =
-                DataStore.observeQuery(Dish, d => d.restaurantID.eq(restaurant.id))
-                .subscribe(({items}) => {
-
-                    setRestaurantDishes(items.filter(dish => dish.originalID === "null"))
-                    setOrderDishes(items.filter(dish => dish.originalID !== "null"))
-                })
+                    .subscribe(({items, isSynced}) => {
+                        if (isSynced) {
+                            console.log("subscribing to orders")
+                            setOrders(items)
+                        }
+                    })
+            }
+            if (orderDishes.length === 0)
+                // subscription.orderDishes =
+            {
+                DataStore.observeQuery(Dish, d => d.and(d => [
+                    d.restaurantID.eq(restaurant.id),
+                    d.orderID.ne("null")
+                ]))
+                    .subscribe(({items, isSynced}) => {
+                        if (isSynced) {
+                            console.log("subscribing to dishes of orders")
+                            setOrderDishes(items)
+                        }
+                    })
+            }
         }
     }, [restaurant])
 
@@ -46,7 +51,7 @@ const OrderContextProvider = ({children}) => {
             order,
             setOrder,
             restaurant,
-             orderDishes,
+            orderDishes,
             orders,
         }}>
             {children}

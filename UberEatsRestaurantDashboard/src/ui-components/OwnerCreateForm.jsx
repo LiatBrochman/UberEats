@@ -6,31 +6,25 @@
 
 /* eslint-disable */
 import * as React from "react";
-import { fetchByPath, validateField } from "./utils";
-import { Owner } from "../models";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
-import {
-  Button,
-  Flex,
-  Grid,
-  SwitchField,
-  TextField,
-} from "@aws-amplify/ui-react";
-import { DataStore } from "aws-amplify";
+import {Button, Flex, Grid, SwitchField, TextField,} from "@aws-amplify/ui-react";
+import {getOverrideProps} from "@aws-amplify/ui-react/internal";
+import {Owner} from "../models";
+import {fetchByPath, validateField} from "./utils";
+import {DataStore} from "aws-amplify";
+
 export default function OwnerCreateForm(props) {
   const {
     clearOnSuccess = true,
     onSuccess,
     onError,
     onSubmit,
-    onCancel,
     onValidate,
     onChange,
     overrides,
     ...rest
   } = props;
   const initialValues = {
-    sub: undefined,
+    sub: "",
     isDeleted: false,
   };
   const [sub, setSub] = React.useState(initialValues.sub);
@@ -45,7 +39,14 @@ export default function OwnerCreateForm(props) {
     sub: [{ type: "Required" }],
     isDeleted: [{ type: "Required" }],
   };
-  const runValidationTasks = async (fieldName, value) => {
+  const runValidationTasks = async (
+    fieldName,
+    currentValue,
+    getDisplayValue
+  ) => {
+    const value = getDisplayValue
+      ? getDisplayValue(currentValue)
+      : currentValue;
     let validationResponse = validateField(value, validations[fieldName]);
     const customValidator = fetchByPath(onValidate, fieldName);
     if (customValidator) {
@@ -89,6 +90,11 @@ export default function OwnerCreateForm(props) {
           modelFields = onSubmit(modelFields);
         }
         try {
+          Object.entries(modelFields).forEach(([key, value]) => {
+            if (typeof value === "string" && value.trim() === "") {
+              modelFields[key] = undefined;
+            }
+          });
           await DataStore.save(new Owner(modelFields));
           if (onSuccess) {
             onSuccess(modelFields);
@@ -102,13 +108,14 @@ export default function OwnerCreateForm(props) {
           }
         }
       }}
-      {...rest}
       {...getOverrideProps(overrides, "OwnerCreateForm")}
+      {...rest}
     >
       <TextField
         label="Sub"
         isRequired={true}
         isReadOnly={false}
+        value={sub}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -161,18 +168,16 @@ export default function OwnerCreateForm(props) {
         <Button
           children="Clear"
           type="reset"
-          onClick={resetStateValues}
+          onClick={(event) => {
+            event.preventDefault();
+            resetStateValues();
+          }}
           {...getOverrideProps(overrides, "ClearButton")}
         ></Button>
-        <Flex {...getOverrideProps(overrides, "RightAlignCTASubFlex")}>
-          <Button
-            children="Cancel"
-            type="button"
-            onClick={() => {
-              onCancel && onCancel();
-            }}
-            {...getOverrideProps(overrides, "CancelButton")}
-          ></Button>
+        <Flex
+          gap="15px"
+          {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
+        >
           <Button
             children="Submit"
             type="submit"

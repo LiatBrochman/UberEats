@@ -1,22 +1,19 @@
-import React, {useEffect, useState} from "react";
-import {Form, Input, Card, Button} from "antd";
+import React, {useState} from "react";
+import {Button, Card, Form, Input} from "antd";
 // import GooglePlacesAutocomplete, {
 //   geocodeByAddress,
 //   getLatLng,
 // } from "react-google-places-autocomplete";
-import {Amplify, Auth, DataStore} from "aws-amplify";
-import {Restaurant} from "../../models";
+import {Auth, DataStore} from "aws-amplify";
 import '../../coolButton.css';
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import {useAuthContext} from "../../contexts/AuthContext";
 
 const Settings = () => {
+    const {authUser, dbOwner} = useAuthContext()
     const [address, setAddress] = useState(null);
     // [coordinates, setCoordinates] = useState(null);
-    const [restaurant, setRestaurant] = useState({})
-
-    useEffect(() => {
-        DataStore.query(Restaurant).then(restaurants => setRestaurant(restaurants[0]))
-    }, [])
-
+    const {restaurant} = useRestaurantContext()
     return (
         <div>
             <Card title="Restaurant Details" style={{margin: 20}}>
@@ -39,29 +36,20 @@ const Settings = () => {
                 </Form>
                 <span>{restaurant?.location?.lat} - {restaurant?.location?.lng}</span>
             </Card>
+
             <Button
-                onClick={() => {
-                    Auth.signOut().then(() => Amplify.DataStore.clear().then(() => Amplify.DataStore.start()))
-                }}
+                onClick={() => Auth.signOut()}
                 style={{textAlign: "center", color: 'red', margin: 10}}>
                 Sign out
             </Button>
 
-
-            <button className="animated-button1"
-                    onClick={async () => await Amplify.DataStore.clear().then(async () => await Amplify.DataStore.start())}
-            >
-                <span>Amplify
-                <span>clear</span>
-                </span>
-                <span> <span>  </span> </span>
-                Amplify.DataStore.clear()
-                <span> <span>  </span> </span>
-                <span>ready?</span>
-
-
-            </button>
-
+            <Button onClick={async () => {
+                await DataStore.stop()
+                await DataStore.clear()
+                await DataStore.start()
+            }}>
+                clear
+            </Button>
         </div>
     )
 }

@@ -6,39 +6,35 @@
 
 /* eslint-disable */
 import * as React from "react";
-import { fetchByPath, validateField } from "./utils";
-import { Owner } from "../models";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
-import {
-  Button,
-  Flex,
-  Grid,
-  SwitchField,
-  TextField,
-} from "@aws-amplify/ui-react";
-import { DataStore } from "aws-amplify";
+import {Button, Flex, Grid, SwitchField, TextField,} from "@aws-amplify/ui-react";
+import {getOverrideProps} from "@aws-amplify/ui-react/internal";
+import {Owner} from "../models";
+import {fetchByPath, validateField} from "./utils";
+import {DataStore} from "aws-amplify";
+
 export default function OwnerUpdateForm(props) {
   const {
-    id,
+    id: idProp,
     owner,
     onSuccess,
     onError,
     onSubmit,
-    onCancel,
     onValidate,
     onChange,
     overrides,
     ...rest
   } = props;
   const initialValues = {
-    sub: undefined,
+    sub: "",
     isDeleted: false,
   };
   const [sub, setSub] = React.useState(initialValues.sub);
   const [isDeleted, setIsDeleted] = React.useState(initialValues.isDeleted);
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
-    const cleanValues = { ...initialValues, ...ownerRecord };
+    const cleanValues = ownerRecord
+      ? { ...initialValues, ...ownerRecord }
+      : initialValues;
     setSub(cleanValues.sub);
     setIsDeleted(cleanValues.isDeleted);
     setErrors({});
@@ -46,17 +42,24 @@ export default function OwnerUpdateForm(props) {
   const [ownerRecord, setOwnerRecord] = React.useState(owner);
   React.useEffect(() => {
     const queryData = async () => {
-      const record = id ? await DataStore.query(Owner, id) : owner;
+      const record = idProp ? await DataStore.query(Owner, idProp) : owner;
       setOwnerRecord(record);
     };
     queryData();
-  }, [id, owner]);
+  }, [idProp, owner]);
   React.useEffect(resetStateValues, [ownerRecord]);
   const validations = {
     sub: [{ type: "Required" }],
     isDeleted: [{ type: "Required" }],
   };
-  const runValidationTasks = async (fieldName, value) => {
+  const runValidationTasks = async (
+    fieldName,
+    currentValue,
+    getDisplayValue
+  ) => {
+    const value = getDisplayValue
+      ? getDisplayValue(currentValue)
+      : currentValue;
     let validationResponse = validateField(value, validations[fieldName]);
     const customValidator = fetchByPath(onValidate, fieldName);
     if (customValidator) {
@@ -100,6 +103,11 @@ export default function OwnerUpdateForm(props) {
           modelFields = onSubmit(modelFields);
         }
         try {
+          Object.entries(modelFields).forEach(([key, value]) => {
+            if (typeof value === "string" && value.trim() === "") {
+              modelFields[key] = undefined;
+            }
+          });
           await DataStore.save(
             Owner.copyOf(ownerRecord, (updated) => {
               Object.assign(updated, modelFields);
@@ -114,14 +122,14 @@ export default function OwnerUpdateForm(props) {
           }
         }
       }}
-      {...rest}
       {...getOverrideProps(overrides, "OwnerUpdateForm")}
+      {...rest}
     >
       <TextField
         label="Sub"
         isRequired={true}
         isReadOnly={false}
-        defaultValue={sub}
+        value={sub}
         onChange={(e) => {
           let { value } = e.target;
           if (onChange) {
@@ -174,23 +182,25 @@ export default function OwnerUpdateForm(props) {
         <Button
           children="Reset"
           type="reset"
-          onClick={resetStateValues}
+          onClick={(event) => {
+            event.preventDefault();
+            resetStateValues();
+          }}
+          isDisabled={!(idProp || owner)}
           {...getOverrideProps(overrides, "ResetButton")}
         ></Button>
-        <Flex {...getOverrideProps(overrides, "RightAlignCTASubFlex")}>
-          <Button
-            children="Cancel"
-            type="button"
-            onClick={() => {
-              onCancel && onCancel();
-            }}
-            {...getOverrideProps(overrides, "CancelButton")}
-          ></Button>
+        <Flex
+          gap="15px"
+          {...getOverrideProps(overrides, "RightAlignCTASubFlex")}
+        >
           <Button
             children="Submit"
             type="submit"
             variation="primary"
-            isDisabled={Object.values(errors).some((e) => e?.hasError)}
+            isDisabled={
+              !(idProp || owner) ||
+              Object.values(errors).some((e) => e?.hasError)
+            }
             {...getOverrideProps(overrides, "SubmitButton")}
           ></Button>
         </Flex>

@@ -1,8 +1,7 @@
-import {Card, Descriptions, Divider, List, Button} from "antd";
-import {useParams} from "react-router-dom";
+import {Button, Card, Descriptions, Divider, List} from "antd";
 import {useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Customer, Order, Restaurant} from "../../models";
+import {Customer} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 
 const DetailedOrder = () => {

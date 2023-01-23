@@ -1,5 +1,5 @@
-import { Menu } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import {Menu} from 'antd';
+import {useNavigate} from 'react-router-dom';
 
 const SideMenu = () => {
   const navigate = useNavigate();

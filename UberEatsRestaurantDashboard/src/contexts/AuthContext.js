@@ -1,18 +1,18 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {Auth, DataStore} from "aws-amplify";
-import {Customer, Owner} from "../models";
+import {Owner} from "../models";
 
 
 const AuthContext = createContext({})
 
 const AuthContextProvider = ({children}) => {
-    const [authUser, setAuthUser] = useState({})
-    const [dbOwner, setDbOwner] = useState({})
+    const [authUser, setAuthUser] = useState(null)
+    const [dbOwner, setDbOwner] = useState(null)
     const sub = authUser?.attributes?.sub
 
 
     useEffect(() => {
-        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser);
+        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
     }, [])
 
 
@@ -27,31 +27,46 @@ const AuthContextProvider = ({children}) => {
     }, [sub])
 
 
-
-
-
     const getOwner = async () => {
 
-        const existingOwner = await getExistingOwner()
-        return existingOwner || await createNewOwner()
+        return await getExistingOwner()
+            .then(async owner => {
+                if (owner) {
+                    return owner
+                } else {
+                    console.log("...........going to create a new owner........")
+                    // return await createNewOwner()
+                }
+            })
     }
 
+
     const getExistingOwner = async () => {
-        try{
-            const [res] = await DataStore.query(Owner, o => o.sub.eq(sub))
-            return res
-        }catch (e){
+        try {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to find owner from sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub,null,4))
+
+            const res = await DataStore.query(Owner, o => o.sub.eq(sub))
+            if(res.length>0){
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ found existing owner!! ~~~~~~~~~~~~~~~~~~~~~ ", JSON.stringify(res[0], null, 4))
+                return res[0]
+            }else{
+                console.log("\n\n ------------ couldn't find owner ------------- ", JSON.stringify(res, null, 4))
+
+            }
+        } catch (e) {
+            console.error("...................")
             throw new Error(e)
         }
     }
 
     const createNewOwner = async () => {
-        try{
-        return await DataStore.save(new Owner({
-            sub: sub,
-            isDeleted: false
-        }))
-        }catch (e){
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ creating new owner!! ~~~~~~~~~~~~~~~~~~~~~ ")
+        try {
+            return await DataStore.save(new Owner({
+                sub: sub,
+                isDeleted: false
+            }))
+        } catch (e) {
             throw new Error(e)
         }
     }
@@ -59,7 +74,12 @@ const AuthContextProvider = ({children}) => {
 
     return (
         <AuthContext.Provider value={
-            {authUser, dbOwner, sub, setDbOwner}
+            {
+                authUser,
+                dbOwner,
+                sub,
+                setDbOwner
+            }
         }>
             {children}
         </AuthContext.Provider>

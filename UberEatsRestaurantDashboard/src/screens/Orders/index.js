@@ -1,8 +1,5 @@
 import {Card, Table, Tag} from 'antd';
 import {useNavigate} from 'react-router-dom';
-import {useEffect, useState} from "react";
-import {Order, Restaurant} from "../../models";
-import {DataStore} from "aws-amplify";
 import {useOrderContext} from "../../contexts/OrderContext";
 
 const Orders = () => {

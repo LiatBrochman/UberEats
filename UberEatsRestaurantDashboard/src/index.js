@@ -5,19 +5,20 @@ import './index.css';
 import App from './App';
 import 'antd/dist/antd.min.css';
 import AuthContextProvider from "./contexts/AuthContext";
-import OrderContext from "./contexts/OrderContext";
 import OrderContextProvider from "./contexts/OrderContext";
-
-
+import RestaurantContextProvider from "./contexts/RestaurantContext";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 root.render(
     <BrowserRouter>
         <AuthContextProvider>
-            <OrderContextProvider>
-                <App/>
-            </OrderContextProvider>
+            <RestaurantContextProvider>
+                <OrderContextProvider>
+                    <App/>
+                </OrderContextProvider>
+            </RestaurantContextProvider>
         </AuthContextProvider>
     </BrowserRouter>
 )

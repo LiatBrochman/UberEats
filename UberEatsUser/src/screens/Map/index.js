@@ -5,7 +5,6 @@ import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {Entypo} from "@expo/vector-icons";
 import {useWindowDimensions, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
-import {useOrderContext} from "../../contexts/OrderContext";
 import {useCourierContext} from "../../contexts/CourierContext";
 import {Icon} from "@react-native-material/core";
 
@@ -14,7 +13,6 @@ const Map = () => {
 
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
-    const {orders} = useOrderContext()
     const [customerLocation, setCustomerLocation] = useState()
     const navigation = useNavigation()
     const {courier} = useCourierContext()

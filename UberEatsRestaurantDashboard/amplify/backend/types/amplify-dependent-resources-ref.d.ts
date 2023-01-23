@@ -1,20 +1,20 @@
 export type AmplifyDependentResourcesAttributes = {
-    "api": {
-        "WoltClone": {
-            "GraphQLAPIKeyOutput": "string",
-            "GraphQLAPIIdOutput": "string",
-            "GraphQLAPIEndpointOutput": "string"
-        }
-    },
-    "auth": {
-        "WoltClone": {
-            "IdentityPoolId": "string",
-            "IdentityPoolName": "string",
-            "UserPoolId": "string",
-            "UserPoolArn": "string",
-            "UserPoolName": "string",
-            "AppClientIDWeb": "string",
-            "AppClientID": "string"
-        }
+  "api": {
+    "WoltClone": {
+      "GraphQLAPIEndpointOutput": "string",
+      "GraphQLAPIIdOutput": "string",
+      "GraphQLAPIKeyOutput": "string"
     }
+  },
+  "auth": {
+    "WoltClone": {
+      "AppClientID": "string",
+      "AppClientIDWeb": "string",
+      "IdentityPoolId": "string",
+      "IdentityPoolName": "string",
+      "UserPoolArn": "string",
+      "UserPoolId": "string",
+      "UserPoolName": "string"
+    }
+  }
 }

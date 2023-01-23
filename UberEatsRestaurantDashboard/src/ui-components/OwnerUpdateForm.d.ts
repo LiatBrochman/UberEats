@@ -5,9 +5,10 @@
  **************************************************************************/
 
 import * as React from "react";
-import { Owner } from "../models";
-import { EscapeHatchProps } from "@aws-amplify/ui-react/internal";
-import { GridProps, SwitchFieldProps, TextFieldProps } from "@aws-amplify/ui-react";
+import {GridProps, SwitchFieldProps, TextFieldProps} from "@aws-amplify/ui-react";
+import {EscapeHatchProps} from "@aws-amplify/ui-react/internal";
+import {Owner} from "../models";
+
 export declare type ValidationResponse = {
     hasError: boolean;
     errorMessage?: string;
@@ -21,11 +22,11 @@ export declare type OwnerUpdateFormValidationValues = {
     sub?: ValidationFunction<string>;
     isDeleted?: ValidationFunction<boolean>;
 };
-export declare type FormProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
+export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type OwnerUpdateFormOverridesProps = {
-    OwnerUpdateFormGrid?: FormProps<GridProps>;
-    sub?: FormProps<TextFieldProps>;
-    isDeleted?: FormProps<SwitchFieldProps>;
+    OwnerUpdateFormGrid?: PrimitiveOverrideProps<GridProps>;
+    sub?: PrimitiveOverrideProps<TextFieldProps>;
+    isDeleted?: PrimitiveOverrideProps<SwitchFieldProps>;
 } & EscapeHatchProps;
 export declare type OwnerUpdateFormProps = React.PropsWithChildren<{
     overrides?: OwnerUpdateFormOverridesProps | undefined | null;
@@ -35,8 +36,7 @@ export declare type OwnerUpdateFormProps = React.PropsWithChildren<{
     onSubmit?: (fields: OwnerUpdateFormInputValues) => OwnerUpdateFormInputValues;
     onSuccess?: (fields: OwnerUpdateFormInputValues) => void;
     onError?: (fields: OwnerUpdateFormInputValues, errorMessage: string) => void;
-    onCancel?: () => void;
     onChange?: (fields: OwnerUpdateFormInputValues) => OwnerUpdateFormInputValues;
     onValidate?: OwnerUpdateFormValidationValues;
-}>;
+} & React.CSSProperties>;
 export default function OwnerUpdateForm(props: OwnerUpdateFormProps): React.ReactElement;
