@@ -35,7 +35,8 @@ const RestaurantContextProvider = ({children}) => {
                 dish =>
                     [
                         dish.restaurantID.eq(restaurant.id),
-                        dish.originalID.eq("null")
+                        dish.originalID.eq("null"),
+                        dish.isDeleted.eq(false)
                     ]
             )).subscribe(({items, isSynced}) => {
                 if (isSynced) {

@@ -1,11 +1,24 @@
 import {Button, Card, Table} from "antd";
 import {Link} from 'react-router-dom';
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import {DataStore} from "aws-amplify";
+import {Dish} from "../../models";
 
 
 const RestaurantMenu = () => {
 
-    const {restaurantDishes} = useRestaurantContext()
+    const {restaurantDishes, restaurant} = useRestaurantContext()
+
+    const deleteRestaurantDish = async (id) => {
+        await DataStore.query(Dish, id ).then(dish =>
+            DataStore.save(
+                Dish.copyOf(dish, (updated) => {
+                        updated.isDeleted = true
+                    }
+                )
+            )
+        )
+    }
 
     const tableColumns = [
         {
@@ -22,25 +35,20 @@ const RestaurantMenu = () => {
         },
         {
             title: "Action",
-            key: 'action',
-            render: () => <Button style={{color: "red", border: "2px solid red"}}>Remove</Button>
-
+            dataIndex: 'id',
+            key: 'Action',
+            render: (id) =>
+                <Button style={{color: "red", border: "2px solid red"}}
+                        onClick={async () => await deleteRestaurantDish(id)}>
+                    Remove
+                </Button>
+            //todo : add remove dish function from db
         },
         {
             title: "Action",
             key: 'action',
-
-            render: (_,dish) =>
-            {
-                // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ render: (_,dish) => ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish,null,4))
-
-                return <Link to={'edit'} state={{...dish}}>
-                    <Button style={{color: "darkblue", border: "2px solid darkblue"}}>
-                        edit
-                    </Button>
-                </Link>
-            }
-
+            render: () => <Button style={{color:"darkblue", border: "2px solid darkblue"}}>edit</Button>
+            //todo: go to edit dish page
         },
 
     ]
