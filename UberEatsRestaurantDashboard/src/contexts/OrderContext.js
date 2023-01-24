@@ -23,7 +23,7 @@ const OrderContextProvider = ({children}) => {
                 DataStore.observeQuery(Order, o => o.restaurantID.eq(restaurant.id))
                     .subscribe(({items, isSynced}) => {
                         if (isSynced) {
-                            console.log("subscribing to orders")
+                            // console.log("subscribing to orders")
                             setOrders(items)
                         }
                     })
@@ -37,7 +37,7 @@ const OrderContextProvider = ({children}) => {
                 ]))
                     .subscribe(({items, isSynced}) => {
                         if (isSynced) {
-                            console.log("subscribing to dishes of orders")
+                            // console.log("subscribing to dishes of orders")
                             setOrderDishes(items)
                         }
                     })

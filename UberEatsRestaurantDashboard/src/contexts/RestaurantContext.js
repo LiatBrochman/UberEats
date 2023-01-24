@@ -19,7 +19,7 @@ const RestaurantContextProvider = ({children}) => {
                 .subscribe(({items, isSynced}) => {
                     if (isSynced) {
                         setRestaurant(items[0])
-                        console.log("subscribing to restaurant")
+                        // console.log("subscribing to restaurant")
                         // console.table(items[0])
                     }
                 })
@@ -39,8 +39,8 @@ const RestaurantContextProvider = ({children}) => {
                     ]
             )).subscribe(({items, isSynced}) => {
                 if (isSynced) {
-                    console.log("subscribing to dishes of restaurant")
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurantDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items, null, 4))
+                    // console.log("subscribing to dishes of restaurant")
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Restaurant Dishes: ~~~~~~~~~~~~~~~~~~~~~ ", JSON.stringify(items, null, 4))
                     setRestaurantDishes(items)
 
                 }

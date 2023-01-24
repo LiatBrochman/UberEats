@@ -23,14 +23,24 @@ const RestaurantMenu = () => {
         {
             title: "Action",
             key: 'action',
-            render: () => <Button style={{color:"red",  border: "2px solid red"}}>Remove</Button>
-            //todo : add remove dish function from db
+            render: () => <Button style={{color: "red", border: "2px solid red"}}>Remove</Button>
+
         },
         {
             title: "Action",
             key: 'action',
-            render: () => <Button style={{color:"darkblue", border: "2px solid darkblue"}}>edit</Button>
-            //todo: go to edit dish page
+
+            render: (_,dish) =>
+            {
+                // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ render: (_,dish) => ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish,null,4))
+
+                return <Link to={'edit'} state={{...dish}}>
+                    <Button style={{color: "darkblue", border: "2px solid darkblue"}}>
+                        edit
+                    </Button>
+                </Link>
+            }
+
         },
 
     ]
