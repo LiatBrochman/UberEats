@@ -42,7 +42,6 @@ const RestaurantMenu = () => {
                         onClick={async () => await deleteRestaurantDish(id)}>
                     Remove
                 </Button>
-            //todo : add remove dish function from db
         },
         {
             title: "Action",

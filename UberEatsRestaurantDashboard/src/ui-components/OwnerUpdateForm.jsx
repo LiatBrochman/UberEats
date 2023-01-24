@@ -6,17 +6,12 @@
 
 /* eslint-disable */
 import * as React from "react";
-import {
-  Button,
-  Flex,
-  Grid,
-  SwitchField,
-  TextField,
-} from "@aws-amplify/ui-react";
-import { getOverrideProps } from "@aws-amplify/ui-react/internal";
-import { Owner } from "../models";
-import { fetchByPath, validateField } from "./utils";
-import { DataStore } from "aws-amplify";
+import {Button, Flex, Grid, SwitchField, TextField,} from "@aws-amplify/ui-react";
+import {getOverrideProps} from "@aws-amplify/ui-react/internal";
+import {Owner} from "../models";
+import {fetchByPath, validateField} from "./utils";
+import {DataStore} from "aws-amplify";
+
 export default function OwnerUpdateForm(props) {
   const {
     id: idProp,

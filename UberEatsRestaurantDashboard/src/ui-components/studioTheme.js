@@ -5,5 +5,6 @@
  **************************************************************************/
 
 /* eslint-disable */
-import { createTheme, defaultTheme } from "@aws-amplify/ui-react";
+import {createTheme, defaultTheme} from "@aws-amplify/ui-react";
+
 export default createTheme(defaultTheme);

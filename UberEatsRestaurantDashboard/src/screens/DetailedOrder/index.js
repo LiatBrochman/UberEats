@@ -1,32 +1,35 @@
 import {Button, Card, Descriptions, Divider, List} from "antd";
 import {useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Customer} from "../../models";
+import {Customer, Order} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 
 const DetailedOrder = () => {
 
-    const [customer, setCustomer] = useState({})
-    const {order,orderDishes,restaurant} = useOrderContext()
+    const {order, orderDishes, restaurant} = useOrderContext()
+    const [customer, setCustomer] = useState(null)
+    const [status, setStatus] = useState(order?.status)
 
     useEffect(() => {
-        if (order) {
-            DataStore.query(Customer, order.customerID).then(setCustomer)
-        }
+        DataStore.query(Customer, order?.customerID).then(setCustomer)
     }, [order])
-    //
-    // useEffect(() => {
-    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
-    //     restaurant &&
-    //     DataStore.query(Order, o => o.and(o => [
-    //         o.restaurantID.eq(restaurant.id),
-    //         o.isDeleted.eq(false),
-    //     ])).then(setOrder[0])
-    // }, [restaurant])
+
+
+    const updateStatus = async ({id, newStatus}) => {
+        DataStore.query(Order, id)
+            .then(order => DataStore.save(
+                    Order.copyOf(order, (updated) => {
+                        updated.status = newStatus
+                    })
+                )
+            )
+        setStatus(newStatus)
+    }
+
 
     return (
         <>
-            {customer?.id &&
+            {customer && order?.id &&
 
             <Card title={`Order ${order.id}`} style={{margin: 20}}>
                 <Descriptions bordered column={{lg: 1, md: 1, sm: 1}}>
@@ -61,17 +64,37 @@ const DetailedOrder = () => {
                     <h2 style={styles.totalPrice}>{order.totalPrice}$</h2>
                 </div>
                 <Divider/>
-                <div style={styles.buttonsContainer}>
-                    <Button block type="danger" size="large" style={styles.button}>
-                        Decline Order
+                {status && <>
+                    <div style={styles.buttonsContainer}>
+                        <Button block type="danger" size="large" style={styles.button}
+                                disabled={status !== "NEW"}
+                                onClick={async () => await updateStatus({id:order.id,newStatus:"DECLINED"})}>
+                            Decline Order
+                        </Button>
+                        <Button block type="primary" size="large" style={styles.button}
+                                disabled={status !== "NEW"}
+                                onClick={async () => await updateStatus({id:order.id,newStatus:"ACCEPTED"})}>
+                            Accept Order
+                        </Button>
+                    </div>
+                    <Button block type="primary" size="large" disabled={status !== "ACCEPTED"}
+                            onClick={async () => await updateStatus({id:order.id,newStatus:"COOKING"})}>
+                        START COOKING :)
                     </Button>
-                    <Button block type="primary" size="large" style={styles.button}>
-                        Accept Order
+                    <Button block type="primary" size="large" disabled={status !== "COOKING"}
+                            onClick={async () => await updateStatus({id:order.id,newStatus:"READY_FOR_PICKUP"})}>
+                        Food Is Done!! ready for pick up!
                     </Button>
-                </div>
-                <Button block type="primary" size="large">
-                    Food Is Done
-                </Button>
+                    <Button block type="primary" size="large" disabled={status !== "READY_FOR_PICKUP"}
+                            onClick={async () => await updateStatus({id:order.id,newStatus:"PICKED_UP"})}>
+                        Order has been picked up!
+                    </Button>
+                    <Button block type="primary" size="large" disabled={status === "NEW"}
+                            onClick={async () => await updateStatus({id:order.id,newStatus:"NEW"})}>
+                        **RETURN TO NEW**
+                    </Button>
+
+                </>}
             </Card>
             }
         </>

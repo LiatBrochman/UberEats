@@ -1,9 +1,9 @@
 import {Button, Card, Form, Input, InputNumber, Switch} from "antd";
 import {Dish} from "../../models";
 import {DataStore} from "aws-amplify";
-import {Alert} from "@aws-amplify/ui-react";
 import {useState} from "react";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import Upload from "antd/es/upload/Upload";
 
 const {TextArea} = Input;
 
@@ -45,7 +45,7 @@ const CreateMenuItem = () => {
                 <Form.Item label="Dish image" value={image}
                            onChange={(e) => setImage(e.target.value)}
                            required>
-                    <Input placeholder="Enter dish image"/>
+                   <Upload/>
                 </Form.Item>
                 <Form.Item label="Dish description" value={description}
                            onChange={(e) => setDescription(e.target.value)}
