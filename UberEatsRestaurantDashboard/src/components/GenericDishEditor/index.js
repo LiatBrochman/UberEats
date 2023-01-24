@@ -68,8 +68,8 @@ function GenericDishEditor({props}) {
             typeof name === "string" &&
             typeof image === "string" &&
             (typeof price === "string" || typeof price === "number") &&
-            name.length > 1 &&
-            image.length > 1 &&
+            name.length > 0 &&
+            image.length > 0 &&
             Number(price) > 0
         )
     }

@@ -7,10 +7,9 @@ import {Dish} from "../../models";
 
 const RestaurantMenu = () => {
 
-    const {restaurantDishes, restaurant} = useRestaurantContext()
-
+    const {restaurantDishes} = useRestaurantContext()
     const deleteRestaurantDish = async (id) => {
-        await DataStore.query(Dish, id ).then(dish =>
+        await DataStore.query(Dish,id).then(dish =>
             DataStore.save(
                 Dish.copyOf(dish, (updated) => {
                         updated.isDeleted = true
@@ -19,7 +18,6 @@ const RestaurantMenu = () => {
             )
         )
     }
-
     const tableColumns = [
         {
             title: "Menu Item",
@@ -35,20 +33,25 @@ const RestaurantMenu = () => {
         },
         {
             title: "Action",
+            key: 'delete',
             dataIndex: 'id',
-            key: 'Action',
             render: (id) =>
                 <Button style={{color: "red", border: "2px solid red"}}
                         onClick={async () => await deleteRestaurantDish(id)}>
                     Remove
                 </Button>
-            //todo : add remove dish function from db
         },
         {
             title: "Action",
-            key: 'action',
-            render: () => <Button style={{color:"darkblue", border: "2px solid darkblue"}}>edit</Button>
-            //todo: go to edit dish page
+            key: 'edit',
+            render: (_,dish) =>
+            {
+                return <Link to={'edit'} state={dish}>
+                    <Button style={{color: "darkblue", border: "2px solid darkblue"}}>
+                        edit
+                    </Button>
+                </Link>
+            }
         },
 
     ]
