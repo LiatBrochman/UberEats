@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useRef, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Courier, Customer, Dish, Order, Restaurant} from "../models";
 import {useAuthContext} from "./AuthContext";
@@ -17,7 +17,35 @@ const OrderContextProvider = ({children}) => {
     const [restaurant, setRestaurant] = useState({})
     const [driverLocation, setDriverLocation] = useState({})
     const [ORCD, setORCD] = useState([])
+    const [activeORCD, setActiveORCD] = useState([])
+    const [countUpdates,setCountUpdates] = useState(0)
+    // useEffect(() => {
+    //     // const lastOrder = ORCD?.[0]?.order?.[ORCD?.length - 1]
+    //
+    //     lastOrder?.status !== "COMPLETED" ||  lastOrder?.status !== "DECLINED" ||  lastOrder?.status !== "PICKED_UP" &&
+    //     setActiveOrders(prevOrders => [...prevOrders, lastOrder])
+    //
+    // }, [ORCD])
 
+    useEffect(() => {
+
+        if(ORCD?.[0]?.order?.id ) {
+
+
+            const filtered = ORCD.filter(orcd => {
+                if (
+                    orcd.order.status === "NEW" ||
+                    orcd.order.status === "COOKING" ||
+                    orcd.order.status === "ACCEPTED" ||
+                    orcd.order.status === "READY_FOR_PICKUP"
+                ) {
+                    return orcd
+                }
+            })
+            setActiveORCD(filtered)
+        }
+
+    }, [countUpdates])
 
     useEffect(() => {
 
@@ -32,8 +60,8 @@ const OrderContextProvider = ({children}) => {
                         o.courierID.eq('null')
                     ])
                 ]
-            )).subscribe(({items}) => {
-
+            )).subscribe(({items,isSynced}) => {
+                if(!isSynced) return null
                 /** explanation:
                  * ORCD =
                  * [
@@ -67,7 +95,7 @@ const OrderContextProvider = ({children}) => {
                 Promise.allSettled(promises).then((results) => {
 
                     setORCD(results.map(res => res?.value && res.value))
-
+                    setCountUpdates(prev=>prev+1)
                 })
 
             })
@@ -214,6 +242,8 @@ const OrderContextProvider = ({children}) => {
             restaurant,
             driverLocation,
             ORCD,
+            activeORCD,
+            countUpdates,
 
             setOrder,
             setDishes,

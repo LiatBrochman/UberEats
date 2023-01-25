@@ -10,13 +10,14 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
         setCustomer,
         setRestaurant,
         setDishes,
-        setOrder
+        setOrder,
+        activeORCD
     } = useOrderContext()
     const navigation = useNavigation()
 
 
     return (
-        restaurant?.image && (
+        activeORCD && restaurant?.image && (
             <Pressable style={{
                 flexDirection: "row",
                 margin: 10,
@@ -46,7 +47,7 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
                         {restaurant.name}
                     </Text>
                     <Text style={{color: "grey"}}>{restaurant.location.address}</Text>
-
+                    <Text style={{color: "grey"}}>{order.status}</Text>
                     <Text style={{marginTop: 10}}>Delivery Details:</Text>
                     <Text style={{color: "grey"}}>{customer?.name}</Text>
                     <Text style={{color: "grey"}}>{customer?.location.address}</Text>
