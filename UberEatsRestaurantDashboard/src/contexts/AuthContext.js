@@ -1,4 +1,4 @@
-import {createContext, useCallback, useContext, useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {Auth, DataStore} from "aws-amplify";
 import {Owner} from "../models";
 
@@ -10,7 +10,7 @@ const AuthContextProvider = ({children}) => {
     const [dbOwner, setDbOwner] = useState(null)
     const sub = authUser?.attributes?.sub
 
-    const getOwner = useCallback(async () => {
+    const getOwner = async () => {
         return await getExistingOwner()
             .then(async owner => {
                 if (owner) {
@@ -20,28 +20,29 @@ const AuthContextProvider = ({children}) => {
                     return await createNewOwner()
                 }
             })
-    }, [])
+    }
 
 
-    const getExistingOwner = useCallback(async () => {
+    const getExistingOwner = async () => {
         try {
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to find owner from sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub, null, 4))
 
-            const res = await DataStore.query(Owner, o => o.sub.eq(sub))
-            if (res.length > 0) {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ found existing owner!! ~~~~~~~~~~~~~~~~~~~~~ ", JSON.stringify(res[0], null, 4))
-                return res[0]
+            const owners = await DataStore.query(Owner, o => o.sub.eq(sub))
+
+            if (owners.length > 0) {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ found existing owner!! ~~~~~~~~~~~~~~~~~~~~~ ", JSON.stringify(owners[0], null, 4))
+                return owners[0]
             } else {
-                console.log("\n\n ------------ couldn't find owner ------------- ", JSON.stringify(res, null, 4))
+                console.log("\n\n ------------ couldn't find owner ------------- ", JSON.stringify(owners, null, 4))
 
             }
         } catch (e) {
             console.error("..........error.........")
             throw new Error(e)
         }
-    }, [])
+    }
 
-    const createNewOwner = useCallback(async () => {
+    const createNewOwner =async () => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ creating new owner!! ~~~~~~~~~~~~~~~~~~~~~ ")
         try {
             return await DataStore.save(new Owner({
@@ -51,7 +52,7 @@ const AuthContextProvider = ({children}) => {
         } catch (e) {
             throw new Error(e)
         }
-    }, [])
+    }
 
     useEffect(() => {
         Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
