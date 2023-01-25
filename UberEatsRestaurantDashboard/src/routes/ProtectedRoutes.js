@@ -1,14 +1,26 @@
-import {useAuthContext} from "../contexts/AuthContext";
-import {Navigate} from "react-router-dom";
+import {useRestaurantContext} from "../contexts/RestaurantContext";
+import {useEffect, useState} from "react";
+import AppRoutes from "./AppRoutes";
+import NewRestaurant from "../screens/NewRestaurant";
 
 const ProtectedRoutes = () => {
-    const authUser = useAuthContext();
 
-    return authUser ? (
-        <Navigate to="/login" replace />
-        //   <AppRoutes />
+    const {restaurant} = useRestaurantContext()
+    const [restaurantIsEmpty, setRestaurantIsEmpty] = useState(true)
+
+
+
+    useEffect(() => {
+        restaurantIsEmpty && restaurant?.id && setRestaurantIsEmpty(false)
+    }, [restaurant]);
+
+
+    return restaurantIsEmpty ? (
+        <NewRestaurant/>
     ) : (
-        <Navigate to="/login" replace />
-    );
-};
+        <AppRoutes/>
+
+    )
+
+}
 export default ProtectedRoutes

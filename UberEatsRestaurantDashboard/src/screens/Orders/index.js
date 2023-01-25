@@ -19,7 +19,6 @@ const Orders = () => {
     }, [orders])
 
     useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ orders ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(orders, null, 4))
         restaurant &&
         DataStore.query(Order, o => o.and(o => [
             o.restaurantID.eq(restaurant.id),

@@ -1,9 +1,9 @@
 import {Image, Layout} from "antd";
 import SideMenu from '../src/components/SideMenu';
-import AppRoutes from "./routes/AppRoutes";
 import {Amplify} from "aws-amplify";
 import awsExports from "./aws-exports";
 import {withAuthenticator} from '@aws-amplify/ui-react';
+import ProtectedRoutes from "./routes/ProtectedRoutes";
 
 Amplify.configure(awsExports)
 // global.subscription = {}
@@ -23,7 +23,8 @@ function App() {
             </Sider>
             <Layout>
                 <Content>
-                    <AppRoutes/>
+                    <ProtectedRoutes/>
+                    {/*<AppRoutes/>*/}
                 </Content>
                 <Footer style={{textAlign: "center"}}>
                     Uber Eats Restaurant Dashboard ©2022

@@ -18,8 +18,8 @@ const SideMenu = () => {
       label: 'Order History'
     },
     {
-      key: "settings",
-      label: 'Settings'
+      key: "edit-restaurant",
+      label: 'Edit Restaurant'
     }
   ];
   
