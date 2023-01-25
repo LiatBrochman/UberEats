@@ -3,14 +3,13 @@ import {Button, Card, Form, Input, InputNumber, Switch} from "antd";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
-import {validateField} from "../../ui-components/utils";
-import Link from "antd/es/typography/Link";
+import {useNavigate} from 'react-router-dom';
 
 function GenericDishEditor({props}) {
 
     const {TextArea} = Input
     const {restaurant} = useRestaurantContext()
-
+    const navigate = useNavigate()
     const [name, setName] = useState(props.type === "NEW" ? '' : props.dish.name)
     const [image, setImage] = useState(props.type === "NEW" ? '' : props.dish.image)
     const [description, setDescription] = useState(props.type === "NEW" ? '' : props.dish.description)
@@ -19,7 +18,7 @@ function GenericDishEditor({props}) {
 
 
     const createNewRestaurantDish = async ({name, image, description, price, isActive}) => {
-        await DataStore.save(
+        return await DataStore.save(
             new Dish({
                 name: name,
                 image: image,
@@ -40,7 +39,7 @@ function GenericDishEditor({props}) {
         const existingDish = await DataStore.query(Dish, props.dish.id)
 
 
-        await DataStore.save(
+        return await DataStore.save(
             Dish.copyOf(existingDish, updated => {
                 updated.name = name
                 updated.image = image
@@ -102,29 +101,29 @@ function GenericDishEditor({props}) {
                     <InputNumber value={price}/>
                 </Form.Item>
 
-                <Form.Item label="dish is active" required >
+                <Form.Item label="dish is active" required>
                     <Switch onClick={() => setIsActive(toggle => !toggle)} checked={isActive}/>
                 </Form.Item>
 
                 <Form.Item>
-                    <Link to={'/'}>
-                        <Button type="primary" onClick={async () => {
-                            switch (props.type) {
-                                case "NEW":
 
-                                    await createNewRestaurantDish({name, image, description, price, isActive})
-                                    break;
+                    <Button type="primary" onClick={async () => {
+                        switch (props.type) {
 
-                                case "EDIT":
-                                    await editRestaurantDish({name, image, description, price, isActive})
-                                    break;
+                            case "NEW":
+                                await createNewRestaurantDish({name, image, description, price, isActive})
+                                break;
 
-                            }
-                        }}
-                                disabled={!isValid({name, image, price})}
+                            case "EDIT":
+                                await editRestaurantDish({name, image, description, price, isActive})
+                                break;
+                        }
 
-                        >Submit</Button>
-                    </Link>
+                        navigate(`/menu`)
+                    }}
+                            disabled={!isValid({name, image, price})}
+
+                    >Submit</Button>
 
                 </Form.Item>
 
