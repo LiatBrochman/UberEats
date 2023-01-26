@@ -20,6 +20,7 @@ const DetailedOrder = () => {
             .then(order => DataStore.save(
                     Order.copyOf(order, (updated) => {
                         updated.status = newStatus
+                        if(newStatus==="NEW") updated.courierID="null"
                     })
                 )
             )

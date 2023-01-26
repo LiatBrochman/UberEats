@@ -1,4 +1,4 @@
-import {useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import BottomSheet from "@gorhom/bottom-sheet";
 import {ActivityIndicator, Button, Pressable, Text, useWindowDimensions, View} from "react-native";
@@ -11,26 +11,46 @@ import {GOOGLE_API_KEY} from '@env';
 import {useOrderContext} from "../../contexts/OrderContext";
 import {DataStore} from "aws-amplify";
 import {Order} from "../../models";
+import {useAuthContext} from "../../contexts/AuthContext";
 
+
+function degreesToRadians(degrees) {
+    return degrees * Math.PI / 180;
+}
+
+function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
+    const earthRadiusKm = 6371;
+
+    const dLat = degreesToRadians(lat2 - lat1);
+    const dLon = degreesToRadians(lon2 - lon1);
+
+    lat1 = degreesToRadians(lat1);
+    lat2 = degreesToRadians(lat2);
+
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusKm * c;
+}
+
+function arrived(driverLocation, customerLocation, minDistance) {
+    return (distanceInKmBetweenEarthCoordinates(driverLocation.latitude, driverLocation.longitude, customerLocation.lat, customerLocation.lng) / 1000) <= minDistance
+}
 
 const OrdersDelivery = () => {
     const {
         order,
         customer,
         restaurant,
-        acceptOrder,
+        assignToCourier,
         driverLocation,
         completeOrder,
-        pickupOrder,
         dishes
     } = useOrderContext()
 
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)
-    const [isDriverClose, setIsDriverClose] = useState(false)
-    const [status, setStatus] = useState(order?.status)
-
-
+    const distanceRef = useRef(null)
     const bottomSheetRef = useRef(null)
     const mapRef = useRef(null)
     const {width, height} = useWindowDimensions()
@@ -38,19 +58,24 @@ const OrdersDelivery = () => {
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const navigation = useNavigation()
 
-    const changeStatusToCompleted = ({id, newStatus}) => {
-        DataStore.query(Order, id)
-            .then(order => DataStore.save(
-                    Order.copyOf(order, (updated) => {
-                        updated.status = newStatus
-                    })
-                )
-            )
-        setStatus(newStatus)
-    }
+    // const changeStatusToCompleted = ({id, newStatus}) => {
+    //     DataStore.query(Order, id)
+    //         .then(order => DataStore.save(
+    //                 Order.copyOf(order, (updated) => {
+    //                     updated.status = newStatus
+    //                 })
+    //             )
+    //         )
+    //     setStatus(newStatus)
+    // }
 
     const onButtonPressed = async () => {
+
+
         switch (order.status) {
+
+            case "ACCEPTED":
+            case "COOKING":
             case "READY_FOR_PICKUP":
                 bottomSheetRef.current?.collapse()
                 mapRef.current.animateToRegion({
@@ -59,29 +84,35 @@ const OrdersDelivery = () => {
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01
                 })
-                await acceptOrder({order})
+                await assignToCourier({order})
                 break;
 
-            case "ACCEPTED":
-                bottomSheetRef.current?.collapse()
-                await pickupOrder({order})
-                break;
 
             case "PICKED_UP":
-                await completeOrder({order})
-                bottomSheetRef.current?.collapse()
-                navigation.goBack()
+
+                if (distanceRef.current <= 0.1
+                    // arrived(driverLocation, customer.location, 100)
+                ) {
+                    await completeOrder({order})
+                    bottomSheetRef.current?.collapse()
+                    navigation.goBack()
+                }
                 break;
+
+
+            default:
+                console.warn(" wrong order status", order.status)
         }
+
     }
-
-
     const renderButtonTitle = () => {
         switch (order.status) {
+
             case "READY_FOR_PICKUP":
-                return 'Accept Order'
+            case "COOKING":
             case "ACCEPTED":
-                return 'Pick-Up Order'
+                return 'Accept Order'
+            // return 'Pick-Up Order'
             case "PICKED_UP":
                 return 'Complete Delivery'
         }
@@ -89,23 +120,80 @@ const OrdersDelivery = () => {
     }
 
     const isButtonDisabled = () => {
+        /**
+         button is clickable only when status is :
+         ACCEPTED\COOKING\READY_FOR_PICKUP
+         and, when the order isn't assigned (yet) to the courier (or to any other courier)
+         */
+        let isClickable = false
+
         switch (order.status) {
-            case "READY_FOR_PICKUP":
-                return false
+
             case "ACCEPTED":
-                return !isDriverClose
+            case "COOKING":
+            case "READY_FOR_PICKUP":
+                isClickable = order.courierID === "null"
+                break;
+
+            /**
+             * to complete an order, the courier must be near the customer's address (100meters)
+             */
             case "PICKED_UP":
-                return !isDriverClose
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current, null, 4))
+                isClickable = distanceRef.current <= 0.1
+                break;
+
+
+            case "NEW":
+            case "COMPLETED":
+            case "DECLINED":
+                isClickable = false
+                break;
+
             default:
-                return true
+                console.error("wrong status", order.status)
         }
 
+        return !isClickable
+        // return (status === "ACCEPTED" || status === "COOKING" || status === "READY_FOR_PICKUP" || order.courierID!=="null")
     }
     const restaurantLocation = {latitude: restaurant?.location.lat, longitude: restaurant?.location.lng}
     const deliveryLocation = {latitude: customer?.location.lat, longitude: customer?.location.lng}
 
     if (!order || !driverLocation || !restaurant || !customer) {
         return <ActivityIndicator size={"large"} color="gray"/>
+    }
+
+    const getDestination = () => {
+        /**
+         *THE TRICK HERE is to combine way points!
+         ACCEPTED \COOKING \READY_FOR_PICKUP = way point to restaurant , then to customer
+         PICKED_UP = no way points , just customer
+         */
+        switch (order.status) {
+            case "ACCEPTED":
+            case "COOKING" :
+            case "READY_FOR_PICKUP":
+            case "PICKED_UP":
+                return deliveryLocation
+            /**
+             NOTE THE WAY POINTS!!!
+             */
+            default:
+                return null
+        }
+    }
+    const getWaypoints = () => {
+        switch (order.status) {
+            case "ACCEPTED":
+            case "COOKING":
+            case "READY_FOR_PICKUP":
+                return [restaurantLocation]
+            case "PICKED_UP":
+                return []
+            default:
+                return []
+        }
     }
 
     return (
@@ -129,13 +217,14 @@ const OrdersDelivery = () => {
             >
                 <MapViewDirections
                     origin={driverLocation}
-                    destination={order.status === "ACCEPTED" ? restaurantLocation : deliveryLocation}
+                    destination={getDestination()}
                     strokeWidth={10}
-                    waypoints={order.status === "READY_FOR_PICKUP" ? [restaurantLocation] : []}
+                    waypoints={getWaypoints()}
                     strokeColor="#3FC060"
                     apikey={GOOGLE_API_KEY}
                     onReady={(result) => {
-                        setIsDriverClose(result.distance <= 0.1)
+                        // setDistance(result.distance)
+                        distanceRef.current = result.distance
                         setTotalMinutes(result.duration)
                         setTotalKm(result.distance)
                     }}
@@ -192,15 +281,16 @@ const OrdersDelivery = () => {
                         })}
                     </View>
                 </View>
-                <Pressable style={{...styles.buttonContainer, backgroundColor: isButtonDisabled() ? 'grey' : '#3FC060'}}
-                           onPress={onButtonPressed} disabled={isButtonDisabled()}>
+                <Pressable
+                    style={{...styles.buttonContainer, backgroundColor: isButtonDisabled() ? 'grey' : '#3FC060'}}
+                    onPress={onButtonPressed} disabled={isButtonDisabled()}>
                     <Text style={styles.buttonText}>{renderButtonTitle()}</Text>
 
                 </Pressable>
-                {status && status === "PICKED_UP"&&
-                <Button title="delivered"
-                        onPress={() => changeStatusToCompleted({id: order.id, newStatus: "COMPLETED"})}
-                />}
+                {/*{ order?.status === "PICKED_UP" &&*/}
+                {/*<Button title="delivered"*/}
+                {/*        onPress={() => changeStatusToCompleted({id: order.id, newStatus: "COMPLETED"})}*/}
+                {/*/>}*/}
             </BottomSheet>
         </GestureHandlerRootView>
     )

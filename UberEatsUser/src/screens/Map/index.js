@@ -26,14 +26,14 @@ const Map = () => {
 
         startWatchingCustomerLocation().then(sub => subscription.watchPosition = sub)
 
-        return subscription?.watchPosition?.remove()
+        // return subscription?.watchPosition?.remove()
     }, [])
 
-    useEffect(() => {
-        if (courier?.length > 0) {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier, null, 4))
-        }
-    }, [courier])
+    // useEffect(() => {
+    //     if (courier?.length > 0) {
+    //         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier, null, 4))
+    //     }
+    // }, [courier])
 
 
     const startWatchingCustomerLocation = async () => {

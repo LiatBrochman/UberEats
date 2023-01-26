@@ -42,9 +42,9 @@ const OrdersScreen = () => {
                         }}
                     >
                         {activeORCD && ORCD?.[0]?.restaurant?.id &&
-                        ORCD.map(({restaurant}) =>
+                        ORCD.map(({restaurant},index) =>
                             <Marker
-                                key={restaurant.id}
+                                key={index}
                                 title={restaurant.name}
                                 description={restaurant.location.address}
                                 coordinate={{

@@ -34,10 +34,10 @@ const OrderContextProvider = ({children}) => {
 
             const filtered = ORCD.filter(orcd => {
                 if (
-                    orcd.order.status === "NEW" ||
                     orcd.order.status === "COOKING" ||
                     orcd.order.status === "ACCEPTED" ||
-                    orcd.order.status === "READY_FOR_PICKUP"
+                    orcd.order.status === "READY_FOR_PICKUP" ||
+                    (orcd.order.courierID === dbCourier.id && orcd.order.status !== "COMPLETED")
                 ) {
                     return orcd
                 }
@@ -50,7 +50,7 @@ const OrderContextProvider = ({children}) => {
     useEffect(() => {
 
         if (dbCourier?.id && !(subscription?.ORCD)) {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~FIRST SUBSCRIPTION: subscription.ORCD ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription.ORCD, null, 4))
+            // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~FIRST SUBSCRIPTION: subscription.ORCD ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription.ORCD, null, 4))
 
 
             subscription.ORCD = DataStore.observeQuery(Order, o => o.and(o => [
@@ -65,7 +65,7 @@ const OrderContextProvider = ({children}) => {
                 /** explanation:
                  * ORCD =
                  * [
-                 *      { "order":{}, "restaurant":{}, "dishes":[] },
+                 *      { "order":{}, "restaurant":{}, "customer":{}, "dishes":[] },
                  *      {...},
                  *      {...},
                  *      {...}
@@ -127,7 +127,7 @@ const OrderContextProvider = ({children}) => {
                 DataStore.save(Courier.copyOf(dbCourier, updated => {
                     updated.location = newLocation
                 })).then(updatedCourier => {
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
+                    //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
                     setDbCourier(updatedCourier)
                 })
             })
@@ -198,12 +198,10 @@ const OrderContextProvider = ({children}) => {
     // }
 
 
-    const acceptOrder = async ({order}) => {
+    const assignToCourier = async ({order}) => {
         return await DataStore.save(
             Order.copyOf(order, (updated) => {
                 updated.courierID = dbCourier.id
-                updated.Courier = dbCourier
-                updated.status = "PICKED_UP"
             })
         )
     }
@@ -211,16 +209,6 @@ const OrderContextProvider = ({children}) => {
         return await DataStore.save(
             Order.copyOf(order, (updated) => {
                 updated.courierID = "null"
-                updated.Courier = dbCourier
-            })
-        )
-    }
-    const pickupOrder = async ({order}) => {
-        return await DataStore.save(
-            Order.copyOf(order, (updated) => {
-                updated.status = "PICKED_UP"
-                updated.Courier = dbCourier
-                updated.courierID = dbCourier.id
             })
         )
     }
@@ -228,7 +216,6 @@ const OrderContextProvider = ({children}) => {
         return await DataStore.save(
             Order.copyOf(order, (updated) => {
                 updated.status = "COMPLETED"
-                updated.Courier = dbCourier
             })
         )
     }
@@ -251,8 +238,7 @@ const OrderContextProvider = ({children}) => {
             setRestaurant,
 
             cancelOrder,
-            acceptOrder,
-            pickupOrder,
+            assignToCourier,
             completeOrder,
         }}>
             {children}
