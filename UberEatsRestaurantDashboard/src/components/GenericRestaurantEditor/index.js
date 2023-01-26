@@ -27,9 +27,7 @@ function GenericRestaurantEditor({props}) {
     const editRestaurant = async (draft_restaurant) => {
         try {
             DataStore.query(Restaurant, restaurant.id)
-                .then(origin => DataStore.save(Restaurant.copyOf(origin, updated => {
-                    updated.isOpen = draft_restaurant.isOpen
-                })))
+                .then(origin => DataStore.save(Restaurant.copyOf(origin,updated=> Object.assign(updated,draft_restaurant))))
                 .then(setRestaurant)
         } catch (e) {
             console.error("error on edit restaurant")
