@@ -13,12 +13,13 @@ const DishListItem = ({dish}) => {
                 navigation.navigate("Dish", {id: dish.id})
             }}
             style={styles.container}>
-            <View style={{flex: 1}}>
+            {dish.image && (<Image source={{uri: dish.image}} style={styles.image}/>)}
+            <View style={{flex: 1, marginLeft: 10}}>
                 <Text style={styles.name}>{dish.name}</Text>
                 <Text style={styles.description} numberOfLines={2}>{dish.description}</Text>
                 <Text style={styles.price}>$ {dish.price}</Text>
             </View>
-            {dish.image && (<Image source={{uri: dish.image}} style={styles.image}/>)}
+
         </Pressable>
     );
 };
@@ -38,15 +39,18 @@ const styles = StyleSheet.create({
         letterSpacing: 0.5,
     },
     description: {
-        color: 'gray',
+        color: '#2a2a2a',
         marginVertical: 5,
     },
     price: {
-        fontSize: 16,
+        // fontSize: 16,
+        fontWeight: '600',
+        color: "black"
     },
     image: {
         height: 75,
         aspectRatio: 1,
+        borderRadius: 10,
     },
 });
 export default DishListItem;

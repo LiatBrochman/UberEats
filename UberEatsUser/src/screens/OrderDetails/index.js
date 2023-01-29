@@ -1,4 +1,4 @@
-import {ActivityIndicator, FlatList, Text} from "react-native";
+import {ActivityIndicator, FlatList, Text, View} from "react-native";
 import BasketDishItem from "../../components/BasketDishItem";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useEffect, useState} from "react";
@@ -24,7 +24,8 @@ const OrderDetails = () => {
     }
 
     return (
-        <>
+        <View style={{backgroundColor: "white", flex: 1}}>
+
             {orderDishes?.[0] &&
                 <FlatList
                     ListHeaderComponent={() => <Header order={order}/>}
@@ -32,11 +33,13 @@ const OrderDetails = () => {
                     renderItem={({item}) => <BasketDishItem dish={item}/>}
                 />
             }
-            <Text>
+
+            <Text style={{padding: 10}}>
                 total order price : {order?.totalPrice} $
             </Text>
 
-        </>
+
+        </View>
 
     )
 }

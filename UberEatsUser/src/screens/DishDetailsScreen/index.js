@@ -53,16 +53,16 @@ const DishDetailsScreen = () => {
 
             <View style={styles.row}>
                 <AntDesign
-                    name="minuscircleo"
-                    size={60}
-                    color={"black"}
+                    name="minussquare"
+                    size={30}
+                    color={"#FFAD60"}
                     onPress={onMinus}
                 />
                 <Text style={styles.quantity}>{tempQuantity}</Text>
                 <AntDesign
-                    name="pluscircleo"
-                    size={60}
-                    color={"black"}
+                    name="plussquare"
+                    size={30}
+                    color={"#FFAD60"}
                     onPress={onPlus}
                 />
             </View>
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
         width: "100%",
         paddingVertical: 40,
         padding: 10,
+        backgroundColor: "white"
     },
     name: {
         fontSize: 30,
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     description: {
-        color: "gray",
+        color: "#3d3d3d",
     },
     separator: {
         height: 1,
@@ -107,10 +108,12 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
     },
     button: {
-        backgroundColor: "black",
+        backgroundColor: "#96CEB4",
         marginTop: "auto",
         padding: 20,
         alignItems: "center",
+        margin: 10,
+        borderRadius: 20,
     },
     buttonText: {
         color: "white",
