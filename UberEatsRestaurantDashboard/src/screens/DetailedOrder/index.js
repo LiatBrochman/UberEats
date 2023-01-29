@@ -30,15 +30,14 @@ const DetailedOrder = () => {
 
     return (
         <>
-            {customer && order?.id &&
-
+            {customer &&
             <Card title={`Order ${order.id}`} style={{margin: 20}}>
                 <Descriptions bordered column={{lg: 1, md: 1, sm: 1}}>
                     <Descriptions.Item label="Customer">
                         {customer.name}
                     </Descriptions.Item>
                     <Descriptions.Item label="Customer Address">
-                        {customer.location.address}
+                        {customer.location?.address}
                     </Descriptions.Item>
                 </Descriptions>
                 <Divider/>

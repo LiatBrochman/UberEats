@@ -2,32 +2,17 @@ import {Card, Table, Tag} from 'antd';
 import {useNavigate} from 'react-router-dom';
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useEffect, useState} from "react";
-import {DataStore} from "aws-amplify";
-import {Order} from "../../models";
+
 
 const Orders = () => {
     const [activeOrders, setActiveOrders] = useState([])
     const navigate = useNavigate();
-    const {restaurant, orders ,setOrder} = useOrderContext()
+    const {orders, setOrder,countOrderUpdates} = useOrderContext()
 
-    useEffect(() => {
-        const lastOrder = orders?.[orders?.length - 1]
-
-        lastOrder?.status !== "COMPLETED" ||  lastOrder?.status !== "DECLINED" &&
-        setActiveOrders(prevOrders => [...prevOrders, lastOrder])
-
-    }, [orders])
-
-    useEffect(() => {
-        restaurant &&
-        DataStore.query(Order, o => o.and(o => [
-            o.restaurantID.eq(restaurant.id),
-            o.isDeleted.eq(false),
-            o.status.ne("DECLINED"),
-            o.status.ne("COMPLETED")
-        ])).then(setActiveOrders)
-    }, [restaurant])
-
+    useEffect(()=>{
+        orders?.length && /** faster check (if orders is an empty array or undefined it will return undefined or 0. and since "0 && (...)" = false , it will not enter the setter */
+        setActiveOrders(orders.filter(o=> o.status !== "COMPLETED" && o.status!=="DECLINED"))
+    },[countOrderUpdates])
 
     function getTagByStatus(status) {
         switch (status) {
@@ -52,7 +37,7 @@ const Orders = () => {
             title: 'Delivery Address',
             dataIndex: 'customerLocation',
             key: 'customerLocation',
-            render: customerLocation => customerLocation.address
+            render: customerLocation => customerLocation?.address
         },
         {
             title: 'Price',
@@ -69,7 +54,7 @@ const Orders = () => {
         }
     ]
 
-    return (orders &&
+    return (orders?.length &&
         <Card title={'Orders'} style={{margin: 20}}>
             <Table
                 dataSource={activeOrders}

@@ -1,6 +1,4 @@
 import React from "react";
-
-import '../../coolButton.css';
 import GenericRestaurantEditor from "../../components/GenericRestaurantEditor";
 
 

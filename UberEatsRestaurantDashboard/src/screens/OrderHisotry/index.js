@@ -9,24 +9,24 @@ const OrderHistory = () => {
     const {restaurant, orders} = useOrderContext()
 
     useEffect(() => {
-        const lastOrder = orders?.[orders?.length - 1]
+        const lastOrder = orders?.[orders?.length - 1];
 
-        lastOrder?.status === "COMPLETED" ||  lastOrder?.status === "DECLINED" &&
+        (lastOrder?.status === "COMPLETED" ||  lastOrder?.status === "DECLINED") &&
         setHistoryOrders(prevOrders => [...prevOrders, lastOrder])
 
     }, [orders])
 
 
     useEffect(() => {
-      restaurant &&
-      DataStore.query(Order, o =>o.and(o=>[
-        o.restaurantID.eq(restaurant.id),
-        o.isDeleted.eq(false),
-          o.or(o => [
-              o.status.eq("DECLINED"),
-              o.status.eq("COMPLETED")
-          ])
-      ])).then(setHistoryOrders)
+        restaurant &&
+        DataStore.query(Order, o =>o.and(o=>[
+            o.restaurantID.eq(restaurant.id),
+            o.isDeleted.eq(false),
+            o.or(o => [
+                o.status.eq("DECLINED"),
+                o.status.eq("COMPLETED")
+            ])
+        ])).then(setHistoryOrders)
     }, [restaurant])
 
     const tableColumns = [
@@ -39,7 +39,7 @@ const OrderHistory = () => {
             title: "Delivery Address",
             dataIndex: "customerLocation",
             key: "customerLocation",
-            render: (customerLocation) => customerLocation.address
+            render: (customerLocation) => customerLocation?.address
         },
         {
             title: "Price",

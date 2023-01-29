@@ -1,12 +1,7 @@
 import {Image, Layout} from "antd";
 import SideMenu from '../src/components/SideMenu';
-import {Amplify} from "aws-amplify";
-import awsExports from "./aws-exports";
 import {withAuthenticator} from '@aws-amplify/ui-react';
 import ProtectedRoutes from "./routes/ProtectedRoutes";
-
-Amplify.configure(awsExports)
-// global.subscription = {}
 
 const {Sider, Content, Footer} = Layout;
 
@@ -24,14 +19,13 @@ function App() {
             <Layout>
                 <Content>
                     <ProtectedRoutes/>
-                    {/*<AppRoutes/>*/}
                 </Content>
                 <Footer style={{textAlign: "center"}}>
                     Uber Eats Restaurant Dashboard ©2022
                 </Footer>
             </Layout>
         </Layout>
+
     )
 }
-
 export default withAuthenticator(App)
