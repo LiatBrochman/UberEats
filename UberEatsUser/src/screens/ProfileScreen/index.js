@@ -1,4 +1,4 @@
-import {Alert, Button, StyleSheet, Text, TextInput} from "react-native";
+import {Alert, Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import React, {useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Auth, DataStore} from "aws-amplify";
@@ -93,8 +93,15 @@ const Profile = () => {
     }
 
     return (
+        <View style={{backgroundColor:"white", flex: 1}}>
         <SafeAreaView>
             <Text style={styles.title}>Profile</Text>
+            <Image
+                source={{
+                    uri: "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2052&q=80"
+                }}
+                style={styles.image}
+            />
             <TextInput
                 value={name}
                 onChangeText={setName}
@@ -120,15 +127,18 @@ const Profile = () => {
             {/*    placeholder="Longitude"*/}
             {/*    style={styles.input}*/}
             {/*/>*/}
-            <Button onPress={onSave} title="Save"/>
+            <Pressable onPress={onSave} style={styles.button}>
+                <Text style={styles.buttonText}>Save</Text>
+            </Pressable>
             <Text
                 onPress={() => Auth.signOut()}
-                style={{textAlign: "center", color: 'red', margin: 10}}>
+                style={{textAlign: "center", color: 'black', margin: 10}}>
                 Sign out
             </Text>
-            <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
+            <Button  onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
             } title="Amplify.DataStore.clear()"/>
         </SafeAreaView>
+        </View>
     );
 };
 
@@ -139,11 +149,31 @@ const styles = StyleSheet.create({
         textAlign: "center",
         margin: 10,
     },
+    image: {
+        width: "100%",
+        aspectRatio: 5 / 3,
+        borderTopRightRadius: 40,
+        borderTopLeftRadius: 40,
+    },
     input: {
         margin: 10,
-        backgroundColor: "white",
-        padding: 15,
-        borderRadius: 5,
+        backgroundColor: "#f7f7f7",
+        padding: 10,
+        borderRadius: 10,
+        borderColor: "gray"
+    },
+    button: {
+        backgroundColor: "#FFAD60",
+        marginTop: "auto",
+        padding: 10,
+        alignItems: "center",
+        margin: 10,
+        borderRadius: 20,
+    },
+    buttonText: {
+        color: "white",
+        fontWeight: "600",
+        fontSize: 18,
     },
 });
 export default Profile;

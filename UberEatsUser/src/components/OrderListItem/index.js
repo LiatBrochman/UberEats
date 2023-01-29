@@ -50,7 +50,8 @@ const styles = StyleSheet.create({
     image: {
         width: 75,
         height: 75,
-        marginRight: 5
+        marginRight: 5,
+        borderRadius: 10,
     },
     name: {
         fontWeight: "600",

@@ -23,31 +23,9 @@ const BasketDishItem = ({dish}) => {
     }
 
     return (
+        <View style={{backgroundColor: "white"}}>
+
         <View style={styles.row}>
-            <View style={styles.quantityContainer}>
-
-                {
-                    dish?.basketID && dish?.basketID !== "null" &&
-                    <AntDesign
-                        name="plussquareo"
-                        size={15}
-                        color={"black"}
-                        onPress={onPlus}
-                    />
-                }
-
-                <Text style={{textAlign: "center"}}>{dish?.quantity}</Text>
-
-                {
-                    dish?.basketID && dish?.basketID !== "null" &&
-                    <AntDesign
-                        name="minussquareo"
-                        size={15}
-                        color={"black"}
-                        onPress={onMinus}
-                    />
-                }
-            </View>
             <Image
                 source={{uri: dish?.image}}
                 style={styles.image}/>
@@ -57,14 +35,43 @@ const BasketDishItem = ({dish}) => {
             {
                 dish?.basketID && dish?.basketID !== "null" &&
                 <AntDesign
-                    name="closesquareo"
-                    size={20}
-                    color={"darkred"}
+                    name="closesquare"
+                    size={30}
+                    color={"#D9534F"}
                     onPress={onRemove}
                 />
             }
 
 
+        </View>
+            {
+                dish?.basketID && dish?.basketID !== "null" &&
+
+            <View style={styles.quantityContainer}>
+
+
+
+                    <AntDesign
+                        name="plus"
+                        size={20}
+                        color={"black"}
+                        onPress={onPlus}
+                    />
+
+
+                <Text style={{textAlign: "center"}}>  {dish?.quantity}  </Text>
+
+
+
+                    <AntDesign
+                        name="minus"
+                        size={20}
+                        color={"black"}
+                        onPress={onMinus}
+                    />
+
+            </View>
+            }
         </View>
     )
 }
@@ -77,22 +84,44 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         marginVertical: 15,
+        backgroundColor: "white",
+
+
+
     },
     quantityContainer: {
-        paddingHorizontal: 5,
+        flexDirection: "row",
+        paddingHorizontal: 12,
         paddingVertical: 2,
-        marginRight: 10,
-        borderRadius: 3,
+       // marginRight: 305,
+        // marginLeft: 5,
+        // borderRadius: 5,
+        backgroundColor:"#96CEB4",
+        marginTop: -25,
+        // paddingRight: 5,
+        alignSelf: "flex-start",
+        width: '22%',
+        marginLeft: 10,
+
+
+
     },
     dishName: {
-        fontWeight: '600'
+        fontWeight: '600',
+         marginLeft: 20,
     },
     dishPrice: {
         marginLeft: "auto",
         marginRight: 10,
     },
     image: {
-        width: '25%',
-        aspectRatio: 5 / 3,
+        width: '22%',
+        aspectRatio: 5 / 4,
+        borderRadius: 10,
+        alignSelf: "flex-start",
+        marginLeft: 10,
+        // marginTop: 12,
+
+
     }
 })

@@ -1,9 +1,11 @@
 import {Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import {AntDesign} from "@expo/vector-icons";
 
 const DEFAULT_IMAGE =
     "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/uber-eats/restaurant1.jpeg";
+
 
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()
@@ -21,17 +23,28 @@ const RestaurantItem = ({restaurant}) => {
                         : DEFAULT_IMAGE,
                 }}
                    style={styles.image}/>
+            <View style={styles.deliveryTime}>
+            <Text style={{color: "black"}}>{restaurant?.minDeliveryMinutes}-{restaurant?.maxDeliveryMinutes} min</Text>
+            </View>
             <View style={styles.row}>
             <View>
             <Text style={styles.title}>{restaurant?.name}</Text>
             <Text style={styles.subtitle}>
-                ${restaurant?.deliveryFee.toFixed(1)} &#8226;{" "}
-                {restaurant?.minDeliveryMinutes}-{restaurant?.maxDeliveryMinutes} minutes</Text>
+                $ {restaurant?.deliveryFee.toFixed(1)} &#8226;{" "}
+                <AntDesign
+                    name="star"
+                    size={15}
+                    color={"#96CEB4"}
+                />
+                <Text style={{fontWeight: "600", color: "black"}}> {restaurant?.rating.toFixed(1)}</Text>
+            </Text>
             </View>
-                <View style={styles.rating}>
-                    <Text>{restaurant?.rating.toFixed(1)}</Text>
-                </View>
+
             </View>
+
+
+
+
         </Pressable>
     );
 };
@@ -52,21 +65,35 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "500",
         marginVertical: 5,
+        marginTop: 20,
     },
     subtitle: {
-        color: "grey",
+        color: "black",
     },
     row: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     rating: {
-        marginLeft: 'auto',
-        backgroundColor: 'lightgrey',
+        // marginLeft: 'auto',
+        // backgroundColor: 'lightgrey',
         width: 30,
         height: 30,
         alignItems: 'center',
         justifyContent: 'center',
+
+        // borderRadius: 20,
+    },
+    deliveryTime: {
+        marginRight: 10,
+        display: "flex",
+        marginTop: -50,
+        backgroundColor: '#FFEEAD',
+        width: 80,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
         borderRadius: 20,
+        alignSelf: "flex-end"
     },
 });
