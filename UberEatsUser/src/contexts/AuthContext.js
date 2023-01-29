@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {Auth, DataStore} from "aws-amplify";
+import {Auth, DataStore, Hub} from "aws-amplify";
 import {Customer} from "../models";
 
 
@@ -12,8 +12,31 @@ const AuthContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser);
-    }, []);
+        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+
+        Hub.listen('auth', (data) => {
+
+            switch (data.payload.event) {
+                case 'signIn':
+                    console.log('user signed in')
+                    Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+                    break;
+                case 'signUp':
+                    console.log('user signed up')
+                    Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+                    break;
+                case 'signOut':
+                    console.log('user signed out')
+                    break;
+                case 'signIn_failure':
+                    console.log('user sign in failed')
+                    break;
+                case 'configured':
+                    console.log('the Auth module is configured')
+            }
+        })
+
+    }, [])
 
     useEffect(() => {
 
