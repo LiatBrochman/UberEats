@@ -91,8 +91,8 @@ const Map = () => {
                     }}
                     onCalloutPress={() => onCalloutPress(restaurant)}
                 >
-                    <View style={{backgroundColor: '#FFAD60', padding: 5, borderRadius: 20}}>
-                        <Entypo name="shop" size={24} color="black"/>
+                    <View style={{backgroundColor: 'white', padding: 5, borderRadius: 20, borderWidth: 2, borderColor: '#FFAD60'}}>
+                        <Entypo name="shop" size={24} color="#FFAD60"/>
                     </View>
                 </Marker>
             )}
@@ -106,8 +106,8 @@ const Map = () => {
                     longitude: courier.location.lng
                 }}>
                 <View style={{padding: 5, borderRadius: 20}}>
-                    {courier?.transportationMode === "DRIVING" && <View style={{backgroundColor: '#96CEB4', padding: 3, borderRadius: 20}}><Icon name="car" size={30} color="black"/></View>}
-                    {courier?.transportationMode === "BICYCLING" && <View style={{backgroundColor: '#96CEB4', padding: 3, borderRadius: 20}}><Icon name="bicycle" size={30} color="black"/></View>}
+                    {courier?.transportationMode === "DRIVING" && <View style={{backgroundColor: 'white', padding: 3, borderRadius: 20, borderWidth: 2, borderColor: '#96CEB4'}}><Icon name="car" size={30} color="#96CEB4"/></View>}
+                    {courier?.transportationMode === "BICYCLING" && <View style={{backgroundColor: 'white', padding: 3, borderRadius: 20, borderWidth: 2, borderColor: '#96CEB4'}}><Icon name="bicycle" size={30} color="#96CEB4"/></View>}
                 </View>
             </Marker>
             }

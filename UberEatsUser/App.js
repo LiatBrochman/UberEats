@@ -11,7 +11,6 @@ import RestaurantContextProvider from "./src/contexts/RestaurantContext";
 import CourierContextProvider from "./src/contexts/CourierContext";
 import {IconComponentProvider} from "@react-native-material/core";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-// import {DefaultTheme} from "@react-navigation/native-stack";
 import { I18nManager } from "react-native";
 
 I18nManager.forceRTL(false);

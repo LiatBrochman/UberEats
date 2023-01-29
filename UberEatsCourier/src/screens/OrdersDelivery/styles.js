@@ -17,7 +17,7 @@ export default StyleSheet.create({
         marginBottom: 20
     },
     routeDetailsText: {
-        fontSize: 25,
+        fontSize: 20,
         letterSpacing: 1
     },
     deliveryDetailsContainer: {
@@ -34,8 +34,8 @@ export default StyleSheet.create({
         alignItems: 'center'
     },
     addressText: {
-        fontSize: 20,
-        color: 'grey',
+        fontSize: 16,
+        color: 'black',
         fontWeight: '500',
         letterSpacing: 0.5,
         marginLeft: 15,
@@ -46,7 +46,7 @@ export default StyleSheet.create({
         paddingTop:20
     },
     orderItemText: {
-        fontSize:18, color:'grey',
+        fontSize:18, color:'black',
         fontWeight:'500',
         letterSpacing: 0.5,
         marginBottom: 5
@@ -60,7 +60,7 @@ export default StyleSheet.create({
     buttonText: {
         color:'white',
         paddingVertical: 15,
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: '500',
         textAlign: 'center',
         letterSpacing: 0.5

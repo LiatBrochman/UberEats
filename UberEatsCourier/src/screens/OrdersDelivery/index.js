@@ -220,7 +220,7 @@ const OrdersDelivery = () => {
                     destination={getDestination()}
                     strokeWidth={10}
                     waypoints={getWaypoints()}
-                    strokeColor="#3FC060"
+                    strokeColor="#96CEB4"
                     apikey={GOOGLE_API_KEY}
                     onReady={(result) => {
                         // setDistance(result.distance)
@@ -234,8 +234,8 @@ const OrdersDelivery = () => {
                     title={restaurant?.name}
                     description={restaurant?.location.address}
                 >
-                    <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
-                        <Entypo name="shop" size={30} color="white"/>
+                    <View style={{backgroundColor: 'white', padding: 5, borderRadius: 20, borderWidth: 2, borderColor: '#FFAD60'}}>
+                        <Entypo name="shop" size={24} color="#FFAD60"/>
                     </View>
                 </Marker>
                 <Marker
@@ -243,8 +243,8 @@ const OrdersDelivery = () => {
                     title={customer?.name}
                     description={customer?.location.address}
                 >
-                    <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
-                        <MaterialIcons name="restaurant" size={30} color="white"/>
+                    <View style={{backgroundColor: 'white', padding: 6, borderRadius: 20, borderWidth: 2, borderColor: '#D9534F'}}>
+                        <MaterialIcons name="person" size={20} color="#D9534F"/>
                     </View>
                 </Marker>
             </MapView>
@@ -260,17 +260,17 @@ const OrdersDelivery = () => {
                          handleIndicatorStyle={styles.handleIndicator}>
                 <View style={styles.handleIndicatorContainer}>
                     <Text style={styles.routeDetailsText}>{totalMinutes.toFixed(0)} min</Text>
-                    <FontAwesome5 name="shopping-bag" size={30} color="#3FC060" style={{marginHorizontal: 10}}/>
+                    <FontAwesome5 name="shopping-bag" size={28} color="#96CEB4" style={{marginHorizontal: 10}}/>
                     <Text style={styles.routeDetailsText}>{totalKm.toFixed(2)} km</Text>
                 </View>
                 <View style={styles.deliveryDetailsContainer}>
                     <Text style={styles.restaurantName}>{restaurant?.name}</Text>
                     <View style={styles.addressContainer}>
-                        <Fontisto name="shopping-store" size={22} color="grey"/>
+                        <Fontisto name="shopping-store" size={18} color="#D9534F"/>
                         <Text style={styles.addressText}>{restaurant?.location.address}</Text>
                     </View>
                     <View style={styles.addressContainer}>
-                        <FontAwesome5 name="map-marker-alt" size={30} color="grey"/>
+                        <FontAwesome5 name="map-marker-alt" size={26} color="#D9534F"/>
                         <Text style={styles.addressText}>{customer?.location.address}</Text>
                     </View>
 
@@ -282,7 +282,7 @@ const OrdersDelivery = () => {
                     </View>
                 </View>
                 <Pressable
-                    style={{...styles.buttonContainer, backgroundColor: isButtonDisabled() ? 'grey' : '#3FC060'}}
+                    style={{...styles.buttonContainer, backgroundColor: isButtonDisabled() ? 'lightgrey' : '#FFAD60'}}
                     onPress={onButtonPressed} disabled={isButtonDisabled()}>
                     <Text style={styles.buttonText}>{renderButtonTitle()}</Text>
 

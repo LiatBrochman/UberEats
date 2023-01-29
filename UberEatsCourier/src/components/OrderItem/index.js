@@ -21,7 +21,7 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
             <Pressable style={{
                 flexDirection: "row",
                 margin: 10,
-                borderColor: "#3FC060",
+                borderColor: "#96CEB4",
                 borderWidth: 2,
                 borderRadius: 12,
             }}
@@ -46,16 +46,16 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
                     <Text style={{fontSize: 18, fontWeight: "500"}}>
                         {restaurant.name}
                     </Text>
-                    <Text style={{color: "grey"}}>{restaurant.location.address}</Text>
-                    <Text style={{color: "grey"}}>{order.status}</Text>
+                    <Text style={{color: "black"}}>{restaurant.location.address}</Text>
+                    <Text style={{color: "black"}}>{order.status}</Text>
                     <Text style={{marginTop: 10}}>Delivery Details:</Text>
-                    <Text style={{color: "grey"}}>{customer?.name}</Text>
-                    <Text style={{color: "grey"}}>{customer?.location.address}</Text>
+                    <Text style={{color: "black"}}>{customer?.name}</Text>
+                    <Text style={{color: "black"}}>{customer?.location.address}</Text>
                 </View>
                 <View
                     style={{
                         padding: 5,
-                        backgroundColor: "#3FC060",
+                        backgroundColor: "#96CEB4",
                         borderBottomRightRadius: 10,
                         borderTopRightRadius: 10,
                         alignItems: "center",

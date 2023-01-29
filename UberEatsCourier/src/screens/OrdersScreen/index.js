@@ -51,8 +51,8 @@ const OrdersScreen = () => {
                                     latitude: restaurant.location.lat,
                                     longitude: restaurant.location.lng
                                 }}>
-                                <View style={{backgroundColor: 'green', padding: 5, borderRadius: 20}}>
-                                    <Entypo name="shop" size={24} color="white"/>
+                                <View style={{backgroundColor: 'white', padding: 5, borderRadius: 20, borderWidth: 2, borderColor: '#FFAD60'}}>
+                                    <Entypo name="shop" size={24} color="#FFAD60"/>
                                 </View>
                             </Marker>
                         )}
@@ -61,7 +61,7 @@ const OrdersScreen = () => {
                         onPress={() => navigation.navigate('Profile')}
                         name="arrow-back-circle"
                         size={45}
-                        color="black"
+                        color="white"
                         style={{top: 40, left: 15, position: 'absolute'}}
                     />
                     {ORCD?.[0]?.restaurant?.id &&
@@ -70,7 +70,7 @@ const OrdersScreen = () => {
                             <Text style={{
                                 fontSize: 20, fontWeight: '600', letterSpacing: 0.5, paddingBottom: 5
                             }}>You're Online</Text>
-                                <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                                <Text style={{letterSpacing: 0.5, color: '#D9534F', fontWeight: '600'}}>
                                     Available Orders: {activeORCD.length}
                                 </Text>
 
