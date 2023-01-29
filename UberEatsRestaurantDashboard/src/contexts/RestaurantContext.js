@@ -11,6 +11,7 @@ const RestaurantContextProvider = ({children}) => {
     const {dbOwner} = useAuthContext()
     const [restaurantDishes, setRestaurantDishes] = useState([])
     const [restaurant, setRestaurant] = useState(null)
+    const [loading,setLoading] = useState(true)
 
     useEffect(() => {
         if (dbOwner && !restaurant) {
@@ -25,8 +26,7 @@ const RestaurantContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (restaurant && restaurantDishes.length === 0)
-        {
+        if (restaurant && restaurantDishes.length === 0) {
             DataStore.observeQuery(Dish, dish => dish.and(
                 dish =>
                     [
@@ -39,12 +39,14 @@ const RestaurantContextProvider = ({children}) => {
                     setRestaurantDishes(items)
                 }
             })
+            setLoading(false)
         }
     }, [restaurant])
 
 
     return (<RestaurantContext.Provider
             value={{
+                loading,
                 restaurant,
                 setRestaurant,
                 restaurantDishes,
