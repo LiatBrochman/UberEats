@@ -11,7 +11,7 @@ const RestaurantContextProvider = ({children}) => {
     const {dbOwner} = useAuthContext()
     const [restaurantDishes, setRestaurantDishes] = useState([])
     const [restaurant, setRestaurant] = useState(null)
-
+    const [loading,setLoading] = useState(true)
 
     useEffect(() => {
         if (dbOwner && !restaurant) {
@@ -19,8 +19,6 @@ const RestaurantContextProvider = ({children}) => {
                 .subscribe(({items, isSynced}) => {
                     if (isSynced) {
                         setRestaurant(items[0])
-                        // console.log("subscribing to restaurant")
-                        // console.table(items[0])
                     }
                 })
         }
@@ -28,9 +26,7 @@ const RestaurantContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (restaurant && restaurantDishes.length === 0)
-            // subscription.restaurantDishes =
-        {
+        if (restaurant && restaurantDishes.length === 0) {
             DataStore.observeQuery(Dish, dish => dish.and(
                 dish =>
                     [
@@ -40,18 +36,17 @@ const RestaurantContextProvider = ({children}) => {
                     ]
             )).subscribe(({items, isSynced}) => {
                 if (isSynced) {
-                    // console.log("subscribing to dishes of restaurant")
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Restaurant Dishes: ~~~~~~~~~~~~~~~~~~~~~ ", JSON.stringify(items, null, 4))
                     setRestaurantDishes(items)
-
                 }
             })
+            setLoading(false)
         }
     }, [restaurant])
 
 
     return (<RestaurantContext.Provider
             value={{
+                loading,
                 restaurant,
                 setRestaurant,
                 restaurantDishes,

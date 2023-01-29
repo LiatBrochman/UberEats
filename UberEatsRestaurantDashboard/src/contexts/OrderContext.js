@@ -2,9 +2,7 @@ import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Dish, Order} from "../models";
 import {useRestaurantContext} from "./RestaurantContext";
-//import {useAuthContext} from "./AuthContext";
-//import * as Location from "expo-location";
-//import {useNavigate} from "react-router-dom";
+
 
 const OrderContext = createContext({});
 
@@ -13,35 +11,39 @@ const OrderContextProvider = ({children}) => {
     const [order, setOrder] = useState(null)
     const [orders, setOrders] = useState([])
     const [orderDishes, setOrderDishes] = useState([])
+    const [countOrderUpdates, setCountOrderUpdates] = useState(0)
 
 
     useEffect(() => {
-        if (restaurant) {
-            if (orders?.length === 0)
-                // subscription.orders =
-            {
-                DataStore.observeQuery(Order, o => o.restaurantID.eq(restaurant.id))
-                    .subscribe(({items, isSynced}) => {
-                        if (isSynced) {
-                            // console.log("subscribing to orders")
-                            setOrders(items)
-                        }
-                    })
-            }
-            if (orderDishes.length === 0)
-                // subscription.orderDishes =
-            {
-                DataStore.observeQuery(Dish, d => d.and(d => [
-                    d.restaurantID.eq(restaurant.id),
-                    d.orderID.ne("null")
-                ]))
-                    .subscribe(({items, isSynced}) => {
-                        if (isSynced) {
-                            // console.log("subscribing to dishes of orders")
-                            setOrderDishes(items)
-                        }
-                    })
-            }
+        /**
+         * Init "Orders" (orders that are related to the restaurant)
+         */
+        if (restaurant && orders?.length === 0) {
+            DataStore.observeQuery(Order, o => o.restaurantID.eq(restaurant.id))
+                .subscribe(({items, isSynced}) => {
+                    if (isSynced) {
+                        setOrders(items)
+                        setCountOrderUpdates(prev => prev + 1)
+                    }
+                })
+        }
+    }, [restaurant])
+
+
+    useEffect(() => {
+        /**
+         * Init "Order Dishes" (dishes that are related to this restaurant)
+         */
+        if (restaurant && orderDishes.length === 0) {
+            DataStore.observeQuery(Dish, d => d.and(d => [
+                d.restaurantID.eq(restaurant.id),
+                d.orderID.ne("null")
+            ]))
+                .subscribe(({items, isSynced}) => {
+                    if (isSynced) {
+                        setOrderDishes(items)
+                    }
+                })
         }
     }, [restaurant])
 
@@ -53,6 +55,7 @@ const OrderContextProvider = ({children}) => {
             restaurant,
             orderDishes,
             orders,
+            countOrderUpdates
         }}>
             {children}
         </OrderContext.Provider>

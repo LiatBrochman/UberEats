@@ -2,12 +2,12 @@ import {useRestaurantContext} from "../contexts/RestaurantContext";
 import {useEffect, useState} from "react";
 import AppRoutes from "./AppRoutes";
 import NewRestaurant from "../screens/NewRestaurant";
+import {Text} from "@aws-amplify/ui-react";
 
 const ProtectedRoutes = () => {
 
-    const {restaurant} = useRestaurantContext()
+    const {loading,restaurant} = useRestaurantContext()
     const [restaurantIsEmpty, setRestaurantIsEmpty] = useState(true)
-
 
 
     useEffect(() => {
@@ -16,7 +16,9 @@ const ProtectedRoutes = () => {
 
 
     return restaurantIsEmpty ? (
-        <NewRestaurant/>
+        loading
+            ? <Text style={{fontSize:100}}>...Loading...</Text>
+            : <NewRestaurant/>
     ) : (
         <AppRoutes/>
 

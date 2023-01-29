@@ -27,7 +27,7 @@ function GenericRestaurantEditor({props}) {
     const editRestaurant = async (draft_restaurant) => {
         try {
             DataStore.query(Restaurant, restaurant.id)
-                .then(origin => DataStore.save(Restaurant.copyOf(origin,updated=> Object.assign(updated,draft_restaurant))))
+                .then(origin => DataStore.save(Restaurant.copyOf(origin, updated => Object.assign(updated, draft_restaurant))))
                 .then(setRestaurant)
         } catch (e) {
             console.error("error on edit restaurant")
@@ -158,8 +158,9 @@ function GenericRestaurantEditor({props}) {
                         <Input placeholder="Enter restaurant address here"/>
                     </Form.Item>
 
-                    <Form.Item name="isOpen" label="Restaurant is open" initialValue={isOpen} required>
-                        <Switch defaultChecked={!!isOpen}/>
+                    <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" required>
+                        <Switch defaultChecked={!!isOpen}
+                        />
                     </Form.Item>
 
 

@@ -19,6 +19,7 @@ const AuthContextProvider = ({children}) => {
         if (sub) {
             DataStore.query(Courier, (courier) => courier.sub.eq(sub))
                 .then((couriers) => {
+                    //fixme: no courier was found - create new courier
                     setDbCourier(couriers[0])
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setting dbCourier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers[0], null, 4))
                 })

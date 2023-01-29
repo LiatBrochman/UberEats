@@ -66,6 +66,8 @@ function GenericDishEditor({props}) {
             case "EDIT":
                 await editRestaurantDish(values)
                 break;
+            default:
+                console.error("wrong type value sent to generic props (can only accept EDIT or NEW)", props.type)
         }
         navigate(`/menu`)
     }
@@ -134,7 +136,7 @@ function GenericDishEditor({props}) {
                 </Form.Item>
                 <Form.Item label="Dish is Active"
                            name="isActive"
-                           initialValue={isActive}
+                           valuePropName="checked"
                            required>
                     <Switch
                         defaultChecked={!!isActive}
