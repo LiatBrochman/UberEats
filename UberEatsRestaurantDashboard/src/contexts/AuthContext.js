@@ -1,5 +1,5 @@
-import {createContext, useContext, useEffect, useState} from "react";
-import {Auth, DataStore} from "aws-amplify";
+import {createContext, useContext, useEffect, useRef, useState} from "react";
+import {Auth, DataStore, Hub} from "aws-amplify";
 import {Owner} from "../models";
 
 
@@ -9,6 +9,33 @@ const AuthContextProvider = ({children}) => {
     const [authUser, setAuthUser] = useState(null)
     const [dbOwner, setDbOwner] = useState(null)
     const sub = authUser?.attributes?.sub
+
+    useEffect(() => {
+        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+
+                Hub.listen('auth', (data) => {
+
+                    switch (data.payload.event) {
+                        case 'signIn':
+                            console.log('user signed in')
+                            Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+                            break;
+                        case 'signUp':
+                            console.log('user signed up')
+                            Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+                            break;
+                        case 'signOut':
+                            console.log('user signed out')
+                            break;
+                        case 'signIn_failure':
+                            console.log('user sign in failed')
+                            break;
+                        case 'configured':
+                            console.log('the Auth module is configured')
+                    }
+                })
+
+    }, [])
 
     const getOwner = async () => {
         return await getExistingOwner()
@@ -42,7 +69,7 @@ const AuthContextProvider = ({children}) => {
         }
     }
 
-    const createNewOwner =async () => {
+    const createNewOwner = async () => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ creating new owner!! ~~~~~~~~~~~~~~~~~~~~~ ")
         try {
             return await DataStore.save(new Owner({
@@ -54,16 +81,12 @@ const AuthContextProvider = ({children}) => {
         }
     }
 
-    useEffect(() => {
-        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
-    }, [])
 
 
     useEffect(() => {
         /**
          * create owner \ get existing owner
          */
-
         if (sub) {
             getOwner().then(setDbOwner)
         }
