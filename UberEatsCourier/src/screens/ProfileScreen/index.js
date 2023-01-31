@@ -60,7 +60,7 @@ const Profile = () => {
                 })
             );
             setDbCourier(courier)
-            console.log("\n\n success creating courier profile")
+           // console.log("\n\n success creating courier profile")
         } catch (e) {
             Alert.alert("Error", e.message);
         }

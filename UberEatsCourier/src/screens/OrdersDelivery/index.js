@@ -139,7 +139,7 @@ const OrdersDelivery = () => {
              * to complete an order, the courier must be near the customer's address (100meters)
              */
             case "PICKED_UP":
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current, null, 4))
+                //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current, null, 4))
                 isClickable = distanceRef.current <= 0.1
                 break;
 
