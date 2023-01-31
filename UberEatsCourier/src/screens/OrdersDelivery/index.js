@@ -7,11 +7,11 @@ import styles from "./styles";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import {useNavigation} from "@react-navigation/native";
-import {GOOGLE_API_KEY} from '@env';
 import {useOrderContext} from "../../contexts/OrderContext";
 import {DataStore} from "aws-amplify";
 import {Order} from "../../models";
 import {useAuthContext} from "../../contexts/AuthContext";
+
 
 
 function degreesToRadians(degrees) {
@@ -221,7 +221,7 @@ const OrdersDelivery = () => {
                     strokeWidth={10}
                     waypoints={getWaypoints()}
                     strokeColor="#96CEB4"
-                    apikey={GOOGLE_API_KEY}
+                    apikey={process.env.GOOGLE_API_KEY }
                     onReady={(result) => {
                         // setDistance(result.distance)
                         distanceRef.current = result.distance

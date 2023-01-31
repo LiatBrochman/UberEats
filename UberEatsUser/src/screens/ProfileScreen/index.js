@@ -5,7 +5,6 @@ import {Auth, DataStore} from "aws-amplify";
 import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
-import {GOOGLE_API_KEY} from '@env';
 import Geocoder from 'react-native-geocoding';
 
 
@@ -32,7 +31,7 @@ const Profile = () => {
             return
         }
 
-        Geocoder.init(GOOGLE_API_KEY)
+        Geocoder.init(process.env.GOOGLE_API_KEY)
         Geocoder.from(address + '')
             .then(json => {
                 const location = json?.results?.[0]?.geometry?.location
