@@ -9,127 +9,158 @@ import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
 
 
+function verifyDraft(draft) {
+   return (
+       typeof draft.name === 'string' &&
+       typeof draft.transportationMode === 'string' &&
+       typeof draft.location.lat === 'number' &&
+       typeof draft.location.lng === 'number'
+   )
+}
 
 const Profile = () => {
     const {dbCourier, setDbCourier, sub} = useAuthContext();
     const {driverLocation} = useOrderContext()
     const [name, setName] = useState(dbCourier?.name || "");
-    const [transportationMode, setTransportationMode] = useState(TransportationModes.DRIVING);
+    const [transportationMode, setTransportationMode] = useState(dbCourier?.transportationMode || "DRIVING");
 
     const navigation = useNavigation()
 
+
     const onSave = async () => {
+        const draft = {name, transportationMode , location:{
+               lat: parseFloat(driverLocation?.latitude),
+                lng: parseFloat(driverLocation?.longitude)
+            }}
+
+        if(!verifyDraft(draft)) {
+            console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to save not a valid courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft),null,4)
+            return null
+        }
         if (dbCourier) {
-            await updateCourier();
+            await updateCourier(draft)
         } else {
-            await createCourier();
+            draft.isDeleted = false
+            draft.isActive = true
+            draft.location.address = "null"
+            await createCourier(draft)
         }
-        //navigation.navigate('OrdersScreen')
-    };
-
-    const updateCourier = async () => {
-        const courier = await DataStore.save(
-            Courier.copyOf(dbCourier, (updated) => {
-                updated.name = name;
-                updated.isDeleted = false;
-                updated.isActive = false;
-                updated.transportationMode = transportationMode;
-                updated.location = {
-                    address: null,
-                    lat: parseFloat(driverLocation.latitude),
-                    lng: parseFloat(driverLocation.longitude),
-                }
-            })
-        );
-        setDbCourier(courier);
-    };
-
-    const createCourier = async () => {
-        try {
-            const courier = await DataStore.save(
-                new Courier({
-                    sub: sub,
-                    name: name,
-                    transportationMode,
-                    location: {
-                        lat: parseFloat(driverLocation?.latitude) || 32.19,
-                        lng: parseFloat(driverLocation?.longitude) || 34.86,
-                    },
-                    isDeleted: false,
-                    isActive: true,
-                })
-            );
-            setDbCourier(courier)
-            console.log("\n\n success creating courier profile")
-        } catch (e) {
-            Alert.alert("Error", e.message);
-        }
+        navigation.navigate('OrdersScreen')
     }
+
+    const updateCourier = async draft => {
+        DataStore.save(Courier.copyOf(dbCourier, updated => Object.assign(updated, draft)))
+            .then(setDbCourier)
+    }
+
+    const createCourier = async draft => {
+        DataStore.save(new Courier(draft))
+            .then(setDbCourier)
+    }
+
+    // const updateCourier = async () => {
+    //     const courier = await DataStore.save(
+    //         Courier.copyOf(dbCourier, (updated) => {
+    //             updated.name = name;
+    //             updated.isDeleted = false;
+    //             updated.isActive = false;
+    //             updated.transportationMode = transportationMode;
+    //             updated.location = {
+    //                 address: null,
+    //                 lat: parseFloat(driverLocation.latitude),
+    //                 lng: parseFloat(driverLocation.longitude),
+    //             }
+    //         })
+    //     );
+    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updateCourier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier, null, 4))
+    //
+    //     setDbCourier(courier);
+    // }
+    //
+    // const createCourier = async () => {
+    //     try {
+    //         const courier = await DataStore.save(
+    //             new Courier({
+    //                 sub: sub,
+    //                 name: name,
+    //                 transportationMode,
+    //                 location: {
+    //                     lat: parseFloat(driverLocation?.latitude) || 32.19,
+    //                     lng: parseFloat(driverLocation?.longitude) || 34.86,
+    //                 },
+    //                 isDeleted: false,
+    //                 isActive: true,
+    //             })
+    //         );
+    //         setDbCourier(courier)
+    //         console.log("\n\n success creating courier profile")
+    //     } catch (e) {
+    //         Alert.alert("Error", e.message);
+    //     }
+    // }
 
     return (
         <View style={{backgroundColor: "white", flex: 1}}>
-        <Text style={styles.title}>Profile</Text>
-    <Image
-        source={{
-            uri: "https://images.unsplash.com/photo-1595509552179-488a7a58e818?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=545&q=80"
-        }}
-        style={styles.image}
-    />
-        <SafeAreaView>
-            <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="Name"
-                style={styles.input}
+            <Text style={styles.title}>Profile</Text>
+            <Image
+                source={{
+                    uri: "https://images.unsplash.com/photo-1595509552179-488a7a58e818?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=545&q=80"
+                }}
+                style={styles.image}
             />
-            <View style={{flexDirection: "row"}}>
-                <Pressable
-                    onPress={() => setTransportationMode(TransportationModes.BICYCLING)}
-                    style={{
-                        backgroundColor: "white",
-                        margin: 10,
-                        padding: 10,
-                        borderWidth: 2,
-                        borderColor: transportationMode === TransportationModes.BICYCLING ? "#96CEB4" : "lightgray",
-                        borderRadius: 30
-                    }}>
-                    <MaterialIcons name="pedal-bike" size={25} color={transportationMode === TransportationModes.BICYCLING ? "#96CEB4" : "lightgray"}/>
+            <SafeAreaView>
+                <TextInput
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Name"
+                    style={styles.input}
+                />
+                <View style={{flexDirection: "row"}}>
+                    <Pressable
+                        onPress={() => setTransportationMode(TransportationModes.BICYCLING)}
+                        style={{
+                            backgroundColor: "white",
+                            margin: 10,
+                            padding: 10,
+                            borderWidth: 2,
+                            borderColor: transportationMode === TransportationModes.BICYCLING ? "#96CEB4" : "lightgray",
+                            borderRadius: 30
+                        }}>
+                        <MaterialIcons name="pedal-bike" size={25}
+                                       color={transportationMode === TransportationModes.BICYCLING ? "#96CEB4" : "lightgray"}/>
+                    </Pressable>
+                    <Pressable
+                        onPress={() => setTransportationMode(TransportationModes.DRIVING)}
+                        style={{
+                            backgroundColor: "white",
+                            margin: 10,
+                            padding: 10,
+                            borderWidth: 2,
+                            borderColor: transportationMode === TransportationModes.DRIVING ? "#96CEB4" : "lightgray",
+                            borderRadius: 30
+                        }}>
+                        <FontAwesome5 name="car" size={25}
+                                      color={transportationMode === TransportationModes.DRIVING ? "#96CEB4" : "lightgray"}/>
+                    </Pressable>
+                </View>
+
+                <Pressable onPress={onSave} style={styles.buttonSave}>
+                    <Text style={styles.buttonText}>Save</Text>
                 </Pressable>
-                <Pressable
-                    onPress={() => setTransportationMode(TransportationModes.DRIVING)}
-                    style={{
-                        backgroundColor: "white",
-                        margin: 10,
-                        padding: 10,
-                        borderWidth: 2,
-                        borderColor: transportationMode === TransportationModes.DRIVING ? "#96CEB4" : "lightgray",
-                        borderRadius: 30
-                    }}>
-                    <FontAwesome5 name="car" size={25} color={transportationMode === TransportationModes.DRIVING ? "#96CEB4" : "lightgray"}/>
+                <Pressable onPress={() => navigation.navigate("OrdersScreen")} style={styles.buttonReturn}>
+                    <Text style={styles.buttonText}>return without save</Text>
                 </Pressable>
-            </View>
-
-            <Pressable onPress={onSave} style={styles.buttonSave}>
-                <Text style={styles.buttonText}>Save</Text>
-            </Pressable>
-            <Pressable  onPress={() => navigation.navigate("OrdersScreen")} style={styles.buttonReturn}>
-                <Text style={styles.buttonText}>return without save</Text>
-            </Pressable>
-            <Text
-                onPress={() => Auth.signOut()}
-                style={{textAlign: "center", color: 'black', margin: 10}}>
-                Sign out
-            </Text>
-            <Button
-                onPress={async () => await Amplify.DataStore.clear().then(async () => await Amplify.DataStore.start())}
-                title="Amplify.DataStore.clear()"/>
+                <Text
+                    onPress={() => Auth.signOut()}
+                    style={{textAlign: "center", color: 'black', margin: 10}}>
+                    Sign out
+                </Text>
+                <Button
+                    onPress={async () => await Amplify.DataStore.clear().then(async () => await Amplify.DataStore.start())}
+                    title="Amplify.DataStore.clear()"/>
 
 
-
-
-
-
-        </SafeAreaView>
+            </SafeAreaView>
         </View>
     );
 };
