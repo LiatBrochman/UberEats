@@ -12,37 +12,36 @@ const RestaurantItem = ({restaurant}) => {
     const {setRestaurant} = useRestaurantContext()
     const onPress = () => {
         setRestaurant(restaurant)
-        navigation.navigate("Restaurant", { id: restaurant?.id });
+        navigation.navigate("Restaurant", {id: restaurant?.id});
     }
     return (
-        <Pressable onPress={onPress}  style={styles.restaurantContainer}>
+        <Pressable onPress={onPress} style={styles.restaurantContainer}>
             <Image
                 source={{
                     uri: restaurant?.image.startsWith("http")
                         ? restaurant.image
                         : DEFAULT_IMAGE,
                 }}
-                   style={styles.image}/>
+                style={styles.image}/>
             <View style={styles.deliveryTime}>
-            <Text style={{color: "black"}}>{restaurant?.minDeliveryMinutes}-{restaurant?.maxDeliveryMinutes} min</Text>
+                <Text
+                    style={{color: "black"}}>{restaurant?.minDeliveryMinutes}-{restaurant?.maxDeliveryMinutes} min</Text>
             </View>
             <View style={styles.row}>
-            <View>
-            <Text style={styles.title}>{restaurant?.name}</Text>
-            <Text style={styles.subtitle}>
-                $ {restaurant?.deliveryFee.toFixed(1)} &#8226;{" "}
-                <AntDesign
-                    name="star"
-                    size={15}
-                    color={"#96CEB4"}
-                />
-                <Text style={{fontWeight: "600", color: "black"}}> {restaurant?.rating.toFixed(1)}</Text>
-            </Text>
-            </View>
+                <View>
+                    <Text style={styles.title}>{restaurant?.name}</Text>
+                    <Text style={styles.subtitle}>
+                        $ {restaurant?.deliveryFee.toFixed(1)} &#8226;{" "}
+                        <AntDesign
+                            name="star"
+                            size={15}
+                            color={"#96CEB4"}
+                        />
+                        <Text style={{fontWeight: "600", color: "black"}}> {restaurant?.rating.toFixed(1)}</Text>
+                    </Text>
+                </View>
 
             </View>
-
-
 
 
         </Pressable>

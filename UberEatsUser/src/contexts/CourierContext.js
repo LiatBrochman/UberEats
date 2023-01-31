@@ -9,7 +9,7 @@ const CourierContext = createContext({})
 
 const CourierContextProvider = ({children}) => {
     const {orders} = useOrderContext()
-    const [courier, setCourier] = useState({})
+    const [courier, setCourier] = useState(null)
 
 
     useEffect(() => {
@@ -21,10 +21,10 @@ const CourierContextProvider = ({children}) => {
             })
             if (orderWithCourier && orderWithCourier?.courierID) {
 
-                subscription.courier = DataStore.observeQuery(Courier, c=> c.id.eq(orderWithCourier.courierID))
-                    .subscribe(({items}) => {
-                       // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updated courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items?.[0],null,4))
-                        setCourier(items?.[0])
+                subscription.courier = DataStore.observeQuery(Courier, c => c.id.eq(orderWithCourier.courierID))
+                    .subscribe(({items, isSynced}) => {
+                        // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updated courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items?.[0],null,4))
+                        isSynced && setCourier(items?.[0])
                     })
             }
         }

@@ -18,9 +18,9 @@ const Basket = () => {
     }, [basketDishes])
 
     const onCreateOrder = async () => {
-        if(totalPrice && restaurant?.deliveryFee && totalPrice > restaurant.deliveryFee){
-        await createOrder()
-        navigation.goBack()
+        if (totalPrice && restaurant?.deliveryFee && totalPrice > restaurant.deliveryFee) {
+            await createOrder()
+            navigation.goBack()
         }
     }
 

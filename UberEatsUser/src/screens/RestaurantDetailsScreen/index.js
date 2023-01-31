@@ -6,7 +6,6 @@ import styles from "./styles";
 import {useNavigation} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import {ShoppingCartOutlined} from "@ant-design/icons";
 
 
 const RestaurantDetailsPage = () => {
@@ -33,9 +32,9 @@ const RestaurantDetailsPage = () => {
 
             {basket && (
                 <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
-                <View>
-                    <Text style={styles.buttonText}>Open basket({totalBasketQuantity})</Text>
-                </View>
+                    <View>
+                        <Text style={styles.buttonText}>Open basket({totalBasketQuantity})</Text>
+                    </View>
                 </Pressable>
 
             )}

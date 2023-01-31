@@ -5,7 +5,6 @@ import {Auth, DataStore} from "aws-amplify";
 import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
-import {GOOGLE_API_KEY} from '@env';
 import Geocoder from 'react-native-geocoding';
 
 
@@ -32,7 +31,7 @@ const Profile = () => {
             return
         }
 
-        Geocoder.init(GOOGLE_API_KEY)
+        Geocoder.init(process.env.GOOGLE_API_KEY)
         Geocoder.from(address + '')
             .then(json => {
                 const location = json?.results?.[0]?.geometry?.location
@@ -93,51 +92,51 @@ const Profile = () => {
     }
 
     return (
-        <View style={{backgroundColor:"white", flex: 1}}>
-        <SafeAreaView>
-            <Text style={styles.title}>Profile</Text>
-            <Image
-                source={{
-                    uri: "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2052&q=80"
-                }}
-                style={styles.image}
-            />
-            <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="Name"
-                style={styles.input}
-            />
-            <TextInput
-                value={address}
-                onChangeText={setAddress}
-                placeholder="Address"
-                style={styles.input}
-            />
-            {/*<TextInput*/}
-            {/*    value={lat}*/}
-            {/*    onChangeText={setLat}*/}
-            {/*    placeholder="Latitude"*/}
-            {/*    style={styles.input}*/}
-            {/*    keyboardType="numeric"*/}
-            {/*/>*/}
-            {/*<TextInput*/}
-            {/*    value={lng}*/}
-            {/*    onChangeText={setLng}*/}
-            {/*    placeholder="Longitude"*/}
-            {/*    style={styles.input}*/}
-            {/*/>*/}
-            <Pressable onPress={onSave} style={styles.button}>
-                <Text style={styles.buttonText}>Save</Text>
-            </Pressable>
-            <Text
-                onPress={() => Auth.signOut()}
-                style={{textAlign: "center", color: 'black', margin: 10}}>
-                Sign out
-            </Text>
-            <Button  onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
-            } title="Amplify.DataStore.clear()"/>
-        </SafeAreaView>
+        <View style={{backgroundColor: "white", flex: 1}}>
+            <SafeAreaView>
+                <Text style={styles.title}>Profile</Text>
+                <Image
+                    source={{
+                        uri: "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2052&q=80"
+                    }}
+                    style={styles.image}
+                />
+                <TextInput
+                    value={name}
+                    onChangeText={setName}
+                    placeholder="Name"
+                    style={styles.input}
+                />
+                <TextInput
+                    value={address}
+                    onChangeText={setAddress}
+                    placeholder="Address"
+                    style={styles.input}
+                />
+                {/*<TextInput*/}
+                {/*    value={lat}*/}
+                {/*    onChangeText={setLat}*/}
+                {/*    placeholder="Latitude"*/}
+                {/*    style={styles.input}*/}
+                {/*    keyboardType="numeric"*/}
+                {/*/>*/}
+                {/*<TextInput*/}
+                {/*    value={lng}*/}
+                {/*    onChangeText={setLng}*/}
+                {/*    placeholder="Longitude"*/}
+                {/*    style={styles.input}*/}
+                {/*/>*/}
+                <Pressable onPress={onSave} style={styles.button}>
+                    <Text style={styles.buttonText}>Save</Text>
+                </Pressable>
+                <Text
+                    onPress={() => Auth.signOut()}
+                    style={{textAlign: "center", color: 'black', margin: 10}}>
+                    Sign out
+                </Text>
+                <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
+                } title="Amplify.DataStore.clear()"/>
+            </SafeAreaView>
         </View>
     );
 };

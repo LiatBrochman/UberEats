@@ -25,30 +25,29 @@ const BasketDishItem = ({dish}) => {
     return (
         <View style={{backgroundColor: "white"}}>
 
-        <View style={styles.row}>
-            <Image
-                source={{uri: dish?.image}}
-                style={styles.image}/>
-            <Text style={styles.dishName}>{dish?.name}</Text>
-            <Text style={styles.dishPrice}>$ {dish?.price}</Text>
+            <View style={styles.row}>
+                <Image
+                    source={{uri: dish?.image}}
+                    style={styles.image}/>
+                <Text style={styles.dishName}>{dish?.name}</Text>
+                <Text style={styles.dishPrice}>$ {dish?.price}</Text>
 
+                {
+                    dish?.basketID && dish?.basketID !== "null" &&
+                    <AntDesign
+                        name="closesquare"
+                        size={30}
+                        color={"#D9534F"}
+                        onPress={onRemove}
+                    />
+                }
+
+
+            </View>
             {
                 dish?.basketID && dish?.basketID !== "null" &&
-                <AntDesign
-                    name="closesquare"
-                    size={30}
-                    color={"#D9534F"}
-                    onPress={onRemove}
-                />
-            }
 
-
-        </View>
-            {
-                dish?.basketID && dish?.basketID !== "null" &&
-
-            <View style={styles.quantityContainer}>
-
+                <View style={styles.quantityContainer}>
 
 
                     <AntDesign
@@ -59,8 +58,7 @@ const BasketDishItem = ({dish}) => {
                     />
 
 
-                <Text style={{textAlign: "center"}}>  {dish?.quantity}  </Text>
-
+                    <Text style={{textAlign: "center"}}>  {dish?.quantity}  </Text>
 
 
                     <AntDesign
@@ -70,7 +68,7 @@ const BasketDishItem = ({dish}) => {
                         onPress={onMinus}
                     />
 
-            </View>
+                </View>
             }
         </View>
     )
@@ -87,16 +85,15 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
 
 
-
     },
     quantityContainer: {
         flexDirection: "row",
         paddingHorizontal: 12,
         paddingVertical: 2,
-       // marginRight: 305,
+        // marginRight: 305,
         // marginLeft: 5,
         // borderRadius: 5,
-        backgroundColor:"#96CEB4",
+        backgroundColor: "#96CEB4",
         marginTop: -25,
         // paddingRight: 5,
         alignSelf: "flex-start",
@@ -104,11 +101,10 @@ const styles = StyleSheet.create({
         marginLeft: 10,
 
 
-
     },
     dishName: {
         fontWeight: '600',
-         marginLeft: 20,
+        marginLeft: 20,
     },
     dishPrice: {
         marginLeft: "auto",
