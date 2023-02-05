@@ -2,7 +2,7 @@ import {useRestaurantContext} from "../contexts/RestaurantContext";
 import {useEffect, useState} from "react";
 import AppRoutes from "./AppRoutes";
 import NewRestaurant from "../screens/NewRestaurant";
-import {Image, Text} from "@aws-amplify/ui-react";
+import {Image} from "@aws-amplify/ui-react";
 
 const ProtectedRoutes = () => {
 
