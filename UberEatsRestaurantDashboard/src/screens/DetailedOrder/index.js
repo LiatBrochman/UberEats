@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Customer, Order} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
+import "./index.css"
 
 const DetailedOrder = () => {
 
@@ -20,7 +21,7 @@ const DetailedOrder = () => {
             .then(order => DataStore.save(
                     Order.copyOf(order, (updated) => {
                         updated.status = newStatus
-                        if(newStatus==="NEW") updated.courierID="null"
+                        if (newStatus === "NEW") updated.courierID = "null"
                     })
                 )
             )
@@ -31,69 +32,104 @@ const DetailedOrder = () => {
     return (
         <>
             {customer &&
-            <Card title={`Order ${order.id}`} style={{margin: 20}}>
-                <Descriptions bordered column={{lg: 1, md: 1, sm: 1}}>
-                    <Descriptions.Item label="Customer">
-                        {customer.name}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Customer Address">
-                        {customer.location?.address}
-                    </Descriptions.Item>
-                </Descriptions>
+            <Card title={`Order`} style={{margin: 20}}>
+
+
+                <List bordered style={{border: "none"}} column={{lg: 1, md: 1, sm: 1}}>
+                    <List.Item style={{border: "none"}}>
+                        <div>
+                            Customer: {customer.name}
+                        </div>
+                    </List.Item>
+                    <List.Item>
+                        <div>
+                            Customer Address: {customer.location?.address}
+                        </div>
+                    </List.Item>
+
+                </List>
                 <Divider/>
-                <List
-                    dataSource={orderDishes}
-                    renderItem={(dishItem) => (
-                        <List.Item>
-                            <div style={{fontWeight: "bold"}}>
-                                {dishItem.name} x{dishItem.quantity}
-                            </div>
-                            <div>{dishItem.price}$</div>
-                        </List.Item>
-                    )}
-                />
-                <List.Item>
-                    <div style={{fontWeight: "bold"}}>
-                        delivery fee:
-                    </div>
-                    <div>{restaurant.deliveryFee}$</div>
-                </List.Item>
-                <Divider/>
-                <div style={styles.totalSumContainer}>
-                    <h2>Total:</h2>
-                    <h2 style={styles.totalPrice}>{order.totalPrice}$</h2>
-                </div>
-                <Divider/>
+
+                <List bordered style={{border: "none"}}
+                      dataSource={orderDishes}
+                      renderItem={(dishItem) => (
+
+                          <List.Item style={{border: "none"}}>
+                              <div>
+                                  {dishItem.name} x{dishItem.quantity}
+                              </div>
+                              <div>{dishItem.price}$</div>
+                          </List.Item>
+                      )}/>
+
+                <List bordered style={{border: "none"}} column={{lg: 1, md: 1, sm: 1}}>
+                    <List.Item style={{border: "none"}}>
+                        <div>
+                            delivery fee:
+                        </div>
+                        <div>{restaurant.deliveryFee}$</div>
+                    </List.Item>
+
+                    <List.Item style={{border: "none"}}>
+                        <h2>Total:</h2>
+                        <h2 className="totalPrice">{order.totalPrice}$</h2>
+                    </List.Item>
+                </List>
+
                 {status && <>
-                    <div style={styles.buttonsContainer}>
-                        <Button block type="danger" size="large" style={styles.button}
+                    <div className="buttonsContainer">
+                        <Button block style={{backgroundColor: "#D9534F", color: "white"}} size="medium"
+                                className="button"
                                 disabled={status !== "NEW"}
-                                onClick={async () => await updateStatus({id:order.id,newStatus:"DECLINED"})}>
+                                onClick={async () => await updateStatus({id: order.id, newStatus: "DECLINED"})}>
                             Decline Order
                         </Button>
-                        <Button block type="primary" size="large" style={styles.button}
+                        <Button block style={{backgroundColor: "#96CEB4", color: "white"}} size="medium"
+                                className="button"
                                 disabled={status !== "NEW"}
-                                onClick={async () => await updateStatus({id:order.id,newStatus:"ACCEPTED"})}>
+                                onClick={async () => await updateStatus({id: order.id, newStatus: "ACCEPTED"})}>
                             Accept Order
                         </Button>
                     </div>
-                    <Button block type="primary" size="large" disabled={status !== "ACCEPTED"}
-                            onClick={async () => await updateStatus({id:order.id,newStatus:"COOKING"})}>
-                        START COOKING :)
-                    </Button>
-                    <Button block type="primary" size="large" disabled={status !== "COOKING"}
-                            onClick={async () => await updateStatus({id:order.id,newStatus:"READY_FOR_PICKUP"})}>
-                        Food Is Done!! ready for pick up!
-                    </Button>
-                    <Button block type="primary" size="large" disabled={status !== "READY_FOR_PICKUP"}
-                            onClick={async () => await updateStatus({id:order.id,newStatus:"PICKED_UP"})}>
-                        Order has been picked up!
-                    </Button>
-                    <Button block type="primary" size="large" disabled={status === "NEW"}
-                            onClick={async () => await updateStatus({id:order.id,newStatus:"NEW"})}>
-                        **RETURN TO NEW**
-                    </Button>
+                    <div className="buttonsContainer2">
+                        <Button block size="medium" style={{
+                            borderBottom: status === "ACCEPTED" ? "2px solid #FFAD60" : "#f5f5f5",
+                            borderRight: "none", borderLeft: "none", borderTop: "none",
+                            backgroundColor: "white",
+                            color: "black"
+                        }} disabled={status !== "ACCEPTED"}
+                                onClick={async () => await updateStatus({id: order.id, newStatus: "COOKING"})}>
+                            START COOKING :)
+                        </Button>
+                        <Button block size="medium" style={{
+                            borderBottom: status === "COOKING" ? "2px solid #FFAD60" : "#f5f5f5",
+                            borderRight: "none", borderLeft: "none", borderTop: "none",
+                            backgroundColor: "white",
+                            color: "black"
+                        }} disabled={status !== "COOKING"}
+                                onClick={async () => await updateStatus({id: order.id, newStatus: "READY_FOR_PICKUP"})}>
+                            Food Is Done!! ready for pick up!
+                        </Button>
+                        <Button block size="medium" style={{
+                            borderBottom: status === "READY_FOR_PICKUP" ? "2px solid #FFAD60" : "#f5f5f5",
+                            borderRight: "none", borderLeft: "none", borderTop: "none",
+                            backgroundColor: "white",
+                            color: "black"
+                        }} disabled={status !== "READY_FOR_PICKUP"}
+                                onClick={async () => await updateStatus({id: order.id, newStatus: "PICKED_UP"})}>
+                            Order has been picked up!
+                        </Button>
+                        <Button block size="medium" style={{
+                            borderBottom: status === "NEW" ? "2px solid #FFAD60" : "#f5f5f5",
+                            borderRight: "none", borderLeft: "none", borderTop: "none",
+                            backgroundColor: "white",
+                            color: "black"
+                        }} disabled={status === "NEW"}
+                                onClick={async () => await updateStatus({id: order.id, newStatus: "NEW"})}>
+                            **RETURN TO NEW**
+                        </Button>
 
+                    </div>
                 </>}
             </Card>
             }
@@ -101,23 +137,5 @@ const DetailedOrder = () => {
     )
 }
 
-const styles = {
-    totalSumContainer: {
-        flexDirection: "row",
-        display: "flex",
-    },
-    totalPrice: {
-        marginLeft: "auto",
-        fontWeight: "bold",
-    },
-    buttonsContainer: {
-        display: "flex",
-        paddingBottom: 30,
-    },
-    button: {
-        marginRight: 20,
-        marginLeft: 20,
-    },
-};
 
 export default DetailedOrder;

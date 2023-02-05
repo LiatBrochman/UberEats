@@ -1,0 +1,169 @@
+.ant-input.res-input:focus {
+    box-shadow:none;
+    border-color: #D9534F !important;
+
+}
+
+ant-input.ant-input-selected.res-input:hover {
+    box-shadow:none;
+    border-color: #D9534F !important;
+
+}
+
+.res-input.ant-input {
+
+    background-color: white;
+    border-bottom-color: lightgray;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    --antd-wave-shadow:none
+
+}
+.res-input.ant-input:hover {
+
+    background-color: white;
+    border-color: lightgray;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    --antd-wave-shadow:none
+
+}
+.res-input.ant-input::selection {
+
+    background-color: white;
+    border-bottom-color: lightgray;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    --antd-wave-shadow-color: white;
+    --scroll-bar: 0
+
+}
+
+.res-input.ant-input-number.ant-input-number-in-form-item {
+    margin: 10px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+}
+
+
+
+
+.ant-input-number.ant-input-number-in-form-item.ant-input-number-status-success.res-input:hover{
+    box-shadow:none;
+    border-color: #D9534F;
+
+}
+.ant-input-number.ant-input-number-in-form-item.ant-input-number-status-success.res-input:focus{
+    box-shadow:none;
+    border-color: #D9534F;
+
+}
+.ant-input-number.ant-input-number-in-form-item.res-input:focus{
+    box-shadow:none;
+    border-color: #D9534F;
+}
+.ant-input-number.ant-input-number-in-form-item.res-input:hover{
+    box-shadow:none;
+    border-color: #D9534F;
+}
+.ant-input-number.ant-input-number-in-form-item.res-input.ant-input-number-focused{
+    box-shadow:none;
+    border-color: #D9534F;
+
+}
+
+
+  .res-input.ant-input {
+    margin: 10px;
+    background-color: white;
+    border-bottom-color: lightgray;
+      border-top: none;
+      border-right: none;
+      border-left: none;
+      --antd-wave-shadow:none
+
+  }
+.res-input.ant-input {
+    margin: 10px;
+    background-color: white;
+    border-bottom-color: lightgray;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    --antd-wave-shadow:none
+
+}
+.res-input.ant-input {
+    margin: 10px;
+    background-color: white;
+    border-bottom-color: lightgray;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    --antd-wave-shadow-color: white;
+    --scroll-bar: 0
+
+}
+
+.res-input.ant-input-number.ant-input-number-in-form-item {
+  margin: 10px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+}
+
+.res-button.ant-btn.ant-btn-primary.res-button{
+  background-color: #D9534F !important;
+  color: white !important;
+  border:none;
+    border-radius: 30px;
+
+}
+
+.res-switch.ant-switch.res-switch.ant-switch-checked{
+  background-color: #D9534F !important;
+}
+
+.ant-form-item-required::before{
+    color: lightgray !important;
+}
+
+[title="Restaurant name"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+
+[title="Restaurant image"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+[title="Restaurant delivery Fee"] {
+   color: lightgray !important;
+   font-weight: 600 !important;
+ }
+
+[title="Restaurant minimum Delivery Minutes"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+[title="Restaurant maximum Delivery Minutes"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+[title="Restaurant address"] {
+   color: lightgray !important;
+   font-weight: 600 !important;
+ }
+
+[title="Restaurant is open"] {
+    color: lightgray !important;
+    font-weight: 600 !important;
+  }
+
+

@@ -1,30 +1,20 @@
-import {Image, Layout} from "antd";
-import SideMenu from '../src/components/SideMenu';
+import {Layout} from "antd";
+import AppMenu from '../src/components/AppMenu';
 import {withAuthenticator} from '@aws-amplify/ui-react';
 import ProtectedRoutes from "./routes/ProtectedRoutes";
+import './App.css'
 
-const {Sider, Content, Footer} = Layout;
+const {Content} = Layout;
 
 function App() {
 
     return (
-        <Layout>
-            <Sider style={{height: "100vh", backgroundColor: "white"}}>
-                <Image
-                    src="https://logos-world.net/wp-content/uploads/2020/11/Uber-Eats-Symbol.jpg"
-                    preview={false}
-                />
-                <SideMenu/>
-            </Sider>
-            <Layout>
+        <div>
+            <AppMenu/>
                 <Content>
                     <ProtectedRoutes/>
                 </Content>
-                <Footer style={{textAlign: "center"}}>
-                    Uber Eats Restaurant Dashboard ©2022
-                </Footer>
-            </Layout>
-        </Layout>
+        </div>
 
     )
 }

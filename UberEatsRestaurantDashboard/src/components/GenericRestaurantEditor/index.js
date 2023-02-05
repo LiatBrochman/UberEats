@@ -6,6 +6,7 @@ import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigate} from "react-router-dom";
 import Geocode from "react-geocode";
 import {Restaurant} from "../../models";
+import  './index.css';
 
 
 function GenericRestaurantEditor({props}) {
@@ -109,11 +110,11 @@ function GenericRestaurantEditor({props}) {
                       onFinish={onFinish}>
 
                     <Form.Item name="name" label="Restaurant name" initialValue={name} required>
-                        <Input placeholder="Enter restaurant name here"/>
+                        <Input className="res-input" placeholder="Enter restaurant name here"/>
                     </Form.Item>
 
                     <Form.Item name="image" label="Restaurant image" initialValue={image} required>
-                        <Input placeholder="Enter image url here"/>
+                        <Input className="res-input" placeholder="Enter image url here"/>
                     </Form.Item>
 
                     <Form.Item name="deliveryFee" label="Restaurant delivery Fee" initialValue={deliveryFee}
@@ -125,7 +126,7 @@ function GenericRestaurantEditor({props}) {
                                                Promise.reject(new Error('deliveryFee must be greater than 0'))
                                    }]
                                } required>
-                        <Input placeholder="Enter restaurant delivery Fee here"/>
+                        <Input className="res-input" placeholder="Enter restaurant delivery Fee here"/>
                     </Form.Item>
 
                     <Form.Item name="minDeliveryMinutes" label="Restaurant minimum Delivery Minutes"
@@ -137,52 +138,61 @@ function GenericRestaurantEditor({props}) {
                                                ? Promise.resolve() :
                                                Promise.reject(new Error('minDeliveryMinutes must be greater than 30'))
                                    }]
-                               } required>
-                        <InputNumber/>
+                               } required
+                    >
+                        <InputNumber className="res-input"/>
                     </Form.Item>
 
                     <Form.Item name="maxDeliveryMinutes" label="Restaurant maximum Delivery Minutes"
                                initialValue={maxDeliveryMinutes}
                                rules={
-                                   [{required: true,}, {
+                                   [{required: true}, {
                                        validator: (_, value) =>
                                            Number(value) >= 30
                                                ? Promise.resolve() :
                                                Promise.reject(new Error('maxDeliveryMinutes must be greater than 30'))
+
                                    }]
+
                                } required>
-                        <InputNumber/>
+                        <InputNumber className="res-input" />
                     </Form.Item>
 
                     <Form.Item name="address" label="Restaurant address" initialValue={address} required>
-                        <Input placeholder="Enter restaurant address here"/>
+                        <Input className="res-input" placeholder="Enter restaurant address here"/>
                     </Form.Item>
 
                     <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" required>
-                        <Switch defaultChecked={!!isOpen}
+                        <Switch defaultChecked={!!isOpen} className="res-switch"
                         />
                     </Form.Item>
 
 
                     <Form.Item>
-                        <Button type="primary" htmlType="submit">Submit</Button>
+                        <Button className="res-button" type="primary" htmlType="submit">Submit</Button>
                     </Form.Item>
                 </Form>
-            </Card>
+
 
             <Button
                 onClick={() => Auth.signOut()}
-                style={{textAlign: "center", color: 'red', margin: 10}}>
+                style={{textAlign: "center", color: 'gray', backgroundColor: "white"
+                  ,fontWeight:500, border: 'none'}}>
                 Sign out
             </Button>
 
             <Button onClick={async () => {
                 await DataStore.stop()
+                await DataStore.stop()
                 await DataStore.clear()
                 await DataStore.start()
-            }}>
+            }}
+                    style={{textAlign: "center", color: 'gray',backgroundColor: "white"
+                        ,fontWeight:500, border: 'none'}}
+            >
                 clear
             </Button>
+            </Card>
         </div>
     )
 

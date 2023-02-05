@@ -30,11 +30,11 @@ const OrderHistory = () => {
     }, [restaurant])
 
     const tableColumns = [
-        {
-            title: "Order ID",
-            dataIndex: "id",
-            key: "id",
-        },
+        // {
+        //     title: "Order ID",
+        //     dataIndex: "id",
+        //     key: "id",
+        // },
         {
             title: "Delivery Address",
             dataIndex: "customerLocation",
@@ -45,14 +45,16 @@ const OrderHistory = () => {
             title: "Price",
             dataIndex: "totalPrice",
             key: "totalPrice",
-            render: (price) => `${price} $`,
+            render: (price) => `${price}$`,
         },
         {
             title: "Status",
             dataIndex: "status",
             key: "status",
             render: (status) => (
-                <Tag color={status === "COMPLETED" ? "green" : status === "DECLINED" ? "red" : "black"}>{status}</Tag>
+                <Tag color={status === "COMPLETED" ? "#b6e0cd" : status === "DECLINED" ? "#f0827f" : "black"}
+                style={{color: status === "COMPLETED" ? "#4e8068" : status === "DECLINED" ? "#730d0a": "black",  borderRadius:15, fontWeight:"bold"}}
+                >{status}</Tag>
             ),
         },
     ];

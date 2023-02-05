@@ -4,6 +4,7 @@ import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
 import {useNavigate} from 'react-router-dom';
+import  './index.css';
 
 function GenericDishEditor({props}) {
 
@@ -49,7 +50,8 @@ function GenericDishEditor({props}) {
             case "NEW":
                 return "Create New Dish"
             case "EDIT":
-                return "Edit Your Dish (id :" + props?.dish?.id + ")"
+                return "Edit Your Dish"
+                // return "Edit Your Dish (id :" + props?.dish?.id + ")"
             default :
                 return "unknown type"
         }
@@ -97,7 +99,7 @@ function GenericDishEditor({props}) {
                                        min: 1,
                                    },
                                ]}>
-                    <Input/>
+                    <Input className="dish-input"/>
                 </Form.Item>
                 <Form.Item label="Dish image"
                            name="image"
@@ -111,13 +113,13 @@ function GenericDishEditor({props}) {
                                        min: 1,
                                    },
                                ]}>
-                    <Input/>
+                    <Input className="dish-input"/>
                 </Form.Item>
                 <Form.Item label="Dish description"
                            name="description"
                            initialValue={description}
                 >
-                    <Input/>
+                    <Input className="dish-input"/>
                 </Form.Item>
                 <Form.Item label="Price ($)"
                            name="price"
@@ -132,7 +134,7 @@ function GenericDishEditor({props}) {
                                            Promise.reject(new Error('price must be greater than 0'))
                                }
                                ]}>
-                    <Input/>
+                    <Input className="dish-input"/>
                 </Form.Item>
                 <Form.Item label="Dish is Active"
                            name="isActive"
@@ -140,11 +142,12 @@ function GenericDishEditor({props}) {
                            required>
                     <Switch
                         defaultChecked={!!isActive}
+                        className="dish-switch"
                     />
                 </Form.Item>
 
 
-                <Button type="primary" htmlType="submit">
+                <Button className="dish-button" type="primary" htmlType="submit">
                     Submit
                 </Button>
 

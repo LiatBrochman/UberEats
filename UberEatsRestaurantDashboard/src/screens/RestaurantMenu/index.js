@@ -3,6 +3,8 @@ import {Link} from 'react-router-dom';
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
+import {CloseCircleOutlined,  EditOutlined} from "@ant-design/icons";
+import "./index.css"
 
 
 const RestaurantMenu = () => {
@@ -20,7 +22,7 @@ const RestaurantMenu = () => {
     }
     const tableColumns = [
         {
-            title: "Menu Item",
+            title: "Dish",
             dataIndex: "name",
             key: "name",
             render: (name) => name
@@ -29,36 +31,35 @@ const RestaurantMenu = () => {
             title: "Price",
             dataIndex: 'price',
             key: 'price',
-            render: (price) => `${price} $`
+            render: (price) => `${price}$`
         },
         {
-            title: "Action",
-            key: 'delete',
-            dataIndex: 'id',
-            render: (id) =>
-                <Button style={{color: "red", border: "2px solid red"}}
-                        onClick={async () => await deleteRestaurantDish(id)}>
-                    Remove
-                </Button>
-        },
-        {
-            title: "Action",
+            title: "Edit",
             key: 'edit',
             render: (_,dish) =>
             {
                 return <Link to={'edit'} state={dish}>
-                    <Button style={{color: "darkblue", border: "2px solid darkblue"}}>
-                        edit
-                    </Button>
+                    <EditOutlined style={{color: "grey", backgroundColor: 'lightgray', padding:8, borderRadius:30, fontSize: '15px'}}/>
                 </Link>
             }
         },
+        {
+            title: "Delete",
+            key: 'delete',
+            dataIndex: 'id',
+            render: (id) =>
+                <CloseCircleOutlined
+                    style={{color: "grey", backgroundColor: 'lightgray', padding:8, borderRadius:30, fontSize: '15px'}}
+                    onClick={async () => await deleteRestaurantDish(id)}
+                />
+        },
+
 
     ]
 
     const renderNewItemButton = () => (
         <Link to={'create'}>
-            <Button type="primary">New Item</Button>
+            <Button className="menu-button" type="primary">New Item</Button>
         </Link>
     )
 

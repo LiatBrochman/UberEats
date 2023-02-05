@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@ant-design/icons": "^4.8.0",
     "@aws-amplify/datastore": "^4.0.11",
     "@aws-amplify/ui-react": "^4.3.4",
     "antd": "^4.24.7",

@@ -2,7 +2,7 @@ import {useRestaurantContext} from "../contexts/RestaurantContext";
 import {useEffect, useState} from "react";
 import AppRoutes from "./AppRoutes";
 import NewRestaurant from "../screens/NewRestaurant";
-import {Text} from "@aws-amplify/ui-react";
+import {Image, Text} from "@aws-amplify/ui-react";
 
 const ProtectedRoutes = () => {
 
@@ -17,12 +17,13 @@ const ProtectedRoutes = () => {
 
     return restaurantIsEmpty ? (
         loading
-            ? <Text style={{fontSize:100}}>...Loading...</Text>
+            ? <Image style={{  display: "block", marginLeft: "auto", marginRight: "auto"}} src={"https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"}/>
             : <NewRestaurant/>
     ) : (
         <AppRoutes/>
 
     )
+
 
 }
 export default ProtectedRoutes

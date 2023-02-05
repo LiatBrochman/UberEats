@@ -1,0 +1,114 @@
+/*@media only screen and (min-width: 768px) {*/
+/*  .res-input.ant-input {*/
+/*    margin: 10px;*/
+/*    background-color: #f7f7f7;*/
+/*    padding: 10px;*/
+/*    border-radius: 10px;*/
+/*    !*border-color: gray;*!*/
+/*  }*/
+/*}*/
+
+
+  /*.dish-input.ant-input {*/
+  /*  margin: 10px;*/
+  /*  background-color: #f7f7f7;*/
+  /*  !*padding: 10px;*!*/
+  /*  border-radius: 10px;*/
+  /*  !*border-color: gray;*!*/
+  /*}*/
+
+.dish-input.ant-input {
+
+  background-color: white;
+  /*padding: 10px;*/
+  /*border-radius: 10px;*/
+  border-bottom-color: lightgray;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  --antd-wave-shadow:none
+
+}
+.dish-input.ant-input:hover {
+
+  background-color: white;
+  /*padding: 10px;*/
+  /*border-radius: 10px;*/
+  border-bottom-color: lightgray;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  --antd-wave-shadow:none
+
+}
+.dish-input.ant-input::selection {
+
+  background-color: white;
+  /*padding: 10px;*/
+  /*border-radius: 10px;*/
+  border-bottom-color: lightgray;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  --antd-wave-shadow-color: white;
+  --scroll-bar: 0
+
+}
+
+.dish-input.ant-input-number.ant-input-number-in-form-item {
+  margin: 10px;
+  background-color: #f7f7f7;
+  /*padding: 10px;*/
+  border-radius: 10px;
+  /*border-color: gray;*/
+}
+
+.dish-button.ant-btn.ant-btn-primary.dish-button{
+  background-color: #D9534F !important;
+  color: white !important;
+  border:none;
+  border-radius: 30px;
+}
+/*.res-title.ant-form-item-required{*/
+/*  color: "red"*/
+/*}*/
+
+.dish-switch.ant-switch.dish-switch.ant-switch-checked{
+  background-color: #D9534F !important;
+}
+
+.ant-input.dish-input:focus {
+  box-shadow:none;
+  border-color: #D9534F;
+
+}
+
+
+[title="Dish name"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+[title="Dish image"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+[title="Dish description"] {
+  color: lightgray !important;
+   font-weight: 600 !important;
+ }
+
+[title="Price ($)"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+[title="Dish is Active"] {
+  color: lightgray !important;
+  font-weight: 600 !important;
+}
+
+
+
+

@@ -1,0 +1,34 @@
+.menu-button.ant-btn.ant-btn-primary{
+    background-color: #FFAD60 !important;
+    color: white !important;
+    border:none;
+    border-radius: 30px;
+}
+
+.ant-pagination-item.ant-pagination-item-active{
+    border:none !important;
+
+}
+
+li.ant-pagination-item-active a{
+    color:gray !important;
+}
+.ant-pagination-item-link{
+    border:none !important;
+}
+
+th.ant-table-cell{
+    background-color: white !important;
+}
+
+.ant-card.ant-card-bordered{
+    border: none !important;
+}
+
+.ant-card-head{
+    border: none !important;
+}
+
+.ant-card-head-title{
+    font-size: 24px;
+}
