@@ -16,6 +16,8 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
     const navigation = useNavigation()
 
 
+
+
     return (
         activeORCD && restaurant?.image && (
             <Pressable style={{

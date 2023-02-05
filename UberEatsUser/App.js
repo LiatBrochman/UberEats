@@ -12,6 +12,7 @@ import CourierContextProvider from "./src/contexts/CourierContext";
 import {IconComponentProvider} from "@react-native-material/core";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { I18nManager } from "react-native";
+import ElapsedTimeContextProvider from "../UberEatsUser/src/contexts/ElapsedTimeContext";
 
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
@@ -19,13 +20,6 @@ I18nManager.allowRTL(false);
 Amplify.configure({...awsconfig, Analytics: {disabled: true}})
 global.subscription = {}
 
-// const MyTheme = {
-//     ...DefaultTheme,
-//     colors: {
-//         ...DefaultTheme.colors,
-//         primary: 'rgb(255, 45, 85)',
-//     },
-// };
 function App() {
     return (
 
@@ -36,7 +30,9 @@ function App() {
                         <BasketContextProvider>
                             <OrderContextProvider>
                                 <CourierContextProvider>
+                                    <ElapsedTimeContextProvider>
                                     <RootNavigator/>
+                                    </ElapsedTimeContextProvider>
                                 </CourierContextProvider>
                             </OrderContextProvider>
                         </BasketContextProvider>

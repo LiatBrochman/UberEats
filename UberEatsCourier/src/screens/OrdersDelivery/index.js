@@ -12,6 +12,8 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import {DataStore} from "aws-amplify";
 import {Order} from "../../models";
 import {useAuthContext} from "../../contexts/AuthContext";
+import {PubSub} from "@aws-amplify/pubsub/lib";
+import ElapsedTimeContext, {useElapsedTimeContext} from "../../contexts/ElapsedTimeContext";
 
 
 function degreesToRadians(degrees) {
@@ -47,6 +49,8 @@ const OrdersDelivery = () => {
         completeOrder,
         dishes
     } = useOrderContext()
+
+    const {isConnected}=useElapsedTimeContext()
 
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)
@@ -227,6 +231,7 @@ const OrdersDelivery = () => {
                         distanceRef.current = result.distance
                         setTotalMinutes(result.duration)
                         setTotalKm(result.distance)
+                        isConnected && PubSub.publish('elapsed-time', { msg: result.duration })
                     }}
                 />
                 <Marker
