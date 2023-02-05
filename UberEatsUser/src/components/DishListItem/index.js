@@ -4,12 +4,12 @@ import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishListItem = ({dish}) => {
     const navigation = useNavigation()
-    const {setDish,setQuantity} = useBasketContext()
+    const {setDish, setQuantity} = useBasketContext()
     return (
         <Pressable
             onPress={() => {
                 setDish(dish)
-               console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setDish(dish) ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish,null,4))
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setDish(dish) ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish, null, 4))
                 navigation.navigate("Dish", {id: dish.id})
             }}
             style={styles.container}>

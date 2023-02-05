@@ -12,8 +12,8 @@ const OrderContextProvider = ({children}) => {
 
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
-    const {totalPrice, basketDishes , setBasketDishes ,setTotalPrice , setTotalBasketQuantity } = useBasketContext()
-    const [order,setOrder] = useState({})
+    const {totalPrice, basketDishes, setBasketDishes, setTotalPrice, setTotalBasketQuantity} = useBasketContext()
+    const [order, setOrder] = useState({})
     const [orders, setOrders] = useState([])
     const [orderDishes, setOrderDishes] = useState([])
 
@@ -25,33 +25,33 @@ const OrderContextProvider = ({children}) => {
         /**
          listen to orders
          */
-        if(dbCustomer?.id)
-        subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
-        ).subscribe(({items}) => {
-            setOrders(items)
-        })
+        if (dbCustomer?.id)
+            subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
+            ).subscribe(({items, isSynced}) => {
+                isSynced && setOrders(items)
+            })
 
         // return subscription?.orders?.unsubscribe()
 
-    },[dbCustomer])
+    }, [dbCustomer])
 
     /**
      listen to current order's dishes
      */
-    useEffect(()=>{
-        if(order?.id) {
+    useEffect(() => {
+        if (order?.id) {
             if (subscription?.orderDishes) subscription.orderDishes.unsubscribe()
             subscription.orderDishes = DataStore.observeQuery(Dish, d => d.and(d => [
                     d.orderID.eq(order.id),
                     d.isDeleted.eq(false)
                 ]
-            )).subscribe(({items}) => {
-                setOrderDishes(items)
+            )).subscribe(({items, isSynced}) => {
+                isSynced && setOrderDishes(items)
             })
         }
         // return subscription?.order?.unsubscribe()
 
-    },[order])
+    }, [order])
 
     function checkIfPriceIsValid({totalPrice}) {
         if (totalPrice && totalPrice > restaurant?.deliveryFee) {
@@ -81,7 +81,7 @@ const OrderContextProvider = ({children}) => {
                 customerID: dbCustomer.id,
                 restaurantID: restaurant.id,
                 dishes: basketDishes,
-                courierID:"null",
+                courierID: "null",
 
             })).then(async newOrder => {
 
@@ -90,8 +90,8 @@ const OrderContextProvider = ({children}) => {
                  */
                 if (subscription?.orders) subscription.orders.unsubscribe()
                 subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
-                ).subscribe(({items}) => {
-                   setOrders(items)
+                ).subscribe(({items, isSynced}) => {
+                    isSynced && setOrders(items)
                 })
 
                 /**
@@ -123,13 +123,13 @@ const OrderContextProvider = ({children}) => {
                     /**
                      update OrderDishes
                      */
-                    if(subscription?.orderDishes) subscription.orderDishes.unsubscribe()
+                    if (subscription?.orderDishes) subscription.orderDishes.unsubscribe()
                     subscription.orderDishes = DataStore.observeQuery(Dish, d => d.and(d => [
                             d.orderID.eq(newOrder.id),
                             d.isDeleted.eq(false)
                         ]
-                    )).subscribe(({items}) => {
-                         setOrderDishes(items)
+                    )).subscribe(({items, isSynced}) => {
+                        isSynced && setOrderDishes(items)
                     })
                 })
             })

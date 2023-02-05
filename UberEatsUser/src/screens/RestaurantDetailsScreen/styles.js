@@ -30,7 +30,7 @@ export default StyleSheet.create({
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,
     },
-    menuTitle:{
+    menuTitle: {
         marginTop: 20,
         marginLeft: 10,
         fontSize: 18,

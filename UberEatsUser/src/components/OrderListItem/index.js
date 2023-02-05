@@ -20,7 +20,7 @@ const OrderListItem = ({order}) => {
     return (
         <Pressable
             onPress={() => {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ clicked on order: ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ clicked on order: ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
 
                 setOrder(order)
                 navigation.navigate("Order", {id: order.id})

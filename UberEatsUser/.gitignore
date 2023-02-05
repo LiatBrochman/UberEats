@@ -1,4 +1,8 @@
+#my variables
 .env
+eas.json
+
+#auto generated stuff:
 node_modules/
 .expo/
 dist/

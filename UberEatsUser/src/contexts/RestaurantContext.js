@@ -13,10 +13,13 @@ const RestaurantContextProvider = ({children}) => {
     const [restaurantDishes, setRestaurantDishes] = useState([])
 
     useEffect(() => {
-        if(dbCustomer?.id)
-        subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).subscribe(({items}) => {
-                setRestaurants(items)
-        })
+        if (dbCustomer?.id)
+            subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).subscribe(({
+                                                                                                                     items,
+                                                                                                                     isSynced
+                                                                                                                 }) => {
+                isSynced && setRestaurants(items)
+            })
         // return subscription?.restaurants?.unsubscribe()
 
     }, [dbCustomer])
@@ -30,8 +33,8 @@ const RestaurantContextProvider = ({children}) => {
                         dish.restaurantID.eq(restaurant.id),
                         dish.originalID.eq("null")
                     ]
-            )).subscribe(({items}) => {
-               setRestaurantDishes(items)
+            )).subscribe(({items, isSynced}) => {
+                isSynced && setRestaurantDishes(items)
             })
         // return subscription?.restaurantDishes?.unsubscribe()
 

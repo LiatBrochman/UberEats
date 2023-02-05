@@ -63,7 +63,7 @@ const Map = () => {
         }
     }
 
-    return (customerLocation && customerLocation?.latitude &&
+    return (
         <MapView
             style={{height, width}}
             provider={PROVIDER_GOOGLE}
@@ -74,13 +74,17 @@ const Map = () => {
             pitchEnabled={true}
             scrollEnabled={true}
             initialRegion={{
-                latitude: customerLocation.latitude,
-                longitude: customerLocation.longitude,
+                latitude:
+                // 32.1975652,
+                    customerLocation?.latitude || 32.1975652,
+                longitude:
+                // 34.8775085,
+                    customerLocation?.longitude || 34.8775085,
                 latitudeDelta: 0.12,
                 longitudeDelta: 0.12
             }}
         >
-            {restaurants && restaurants?.length > 0 && restaurants.map(restaurant =>
+            {restaurants.length > 0 && restaurants.map(restaurant =>
                 <Marker
                     key={restaurant.id}
                     title={restaurant.name}
@@ -91,12 +95,18 @@ const Map = () => {
                     }}
                     onCalloutPress={() => onCalloutPress(restaurant)}
                 >
-                    <View style={{backgroundColor: 'white', padding: 5, borderRadius: 20, borderWidth: 2, borderColor: '#FFAD60'}}>
+                    <View style={{
+                        backgroundColor: 'white',
+                        padding: 5,
+                        borderRadius: 20,
+                        borderWidth: 2,
+                        borderColor: '#FFAD60'
+                    }}>
                         <Entypo name="shop" size={24} color="#FFAD60"/>
                     </View>
                 </Marker>
             )}
-            {courier && courier?.location &&
+            {courier &&
             <Marker
                 key={courier.id}
                 title={courier.name}
@@ -106,8 +116,25 @@ const Map = () => {
                     longitude: courier.location.lng
                 }}>
                 <View style={{padding: 5, borderRadius: 20}}>
-                    {courier?.transportationMode === "DRIVING" && <View style={{backgroundColor: 'white', padding: 3, borderRadius: 20, borderWidth: 2, borderColor: '#96CEB4'}}><Icon name="car" size={30} color="#96CEB4"/></View>}
-                    {courier?.transportationMode === "BICYCLING" && <View style={{backgroundColor: 'white', padding: 3, borderRadius: 20, borderWidth: 2, borderColor: '#96CEB4'}}><Icon name="bicycle" size={30} color="#96CEB4"/></View>}
+                    {courier?.transportationMode === "DRIVING" &&
+                    <View style={{
+                        backgroundColor: 'white',
+                        padding: 3,
+                        borderRadius: 20,
+                        borderWidth: 2,
+                        borderColor: '#96CEB4'
+                    }}>
+                        <Icon name="car" size={30} color="#96CEB4"/>
+                    </View>}
+
+                    {courier?.transportationMode === "BICYCLING" &&
+                    <View style={{
+                        backgroundColor: 'white',
+                        padding: 3,
+                        borderRadius: 20,
+                        borderWidth: 2,
+                        borderColor: '#96CEB4'
+                    }}><Icon name="bicycle" size={30} color="#96CEB4"/></View>}
                 </View>
             </Marker>
             }

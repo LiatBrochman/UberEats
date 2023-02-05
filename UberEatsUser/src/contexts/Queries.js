@@ -76,7 +76,7 @@ const createNewBasket_DB = async ({dbCustomer, restaurant}) => {
             restaurantID: restaurant?.id,
             isDeleted: false
         }))
-    }else{
+    } else {
         console.error("\n\nUnable to create new basket!! \nreason: ")
         !dbCustomer && console.error("customer id isn't valid")
         !restaurant && console.error("restaurant id isn't valid")
@@ -90,7 +90,7 @@ const updateDishQuantity_DB = async ({dish, quantity}) => {
     // }))
 }
 const createNewDish_DB = async ({dish, basket}) => {
-    if(!basket) return null
+    if (!basket) return null
     const newDish = {
         name: dish.name,
         price: dish.price,

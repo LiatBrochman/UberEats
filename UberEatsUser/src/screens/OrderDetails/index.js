@@ -16,7 +16,7 @@ const OrderDetails = () => {
     const id = route.params?.id;
 
     useEffect(() => {
-        DataStore.query(Order,id).then(setOrder)
+        DataStore.query(Order, id).then(setOrder)
     }, [id])
 
     if (!order) {
@@ -27,11 +27,11 @@ const OrderDetails = () => {
         <View style={{backgroundColor: "white", flex: 1}}>
 
             {orderDishes?.[0] &&
-                <FlatList
-                    ListHeaderComponent={() => <Header order={order}/>}
-                    data={orderDishes}
-                    renderItem={({item}) => <BasketDishItem dish={item}/>}
-                />
+            <FlatList
+                ListHeaderComponent={() => <Header order={order}/>}
+                data={orderDishes}
+                renderItem={({item}) => <BasketDishItem dish={item}/>}
+            />
             }
 
             <Text style={{padding: 10}}>

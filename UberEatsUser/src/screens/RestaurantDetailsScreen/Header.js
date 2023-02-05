@@ -4,7 +4,7 @@ import styles from "./styles";
 const DEFAULT_IMAGE =
     "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/uber-eats/restaurant1.jpeg";
 
-const RestaurantHeader = ({ restaurant }) => {
+const RestaurantHeader = ({restaurant}) => {
     return (
         <View style={styles.page}>
             <Image

@@ -11,21 +11,21 @@ const DishDetailsScreen = () => {
     const route = useRoute();
     const id = route.params?.id;
 
-    const {addDishToBasket, quantity:realQuantity, basket} = useBasketContext()
+    const {addDishToBasket, quantity: realQuantity, basket} = useBasketContext()
     const {restaurantDishes} = useRestaurantContext()
-    const [dish,setDish]= useState(restaurantDishes?.[0])
-    const [tempQuantity,setTempQuantity] = useState(realQuantity||1)
+    const [dish, setDish] = useState(restaurantDishes?.[0])
+    const [tempQuantity, setTempQuantity] = useState(realQuantity || 1)
 
-    useEffect(()=>{
-        setTempQuantity(realQuantity||1)
-    },[realQuantity])
-    useEffect(()=>{
-        restaurantDishes?.[0] && setDish(restaurantDishes.find(d=>d.id===id))
-    },[restaurantDishes])
+    useEffect(() => {
+        setTempQuantity(realQuantity || 1)
+    }, [realQuantity])
+    useEffect(() => {
+        restaurantDishes?.[0] && setDish(restaurantDishes.find(d => d.id === id))
+    }, [restaurantDishes])
 
 
     const onAddToBasket = async () => {
-        const clonedDish = {dish:{...dish,quantity: tempQuantity,basketID:basket?.id}}
+        const clonedDish = {dish: {...dish, quantity: tempQuantity, basketID: basket?.id}}
         await addDishToBasket(clonedDish)
         navigation.goBack()
     }
