@@ -21,11 +21,11 @@ const ElapsedTimeContextProvider = ({children}) => {
             new AWSIoTProvider({
                 aws_pubsub_region: 'us-east-1',
                 aws_pubsub_endpoint:
-                    'wss://a7qe1o6h9jfvb-ats.iot.us-east-1.amazonaws.com.iot.us-east-1.amazonaws.com/mqtt'
+                    'wss://a7qe1o6h9jfvb-ats.iot.us-east-1.amazonaws.com/mqtt'
             })
         )
 
-        PubSub.subscribe('elapsed-time').subscribe({
+        PubSub.subscribe('elapsed-time',{ provider: 'AWSIoTProvider' }).subscribe({
             next: data => {
                 console.log('Message received', data)
                 setElapsedTime(data)
@@ -35,10 +35,11 @@ const ElapsedTimeContextProvider = ({children}) => {
         })
 
         Hub.listen("pubsub", (data) => {
-
+            console.log("pubsub:")
             const {payload} = data
 
             if (payload.event === CONNECTION_STATE_CHANGE) {
+                console.log(payload.event)
 
                 /**
                  * connection has been changed!!
@@ -47,18 +48,26 @@ const ElapsedTimeContextProvider = ({children}) => {
                 switch (priorConnectionState + ' ' + payload.data.connectionState) {
 
                     case ConnectionState.Connecting + ' ' + ConnectionState.Connected:
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
+
                         setIsConnected(true)
                         break;
 
                     case ConnectionState.Connected + ' ' + ConnectionState.Disconnected:
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
+
                         setIsConnected(false)
                         break;
 
                     case ConnectionState.Connected + ' ' + ConnectionState.ConnectionDisrupted:
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
+
                         setIsConnected(false)
                         break;
 
                     case ConnectionState.Connected + ' ' + ConnectionState.ConnectionDisruptedPendingNetwork:
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
+
                         setIsConnected(false)
                         break;
                 }
@@ -68,6 +77,7 @@ const ElapsedTimeContextProvider = ({children}) => {
 
             }
         })
+
 
     },[])
 

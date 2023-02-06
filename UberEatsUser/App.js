@@ -13,10 +13,17 @@ import {IconComponentProvider} from "@react-native-material/core";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { I18nManager } from "react-native";
 import ElapsedTimeContextProvider from "../UberEatsUser/src/contexts/ElapsedTimeContext";
+import {AWSIoTProvider} from "@aws-amplify/pubsub";
 
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
 
+Amplify.addPluggable(
+    new AWSIoTProvider({
+        aws_pubsub_region: 'us-east-1',
+        aws_pubsub_endpoint: 'wss://a7qe1o6h9jfvb-ats.iot.us-east-1.amazonaws.com/mqtt'
+    })
+)
 Amplify.configure({...awsconfig, Analytics: {disabled: true}})
 global.subscription = {}
 

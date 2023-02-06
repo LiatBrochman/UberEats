@@ -7,8 +7,14 @@ import awsconfig from './src/aws-exports';
 import AuthContextProvider from './src/contexts/AuthContext';
 import OrderContextProvider from './src/contexts/OrderContext';
 import ElapsedTimeContextProvider from "./src/contexts/ElapsedTimeContext";
+import {AWSIoTProvider} from "@aws-amplify/pubsub";
 
-
+Amplify.addPluggable(
+    new AWSIoTProvider({
+        aws_pubsub_region: 'us-east-1',
+        aws_pubsub_endpoint: 'wss://a7qe1o6h9jfvb-ats.iot.us-east-1.amazonaws.com/mqtt'
+    })
+)
 Amplify.configure({...awsconfig, Analytics: {disabled: true}})
 global.subscription = {}
 
