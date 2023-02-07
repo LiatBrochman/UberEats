@@ -116,7 +116,7 @@ const DetailedOrder = () => {
                             backgroundColor: "white",
                             color: "black"
                         }} disabled={status !== "READY_FOR_PICKUP"}
-                                onClick={async () => await updateStatus({id: order.id, newStatus: "PICKED_UP"})}>
+                                onClick={async () => await order.courierID !== "null" && updateStatus({id: order.id, newStatus: "PICKED_UP"})}>
                             Order has been picked up!
                         </Button>
                         <Button block size="medium" style={{

@@ -98,6 +98,7 @@ ant-input.ant-input-selected.res-input:hover {
 }
 .res-input.ant-input {
     margin: 10px;
+    color:black !important;
     background-color: white;
     border-bottom-color: lightgray;
     border-top: none;
@@ -129,6 +130,8 @@ ant-input.ant-input-selected.res-input:hover {
 .ant-form-item-required::before{
     color: lightgray !important;
 }
+
+
 
 [title="Restaurant name"] {
   color: lightgray !important;

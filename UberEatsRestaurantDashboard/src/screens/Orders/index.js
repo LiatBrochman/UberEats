@@ -4,7 +4,8 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import {useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Customer} from "../../models";
-
+import "./index.css"
+//import MovingComponent from "react-moving-text/src";
 
 
 const Orders = () => {
@@ -25,11 +26,22 @@ const Orders = () => {
     function getTagByStatus(status) {
         switch (status) {
             case 'ACCEPTED':
-                return <Tag color={'#b6e0cd'} style={{fontSize: "10px", color:"#4e8068",  borderRadius:15, fontWeight:"bold"}}>{status}</Tag>
+                return <Tag color={'#b6e0cd'} style={{fontSize: "10px", color:"#4e8068",  borderRadius:15, fontWeight:"bold",}}>{status}</Tag>
 
             case 'NEW':
-                return <Tag color={'#f5c393'} style={{fontSize: "10px", color:"#9c5411", borderRadius:15, fontWeight:"bold"}}>{status}</Tag>
-
+                 return <Tag className="blink_me" color={'#f5c393'} style={{fontSize: "10px", color:"#9c5411", borderRadius:15, fontWeight:"bold"}}>{status}</Tag>
+// return <MovingComponent
+//     type="flash"
+//     duration="1000ms"
+//     delay="0s"
+//     direction="normal"
+//     timing="ease"
+//     iteration="5"
+//     fillMode="none"
+//     style={{fontSize: "10px", color:"#9c5411", borderRadius:15, fontWeight:"bold", backgroundColor:'#f5c393'}}
+// >
+//     {status}
+// </MovingComponent>
             default:
                 return <Tag color={'#f0827f'} style={{fontSize: "10px", color:"#730d0a",  borderRadius:15, fontWeight:"bold"}}>{status}</Tag>
         }
