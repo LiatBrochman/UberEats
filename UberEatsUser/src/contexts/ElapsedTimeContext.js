@@ -39,7 +39,7 @@ const ElapsedTimeContextProvider = ({children}) => {
             const {payload} = data
 
             if (payload.event === CONNECTION_STATE_CHANGE) {
-                console.log(payload.event)
+                console.log(payload.event,payload.data.connectionState)
 
                 /**
                  * connection has been changed!!

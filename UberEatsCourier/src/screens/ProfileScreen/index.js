@@ -1,4 +1,4 @@
-import {Alert, Button, Pressable, StyleSheet, Text, TextInput, View, Image} from "react-native";
+import {Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import React, {useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Amplify, Auth, DataStore} from "aws-amplify";
@@ -6,21 +6,20 @@ import {Courier, TransportationModes} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
-import {useOrderContext} from "../../contexts/OrderContext";
 
 
 function verifyDraft(draft) {
-   return (
-       typeof draft.name === 'string' &&
-       typeof draft.transportationMode === 'string' &&
-       typeof draft.location.lat === 'number' &&
-       typeof draft.location.lng === 'number'
-   )
+    return (
+        typeof draft.name === 'string' &&
+        typeof draft.transportationMode === 'string' &&
+        typeof draft.location.lat === 'number' &&
+        typeof draft.location.lng === 'number'
+    )
 }
 
 const Profile = () => {
-    const {dbCourier, setDbCourier, sub} = useAuthContext();
-    const {driverLocation} = useOrderContext()
+    const {dbCourier, setDbCourier, initLocation,sub} = useAuthContext();
+    // const {driverLocation} = useOrderContext()
     const [name, setName] = useState(dbCourier?.name || "");
     const [transportationMode, setTransportationMode] = useState(dbCourier?.transportationMode || "DRIVING");
 
@@ -28,28 +27,33 @@ const Profile = () => {
 
 
     const onSave = async () => {
-        const draft = {name, transportationMode , location:{
-               lat: parseFloat(driverLocation?.latitude),
-                lng: parseFloat(driverLocation?.longitude)
-            }}
+        const draft = {
+            name, transportationMode, location: {
+                lat: parseFloat(initLocation?.latitude),
+                lng: parseFloat(initLocation?.longitude)
+            }
+        }
 
-        if(!verifyDraft(draft)) {
-            console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to save not a valid courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft),null,4)
+        if (!verifyDraft(draft)) {
+            console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to save not a valid courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft), null, 4)
             return null
         }
+
         if (dbCourier) {
             await updateCourier(draft)
+
         } else {
             draft.isDeleted = false
             draft.isActive = true
             draft.location.address = "null"
+            draft.sub = sub
             await createCourier(draft)
         }
         navigation.navigate('OrdersScreen')
     }
 
     const updateCourier = async draft => {
-        DataStore.save(Courier.copyOf(dbCourier, updated => Object.assign(updated, draft)))
+        DataStore.save(Courier.copyOf(await DataStore.query(Courier,dbCourier.id), updated => Object.assign(updated, draft)))
             .then(setDbCourier)
     }
 
@@ -57,47 +61,6 @@ const Profile = () => {
         DataStore.save(new Courier(draft))
             .then(setDbCourier)
     }
-
-    // const updateCourier = async () => {
-    //     const courier = await DataStore.save(
-    //         Courier.copyOf(dbCourier, (updated) => {
-    //             updated.name = name;
-    //             updated.isDeleted = false;
-    //             updated.isActive = false;
-    //             updated.transportationMode = transportationMode;
-    //             updated.location = {
-    //                 address: null,
-    //                 lat: parseFloat(driverLocation.latitude),
-    //                 lng: parseFloat(driverLocation.longitude),
-    //             }
-    //         })
-    //     );
-    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updateCourier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier, null, 4))
-    //
-    //     setDbCourier(courier);
-    // }
-    //
-    // const createCourier = async () => {
-    //     try {
-    //         const courier = await DataStore.save(
-    //             new Courier({
-    //                 sub: sub,
-    //                 name: name,
-    //                 transportationMode,
-    //                 location: {
-    //                     lat: parseFloat(driverLocation?.latitude) || 32.19,
-    //                     lng: parseFloat(driverLocation?.longitude) || 34.86,
-    //                 },
-    //                 isDeleted: false,
-    //                 isActive: true,
-    //             })
-    //         );
-    //         setDbCourier(courier)
-    //         console.log("\n\n success creating courier profile")
-    //     } catch (e) {
-    //         Alert.alert("Error", e.message);
-    //     }
-    // }
 
     return (
         <View style={{backgroundColor: "white", flex: 1}}>

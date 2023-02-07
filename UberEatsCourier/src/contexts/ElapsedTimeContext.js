@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {Amplify, Auth, Hub, PubSub} from 'aws-amplify';
 import {AWSIoTProvider, CONNECTION_STATE_CHANGE, ConnectionState} from '@aws-amplify/pubsub';
-import {useAuthContext} from "./AuthContext";
+
 
 const ElapsedTimeContext = createContext({})
 
@@ -9,40 +9,54 @@ const ElapsedTimeContextProvider = ({children}) => {
 
     const [isConnected, setIsConnected] = useState(false)
     const [cognitoIdentityId, setCognitoIdentityId] = useState(null)
-    let priorConnectionState
-    const {authUser} = useAuthContext()
+    let priorConnectionState;
+    // let endpoint = 'a7qe1o6h9jfvb-ats.iot.us-east-1.amazonaws.com';
+
 
     /**
      * establishing connection:
      */
     useEffect(() => {
 
-        Auth.currentCredentials().then((info) => {
-            const cognitoIdentityId = info.identityId;
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ cognitoIdentityId ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(cognitoIdentityId, null, 4))
-            setCognitoIdentityId(cognitoIdentityId)
-        })
 
+        // Auth.currentCredentials().then((info) => {
+        //     const cognitoIdentityId = info.identityId;
+        //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ cognitoIdentityId ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(cognitoIdentityId, null, 4))
+        //     setCognitoIdentityId(cognitoIdentityId)
+        // })
+        // Amplify.addPluggable(new AWSIoTProvider({
+        //         aws_pubsub_region: 'us-east-1',
+        //         aws_pubsub_endpoint: `wss://${endpoint}/mqtt`
+        //     })
+        // )
         // Amplify.addPluggable(
         //     new AWSIoTProvider({
         //         aws_pubsub_region: 'us-east-1',
         //         aws_pubsub_endpoint: 'wss://a7qe1o6h9jfvb-ats.iot.us-east-1.amazonaws.com/mqtt'
         //     })
         // )
+        // PubSub.subscribe('myTopic').subscribe({
+        //     next: data => console.log('Message received', data),
+        //     error: error => console.error(error),
+        //     complete: () => console.log('Done'),
+        // })
 
-        PubSub.subscribe('elapsed-time',{ provider: 'AWSIoTProvider' }).subscribe({
+
+        PubSub.subscribe('myTopic').subscribe({
             next: data => console.log('Message received', data),
             error: error => console.error(error),
-            complete: () => console.log('Done'),
+            complete: () => console.log('Done')
         })
-
-
         Hub.listen("pubsub", (data) => {
-            console.log("pubsub:")
+
             const {payload} = data
 
             if (payload.event === CONNECTION_STATE_CHANGE) {
-                console.log(payload.event)
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(payload.data.connectionState, null, 4))
+
+                // if(payload.data.connectionState===ConnectionState.ConnectionDisrupted){
+                // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ payload ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(payload,null,4))
+                // }
 
                 /**
                  * connection has been changed!!
@@ -51,27 +65,23 @@ const ElapsedTimeContextProvider = ({children}) => {
                 switch (priorConnectionState + ' ' + payload.data.connectionState) {
 
                     case ConnectionState.Connecting + ' ' + ConnectionState.Connected:
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
-
                         setIsConnected(true)
+                        PubSub.publish("myTopic",{msg:"from COURIER"})
                         break;
 
                     case ConnectionState.Connected + ' ' + ConnectionState.Disconnected:
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
-
                         setIsConnected(false)
+                       PubSub.publish("myTopic",{msg:"from COURIER"})
                         break;
 
                     case ConnectionState.Connected + ' ' + ConnectionState.ConnectionDisrupted:
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
-
                         setIsConnected(false)
+                        PubSub.publish("myTopic",{msg:"from COURIER"})
                         break;
 
                     case ConnectionState.Connected + ' ' + ConnectionState.ConnectionDisruptedPendingNetwork:
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ priorConnectionState + ' ' + payload.data.connectionState ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(priorConnectionState + ' ' + payload.data.connectionState, null, 4))
-
                         setIsConnected(false)
+                        PubSub.publish("myTopic",{msg:"from COURIER"})
                         break;
                 }
 
@@ -81,7 +91,7 @@ const ElapsedTimeContextProvider = ({children}) => {
             }
         })
 
-    }, [authUser])
+    }, [])
 
 
     return <ElapsedTimeContext.Provider value={{

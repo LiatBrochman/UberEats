@@ -1,14 +1,33 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {Auth, DataStore, Hub} from "aws-amplify";
 import {Courier} from "../models";
+import * as Location from "expo-location";
 
+const askLocationPermission = async () => {
+
+    let {status} = await Location.requestForegroundPermissionsAsync()
+
+    switch (status === "granted") {
+
+        case true:
+           return Location.getCurrentPositionAsync().then(({coords}) => ({
+                latitude: coords.latitude,
+                longitude: coords.longitude
+            }))
+
+        case false:
+            console.error('Permission to access location was denied, please try again')
+            return await askLocationPermission()
+    }
+}
 const AuthContext = createContext({});
 
 const AuthContextProvider = ({children}) => {
-    const [authUser, setAuthUser] = useState(null);
+    const [authUser, setAuthUser] = useState(null)
     const [dbCourier, setDbCourier] = useState(null)
     const sub = authUser?.attributes?.sub;
-
+    const [initLocation,setInitLocation]=useState(null)
+    
     useEffect(() => {
         Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
 
@@ -40,10 +59,18 @@ const AuthContextProvider = ({children}) => {
     useEffect(() => {
       //  console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to find sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub, null, 4))
         if (sub) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub,null,4))
+
             DataStore.query(Courier, (courier) => courier.sub.eq(sub))
                 .then((couriers) => {
-                    //fixme: no courier was found - create new courier
-                    setDbCourier(couriers[0])
+                    if(couriers.length > 0) {
+                        setDbCourier(couriers[0])
+                    }
+                    else{
+                        askLocationPermission().then( ({latitude,longitude}) =>{
+                            setInitLocation({latitude,longitude})
+                        })
+                    }
                   //  console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setting dbCourier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers[0], null, 4))
                 })
 
@@ -52,7 +79,13 @@ const AuthContextProvider = ({children}) => {
 
 
     return (
-        <AuthContext.Provider value={{authUser, dbCourier, sub, setDbCourier}}>
+        <AuthContext.Provider value={{
+            authUser,
+            dbCourier,
+            sub,
+            setDbCourier,
+            initLocation
+        }}>
             {children}
         </AuthContext.Provider>
     )
