@@ -15,7 +15,7 @@ const AppRoutes = () => {
             <Route path="/" element={<Orders/>}/>
             <Route path="/static-uber-eats-manager" element={<Orders/>}/>
             <Route path="create-new-restaurant" element={<NewRestaurant/>}/>
-            <Route path="order/:id" element={<DetailedOrder/>}/>
+            <Route path="order/:orderID" element={<DetailedOrder/>}/>
             <Route path="menu" element={<RestaurantMenu/>}/>
             <Route path="menu/create" element={<CreateMenuItem/>}/>
             <Route path="menu/edit" element={<EditMenuItem/>}/>
