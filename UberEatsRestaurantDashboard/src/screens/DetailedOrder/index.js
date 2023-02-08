@@ -1,20 +1,25 @@
-import {Button, Card, Descriptions, Divider, List} from "antd";
+import {Button, Card, Divider, List} from "antd";
 import {useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Customer, Order} from "../../models";
+import {Order} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 import "./index.css"
+import {useParams} from "react-router-dom";
+
 
 const DetailedOrder = () => {
 
-    const {order, orderDishes, restaurant} = useOrderContext()
-    const [customer, setCustomer] = useState(null)
+    const {orderID} = useParams()
+    const {order, orderDishes, restaurant, courier, customer, getOrder} = useOrderContext()
     const [status, setStatus] = useState(order?.status)
 
     useEffect(() => {
-        DataStore.query(Customer, order?.customerID).then(setCustomer)
-    }, [order])
+        !order && getOrder(orderID)
+    }, [])
 
+    useEffect(() => {
+        order && setStatus(order?.status)
+    }, [order])
 
     const updateStatus = async ({id, newStatus}) => {
         DataStore.query(Order, id)
@@ -31,9 +36,8 @@ const DetailedOrder = () => {
 
     return (
         <>
-            {customer &&
+            {customer && order && status &&
             <Card title={`Order`} style={{margin: 20}}>
-
 
                 <List bordered style={{border: "none"}} column={{lg: 1, md: 1, sm: 1}}>
                     <List.Item style={{border: "none"}}>
@@ -44,6 +48,11 @@ const DetailedOrder = () => {
                     <List.Item>
                         <div>
                             Customer Address: {customer.location?.address}
+                        </div>
+                    </List.Item>
+                    <List.Item>
+                        <div>
+                            Courier: {courier?.name}
                         </div>
                     </List.Item>
 
@@ -116,7 +125,10 @@ const DetailedOrder = () => {
                             backgroundColor: "white",
                             color: "black"
                         }} disabled={status !== "READY_FOR_PICKUP"}
-                                onClick={async () => await updateStatus({id: order.id, newStatus: "PICKED_UP"})}>
+                                onClick={async () => order.courierID === courier.id && await updateStatus({
+                                    id: order.id,
+                                    newStatus: "PICKED_UP"
+                                })}>
                             Order has been picked up!
                         </Button>
                         <Button block size="medium" style={{

@@ -14,6 +14,8 @@ import {AntDesign, FontAwesome5, Foundation} from "@expo/vector-icons";
 import {Text} from "@react-native-material/core";
 
 
+
+
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
@@ -41,7 +43,21 @@ const HomeTabs = () => {
             screenOptions={{headerShown: false}}
             barStyle={{backgroundColor: "white"}}
         >
+            <Tab.Screen
+                name="Home"
+                component={HomeStackNavigator}
+                options={{
+                    tabBarIcon: ({color, focused}) => (
+                        focused ? <AntDesign name="home" size={24} color={"#D9534F"} />
+                            :<AntDesign name="home" size={24} color={"gray"} />
 
+                    ),
+                    tabBarLabel: ({color, focused}) =>
+                        focused ? (
+                                <Text style={{fontSize: 10, fontWeight: "bold", color: "#D9534F"}}>HOME</Text>) :
+                            <Text style={{fontSize: 10, fontWeight: "bold", color: "gray"}}>HOME</Text>
+
+                }}/>
             <Tab.Screen
                 name="Map"
                 component={Map}
@@ -56,23 +72,6 @@ const HomeTabs = () => {
                             <Text style={{fontSize: 10, fontWeight: "bold", color: "gray"}}>Map</Text>
 
                 }}/>
-
-            <Tab.Screen
-                name="Home"
-                component={HomeStackNavigator}
-                options={{
-                    tabBarIcon: ({color, focused}) => (
-                        focused ? <AntDesign name="home" size={24} color={"#D9534F"}/>
-                            : <AntDesign name="home" size={24} color={"gray"}/>
-
-                    ),
-                    tabBarLabel: ({color, focused}) =>
-                        focused ? (
-                                <Text style={{fontSize: 10, fontWeight: "bold", color: "#D9534F"}}>HOME</Text>) :
-                            <Text style={{fontSize: 10, fontWeight: "bold", color: "gray"}}>HOME</Text>
-
-                }}/>
-
             <Tab.Screen
                 name="Orders"
                 component={OrderStackNavigator}
@@ -92,8 +91,8 @@ const HomeTabs = () => {
                 component={ProfileScreen}
                 options={{
                     tabBarIcon: ({color, focused}) => (
-                        focused ? <AntDesign name="user" size={24} color={"#D9534F"}/>
-                            : <AntDesign name="user" size={24} color={"gray"}/>
+                        focused ? <AntDesign name="user" size={24} color={"#D9534F"} />
+                            :  <AntDesign name="user" size={24} color={"gray"} />
                     ),
                     tabBarLabel: ({color, focused}) =>
                         focused ? (
