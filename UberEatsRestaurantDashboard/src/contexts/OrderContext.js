@@ -1,6 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Dish, Order} from "../models";
+import {Dish, Order, Courier,Customer} from "../models";
 import {useRestaurantContext} from "./RestaurantContext";
 
 
