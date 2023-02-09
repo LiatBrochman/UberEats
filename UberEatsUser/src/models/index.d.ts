@@ -1,13 +1,6 @@
+import { ModelInit, MutableModel, __modelMeta__, ManagedIdentifier } from "@aws-amplify/datastore";
 // @ts-ignore
-import {
-    __modelMeta__,
-    AsyncCollection,
-    LazyLoading,
-    LazyLoadingDisabled,
-    ManagedIdentifier,
-    ModelInit,
-    MutableModel
-} from "@aws-amplify/datastore";
+import { LazyLoading, LazyLoadingDisabled, AsyncCollection } from "@aws-amplify/datastore";
 
 export enum OrderStatus {
   NEW = "NEW",

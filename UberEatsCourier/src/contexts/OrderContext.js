@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useRef, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Courier, Customer, Dish, Order, Restaurant} from "../models";
 import {useAuthContext} from "./AuthContext";
@@ -10,15 +10,15 @@ const OrderContext = createContext({})
 
 const OrderContextProvider = ({children}) => {
 
-    const {dbCourier, setDbCourier} = useAuthContext({})
-    const [order, setOrder] = useState({})
+    const {dbCourier, setDbCourier} = useAuthContext()
+    const [order, setOrder] = useState(null)
     const [dishes, setDishes] = useState([])
-    const [customer, setCustomer] = useState({})
-    const [restaurant, setRestaurant] = useState({})
-    const [driverLocation, setDriverLocation] = useState({})
+    const [customer, setCustomer] = useState(null)
+    const [restaurant, setRestaurant] = useState(null)
+    const [driverLocation, setDriverLocation] = useState(null)
     const [ORCD, setORCD] = useState([])
     const [activeORCD, setActiveORCD] = useState([])
-    const [countUpdates,setCountUpdates] = useState(0)
+    const [countUpdates, setCountUpdates] = useState(0)
     // useEffect(() => {
     //     // const lastOrder = ORCD?.[0]?.order?.[ORCD?.length - 1]
     //
@@ -27,9 +27,16 @@ const OrderContextProvider = ({children}) => {
     //
     // }, [ORCD])
 
+
+    useEffect(() => {
+        startWatchingDriverLocation().then(sub => subscription.watchPosition = sub)
+        // return () => subscription?.watchPosition?.remove()
+
+    }, [])
+
     useEffect(() => {
 
-        if(ORCD?.[0]?.order?.id ) {
+        if (ORCD?.[0]?.order?.id) {
 
 
             const filtered = ORCD.filter(orcd => {
@@ -37,7 +44,7 @@ const OrderContextProvider = ({children}) => {
                     orcd.order.status === "COOKING" ||
                     orcd.order.status === "ACCEPTED" ||
                     orcd.order.status === "READY_FOR_PICKUP" ||
-                    (orcd.order.courierID === dbCourier.id && orcd.order.status !== "COMPLETED")
+                    (orcd.order.courierID === dbCourier?.id && orcd.order.status !== "COMPLETED")
                 ) {
                     return orcd
                 }
@@ -60,8 +67,8 @@ const OrderContextProvider = ({children}) => {
                         o.courierID.eq('null')
                     ])
                 ]
-            )).subscribe(({items,isSynced}) => {
-                if(!isSynced) return null
+            )).subscribe(({items, isSynced}) => {
+                if (!isSynced) return null
                 /** explanation:
                  * ORCD =
                  * [
@@ -95,46 +102,38 @@ const OrderContextProvider = ({children}) => {
                 Promise.allSettled(promises).then((results) => {
 
                     setORCD(results.map(res => res?.value && res.value))
-                    setCountUpdates(prev=>prev+1)
+                    setCountUpdates(prev => prev + 1)
                 })
 
             })
 
-            startWatchingDriverLocation().then(sub => subscription.watchPosition = sub)
-
         }
-
-        // return () => {
-        //     subscription?.ORCD?.unsubscribe()
-        //     subscription?.watchPosition?.remove()
-        // }
-
+        // return () => subscription?.ORCD?.unsubscribe()
 
     }, [dbCourier])
 
-
-    useEffect(() => {
-        /**
-         * update driver location in the DB every 100meters
-         */
-        if (dbCourier?.id && driverLocation?.latitude && driverLocation?.longitude) {
-            const newLocation = {
-                address: driverLocation?.address || "null",
-                lat: driverLocation.latitude,
-                lng: driverLocation.longitude
-            }
-            DataStore.query(Courier, dbCourier.id).then(dbCourier => {
-                DataStore.save(Courier.copyOf(dbCourier, updated => {
-                    updated.location = newLocation
-                })).then(updatedCourier => {
-                    //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
-                    setDbCourier(updatedCourier)
-                })
-            })
-
-
-        }
-    }, [driverLocation])
+    // useEffect(() => {
+    //     /**
+    //      * update driver location in the DB every 100meters
+    //      */
+    //     if (dbCourier?.id && driverLocation?.latitude && driverLocation?.longitude) {
+    //         const newLocation = {
+    //             address: driverLocation?.address || "null",
+    //             lat: driverLocation.latitude,
+    //             lng: driverLocation.longitude
+    //         }
+    //         DataStore.query(Courier, dbCourier.id).then(dbCourier => {
+    //             DataStore.save(Courier.copyOf(dbCourier, updated => {
+    //                 updated.location = newLocation
+    //             })).then(updatedCourier => {
+    //                 //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
+    //                 setDbCourier(updatedCourier)
+    //             })
+    //         })
+    //
+    //
+    //     }
+    // }, [driverLocation])
 
 
     const startWatchingDriverLocation = async () => {
@@ -153,12 +152,26 @@ const OrderContextProvider = ({children}) => {
                         accuracy: Location.Accuracy.High,
                         distanceInterval: 100,
                     },
-                    ({coords}) => {
+                    async ({coords}) => {
+                        /**
+                         * update driver location in the context every 100meters
+                         */
                         setDriverLocation({
                             latitude: coords.latitude,
                             longitude: coords.longitude,
                         })
 
+                        /**
+                         * update driver location also in the DB every 100meters
+                         */
+                        DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier?.id)//a must!
+                            , updated => {
+                                updated.location = {
+                                    address: driverLocation?.address || "null",
+                                    lat: coords.latitude,
+                                    lng: coords.longitude
+                                }
+                            })).then(setDbCourier)
                     })
 
             case false:

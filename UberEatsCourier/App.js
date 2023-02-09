@@ -16,10 +16,10 @@ function App() {
         <NavigationContainer>
             <AuthContextProvider>
                 <OrderContextProvider>
-                    <Navigation/>
+                        <Navigation/>
                 </OrderContextProvider>
             </AuthContextProvider>
-                <StatusBar style="auto"/>
+            <StatusBar style="auto"/>
         </NavigationContainer>
     )
 }

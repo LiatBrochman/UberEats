@@ -1,9 +1,9 @@
 import * as Location from "expo-location";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {Entypo} from "@expo/vector-icons";
-import {StyleSheet, Text, useWindowDimensions, View} from 'react-native';
+import {Button, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useCourierContext} from "../../contexts/CourierContext";
 import {Icon} from "@react-native-material/core";
@@ -22,6 +22,7 @@ const Map = () => {
     const navigation = useNavigation()
 
     const {courier} = useCourierContext()
+
     const onCalloutPress = (restaurant) => {
         setRestaurant(restaurant)
         navigation.navigate("Restaurant")
@@ -70,7 +71,6 @@ const Map = () => {
 
     }
 
-
     return (
         <>
             {/*<View style={{display:"flex"}}>*/}
@@ -79,7 +79,6 @@ const Map = () => {
                 provider={PROVIDER_GOOGLE}
                 followUserLocation={true}
                 showsUserLocation={true}
-                showsMyLocationButton={true}
                 showsCompass={true}
                 pitchEnabled={true}
                 scrollEnabled={true}
@@ -93,6 +92,9 @@ const Map = () => {
                     latitudeDelta: 0.12,
                     longitudeDelta: 0.12
                 }}
+
+                showsMyLocationButton={true}
+                zoomControlEnabled={true}
             >
                 {restaurants.length > 0 && restaurants.map(restaurant =>
                     <Marker
@@ -151,23 +153,6 @@ const Map = () => {
 
             </MapView>
 
-            {/*<View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-evenly'}}>*/}
-
-            {/*<CountdownCircleTimer*/}
-            {/*    style={{flex: 1, justifyContent: 'space-evenly',backgroundColor: "rgba(255, 0, 0, 0.3) !important"}}*/}
-            {/*    isPlaying*/}
-            {/*    duration={7}*/}
-            {/*    colors={['#004777', '#F7B801', '#A30000', '#A30000']}*/}
-            {/*    color="transparent"*/}
-            {/*    bgColor="rgba(255, 0, 0, 0.3)"*/}
-            {/*    colorsTime={[7, 5, 2, 0]}*/}
-            {/*    onComplete={() => ({ shouldRepeat: true, delay: 1.5 } )}*/}
-            {/*>*/}
-            {/*    {({remainingTime}) => <Text>{remainingTime}</Text>}*/}
-            {/*</CountdownCircleTimer>*/}
-
-            {/*</View>*/}
-
             {duration && <View style={styles.container}>
                 <View style={{width: size, height: size}}>
                     <Svg width={size} height={size}>
@@ -206,12 +191,10 @@ const Map = () => {
             }
         </>
 
-
     )
 }
 
 export default Map
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -232,4 +215,13 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%'
     }
-});
+})
+
+// Courier({
+//     orderOfDestinations:['Pancakes Oldies', 'Pizza Nostalgia', 'AM-PM', 'yossi'],
+//     timeToArrive:[20,15,7,18]
+// })
+// Courier({
+//     orderOfDestinations:['Pancakes Oldies', 'yossi'],
+//     timeToArrive:[30,12]
+// })

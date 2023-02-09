@@ -1,11 +1,11 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useMemo, useRef} from "react";
 import {Button, Text, useWindowDimensions, View} from 'react-native';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import OrderItem from '../../components/OrderItem';
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import {Entypo, Ionicons} from "@expo/vector-icons";
-import {Amplify, Auth, DataStore} from "aws-amplify";
+import {Amplify, Auth} from "aws-amplify";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useNavigation} from "@react-navigation/native";
 

@@ -163,7 +163,7 @@ const BasketContextProvider = ({children}) => {
         /**
          * verifying again , and then creating a new basket (subscription is unneeded since basket isn't suppose to change)
          */
-        DataStore.query(Basket, b => b.and(b => [
+       return DataStore.query(Basket, b => b.and(b => [
             b.restaurantID.eq(restaurant?.id),
             b.customerID.eq(dbCustomer?.id),
             b.isDeleted.eq(false)

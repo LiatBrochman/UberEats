@@ -8,11 +8,7 @@ const RestaurantHeader = ({restaurant}) => {
     return (
         <View style={styles.page}>
             <Image
-                source={{
-                    uri: restaurant.image.startsWith("http")
-                        ? restaurant.image
-                        : DEFAULT_IMAGE,
-                }}
+                source={{uri: restaurant?.image}}
                 style={styles.image}
             />
 

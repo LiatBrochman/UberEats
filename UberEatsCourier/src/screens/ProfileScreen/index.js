@@ -1,4 +1,4 @@
-import {Alert, Button, Pressable, StyleSheet, Text, TextInput, View, Image} from "react-native";
+import {Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import React, {useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Amplify, Auth, DataStore} from "aws-amplify";
@@ -7,15 +7,16 @@ import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
+import * as Location from "expo-location";
 
 
 function verifyDraft(draft) {
-   return (
-       typeof draft.name === 'string' &&
-       typeof draft.transportationMode === 'string' &&
-       typeof draft.location.lat === 'number' &&
-       typeof draft.location.lng === 'number'
-   )
+    return (
+        typeof draft.name === 'string' &&
+        typeof draft.transportationMode === 'string' &&
+        typeof draft.location.lat === 'number' &&
+        typeof draft.location.lng === 'number'
+    )
 }
 
 const Profile = () => {
@@ -28,13 +29,13 @@ const Profile = () => {
 
 
     const onSave = async () => {
-        const draft = {name, transportationMode , location:{
-               lat: parseFloat(driverLocation?.latitude),
+        const draft = {
+            name, transportationMode, location: {
+                lat: parseFloat(driverLocation?.latitude),
                 lng: parseFloat(driverLocation?.longitude)
             }}
-
-        if(!verifyDraft(draft)) {
-            console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to save not a valid courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft),null,4)
+        if (!verifyDraft(draft)) {
+            console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ your trying to save an invalid courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft), null, 4)
             return null
         }
         if (dbCourier) {
@@ -43,6 +44,7 @@ const Profile = () => {
             draft.isDeleted = false
             draft.isActive = true
             draft.location.address = "null"
+            draft.sub = sub
             await createCourier(draft)
         }
         navigation.navigate('OrdersScreen')
@@ -54,50 +56,10 @@ const Profile = () => {
     }
 
     const createCourier = async draft => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ draft on create a new Courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft, null, 4))
         DataStore.save(new Courier(draft))
             .then(setDbCourier)
     }
-
-    // const updateCourier = async () => {
-    //     const courier = await DataStore.save(
-    //         Courier.copyOf(dbCourier, (updated) => {
-    //             updated.name = name;
-    //             updated.isDeleted = false;
-    //             updated.isActive = false;
-    //             updated.transportationMode = transportationMode;
-    //             updated.location = {
-    //                 address: null,
-    //                 lat: parseFloat(driverLocation.latitude),
-    //                 lng: parseFloat(driverLocation.longitude),
-    //             }
-    //         })
-    //     );
-    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updateCourier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier, null, 4))
-    //
-    //     setDbCourier(courier);
-    // }
-    //
-    // const createCourier = async () => {
-    //     try {
-    //         const courier = await DataStore.save(
-    //             new Courier({
-    //                 sub: sub,
-    //                 name: name,
-    //                 transportationMode,
-    //                 location: {
-    //                     lat: parseFloat(driverLocation?.latitude) || 32.19,
-    //                     lng: parseFloat(driverLocation?.longitude) || 34.86,
-    //                 },
-    //                 isDeleted: false,
-    //                 isActive: true,
-    //             })
-    //         );
-    //         setDbCourier(courier)
-    //         console.log("\n\n success creating courier profile")
-    //     } catch (e) {
-    //         Alert.alert("Error", e.message);
-    //     }
-    // }
 
     return (
         <View style={{backgroundColor: "white", flex: 1}}>

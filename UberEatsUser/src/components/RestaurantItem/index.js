@@ -17,11 +17,7 @@ const RestaurantItem = ({restaurant}) => {
     return (
         <Pressable onPress={onPress} style={styles.restaurantContainer}>
             <Image
-                source={{
-                    uri: restaurant?.image.startsWith("http")
-                        ? restaurant.image
-                        : DEFAULT_IMAGE,
-                }}
+                source={{uri:  restaurant?.image}}
                 style={styles.image}/>
             <View style={styles.deliveryTime}>
                 <Text

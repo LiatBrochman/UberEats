@@ -31,6 +31,7 @@ const AuthContextProvider = ({children}) => {
                     break;
                 case 'configured':
                     console.log('the Auth module is configured')
+                    break;
             }
         })
 
@@ -38,15 +39,15 @@ const AuthContextProvider = ({children}) => {
 
 
     useEffect(() => {
-      //  console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to find sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub, null, 4))
         if (sub) {
             DataStore.query(Courier, (courier) => courier.sub.eq(sub))
                 .then((couriers) => {
-                    //fixme: no courier was found - create new courier
-                    setDbCourier(couriers[0])
-                  //  console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setting dbCourier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers[0], null, 4))
+                    if(couriers.length>0) {
+                        setDbCourier(couriers[0])
+                    }else{
+                        console.log("no courier was found")
+                    }
                 })
-
         }
     }, [sub]);
 

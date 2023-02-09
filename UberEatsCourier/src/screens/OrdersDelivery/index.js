@@ -1,7 +1,7 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useMemo, useRef, useState} from "react";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import BottomSheet from "@gorhom/bottom-sheet";
-import {ActivityIndicator, Button, Pressable, Text, useWindowDimensions, View} from "react-native";
+import {ActivityIndicator, Pressable, Text, useWindowDimensions, View} from "react-native";
 import {Entypo, FontAwesome5, Fontisto, Ionicons, MaterialIcons} from '@expo/vector-icons';
 import styles from "./styles";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
@@ -9,9 +9,6 @@ import MapViewDirections from "react-native-maps-directions";
 import {useNavigation} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
 import {useOrderContext} from "../../contexts/OrderContext";
-import {DataStore} from "aws-amplify";
-import {Order} from "../../models";
-import {useAuthContext} from "../../contexts/AuthContext";
 
 
 function degreesToRadians(degrees) {
@@ -47,6 +44,7 @@ const OrdersDelivery = () => {
         completeOrder,
         dishes
     } = useOrderContext()
+
 
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)

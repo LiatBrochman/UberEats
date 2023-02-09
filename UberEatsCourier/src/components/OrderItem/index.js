@@ -16,10 +16,8 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
     const navigation = useNavigation()
 
 
-
-
     return (
-        activeORCD && restaurant?.image && (
+        activeORCD && restaurant?.id && (
             <Pressable style={{
                 flexDirection: "row",
                 margin: 10,
@@ -36,7 +34,7 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
                        }}
             >
                 <Image
-                    source={{uri: restaurant.image}}
+                    source={{uri: restaurant?.image}}
                     style={{
                         width: "25%",
                         height: "100%",

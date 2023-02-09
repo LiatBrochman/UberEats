@@ -19,6 +19,13 @@ const getTime = ({order}) => {
         return date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
     }
 }
+const getDaysAgo = ({order}) => {
+    if (order && order?.createdAt) {
+        let date = (new Date(order.createdAt)).getTime()
+        let now = (new Date()).getTime()
+        return (( now - date )/86400000).toFixed(0)
+    }
+}
 
 const OrderListItem = ({order}) => {
 
@@ -46,7 +53,10 @@ const OrderListItem = ({order}) => {
             <View>
                 <Text style={styles.name}>{restaurant?.name}</Text>
                 <Text style={styles.price}>{order?.totalQuantity} items &#8226; ${order?.totalPrice}</Text>
-                <Text>{getDate({order})} {getTime({order})} &#8226; {order?.status}</Text>
+                <Text>{getDate({order})} {getTime({order})} </Text>
+                <Text style={styles.subtitle}>
+                    &#8226;{order.status}&#8226; {getDaysAgo({order})} days ago
+                </Text>
             </View>
         </Pressable>
     );
@@ -73,4 +83,11 @@ const styles = StyleSheet.create({
     price: {
         marginVertical: 5
     },
+    subtitle: {
+        fontSize: 15,
+        color: "#D9534F",
+        textAlign: "center",
+        backgroundColor: "white",
+
+    }
 })

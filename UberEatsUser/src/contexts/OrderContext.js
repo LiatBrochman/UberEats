@@ -30,7 +30,6 @@ const OrderContextProvider = ({children}) => {
             ).subscribe(({items, isSynced}) => {
                 isSynced && setOrders(items)
             })
-
         // return subscription?.orders?.unsubscribe()
 
     }, [dbCustomer])
@@ -62,7 +61,6 @@ const OrderContextProvider = ({children}) => {
             return false
         }
     }
-
 
     const createOrder = async () => {
 
