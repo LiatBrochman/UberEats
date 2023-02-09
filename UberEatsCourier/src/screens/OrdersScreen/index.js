@@ -1,5 +1,5 @@
 import {useEffect, useMemo, useRef, useState} from "react";
-import {Button, Text, useWindowDimensions, View} from 'react-native';
+import {Button, Text, useWindowDimensions, View, StyleSheet} from 'react-native';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import OrderItem from '../../components/OrderItem';
@@ -10,6 +10,7 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import {useNavigation} from "@react-navigation/native";
 
 
+
 export var subscription = {}
 
 const OrdersScreen = () => {
@@ -18,6 +19,7 @@ const OrdersScreen = () => {
     const bottomSheetRef = useRef({})
     const {width, height} = useWindowDimensions()
     const snapPoints = useMemo(() => ["12%", "95%"], [])
+
 
 
     return (
@@ -34,12 +36,14 @@ const OrdersScreen = () => {
                         showsCompass={true}
                         pitchEnabled={true}
                         scrollEnabled={true}
+                        zoomControlEnabled={true}
                         initialRegion={{
                             latitude: driverLocation?.latitude || 32.1722383,
                             longitude: driverLocation?.longitude || 34.869715,
                             latitudeDelta: 0.12,
                             longitudeDelta: 0.12
                         }}
+
                     >
                         {activeORCD && ORCD?.[0]?.restaurant?.id &&
                         ORCD.map(({restaurant},index) =>
@@ -61,7 +65,7 @@ const OrdersScreen = () => {
                         onPress={() => navigation.navigate('Profile')}
                         name="arrow-back-circle"
                         size={45}
-                        color="white"
+                        color="black"
                         style={{top: 40, left: 15, position: 'absolute'}}
                     />
                     {ORCD?.[0]?.restaurant?.id &&
@@ -102,5 +106,6 @@ const OrdersScreen = () => {
         </>
     );
 };
+
 
 export default OrdersScreen;

@@ -53,6 +53,8 @@ const DetailedOrder = () => {
                     <List.Item>
                         <div>
                             Courier: {courier?.name}
+                            <br/>
+                            Time:
                         </div>
                     </List.Item>
 

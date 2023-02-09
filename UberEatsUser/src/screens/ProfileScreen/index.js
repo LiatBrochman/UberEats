@@ -101,18 +101,22 @@ const Profile = () => {
                     }}
                     style={styles.image}
                 />
+
                 <TextInput
                     value={name}
                     onChangeText={setName}
                     placeholder="Name"
                     style={styles.input}
                 />
+
                 <TextInput
                     value={address}
                     onChangeText={setAddress}
                     placeholder="Address"
                     style={styles.input}
                 />
+{/*<GooglePlacesInput/>*/}
+
                 {/*<TextInput*/}
                 {/*    value={lat}*/}
                 {/*    onChangeText={setLat}*/}
@@ -126,7 +130,8 @@ const Profile = () => {
                 {/*    placeholder="Longitude"*/}
                 {/*    style={styles.input}*/}
                 {/*/>*/}
-                <Pressable onPress={onSave} style={styles.button}>
+            </SafeAreaView>
+                <Pressable onPress={onSave} style={styles.button} title="Save">
                     <Text style={styles.buttonText}>Save</Text>
                 </Pressable>
                 <Text
@@ -136,7 +141,7 @@ const Profile = () => {
                 </Text>
                 <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
                 } title="Amplify.DataStore.clear()"/>
-            </SafeAreaView>
+
         </View>
     );
 };
@@ -163,10 +168,12 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: "#FFAD60",
-        marginTop: "auto",
+        // marginTop: "auto",
         padding: 10,
         alignItems: "center",
-        margin: 10,
+        marginTop: 50,
+        marginRight: 10,
+        marginLeft: 10,
         borderRadius: 20,
     },
     buttonText: {

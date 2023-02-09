@@ -7,6 +7,7 @@ import {useNavigate} from "react-router-dom";
 import Geocode from "react-geocode";
 import {Restaurant} from "../../models";
 import  './index.css';
+import UploadAndDisplayImage from "../UploadAndDisplayImage";
 
 
 function GenericRestaurantEditor({props}) {
@@ -95,27 +96,30 @@ function GenericRestaurantEditor({props}) {
 
     }
 
-    let name = props.type === "NEW" ? '' : restaurant?.name
-    let image = props.type === "NEW" ? '' : restaurant?.image
-    let deliveryFee = props.type === "NEW" ? '' : restaurant?.deliveryFee
-    let minDeliveryMinutes = props.type === "NEW" ? '' : restaurant?.minDeliveryMinutes
-    let maxDeliveryMinutes = props.type === "NEW" ? '' : restaurant?.maxDeliveryMinutes
-    let address = props.type === "NEW" ? '' : restaurant?.location.address
-    let isOpen = props.type === "NEW" ? true : restaurant?.isOpen
 
-    return (
-        <div>
-            <Card title="Restaurant Details" style={{margin: 20}}>
-                <Form layout="vertical" wrapperCol={{span: 8}}
-                      onFinish={onFinish}>
 
-                    <Form.Item name="name" label="Restaurant name" initialValue={name} required>
-                        <Input className="res-input" placeholder="Enter restaurant name here"/>
-                    </Form.Item>
+            let name = props.type === "NEW" ? '' : restaurant?.name
+            let image = props.type === "NEW" ? '' : restaurant?.image
+            let deliveryFee = props.type === "NEW" ? '' : restaurant?.deliveryFee
+            let minDeliveryMinutes = props.type === "NEW" ? '' : restaurant?.minDeliveryMinutes
+            let maxDeliveryMinutes = props.type === "NEW" ? '' : restaurant?.maxDeliveryMinutes
+            let address = props.type === "NEW" ? '' : restaurant?.location.address
+            let isOpen = props.type === "NEW" ? true : restaurant?.isOpen
 
-                    <Form.Item name="image" label="Restaurant image" initialValue={image} required>
-                        <Input className="res-input" placeholder="Enter image url here"/>
-                    </Form.Item>
+            return (
+                <div>
+                    <Card title="Restaurant Details" style={{margin: 20}}>
+                        <Form layout="vertical" wrapperCol={{span: 8}}
+                              onFinish={onFinish}>
+
+                            <Form.Item name="name" label="Restaurant name" initialValue={name} required>
+                                <Input className="res-input" placeholder="Enter restaurant name here"/>
+                            </Form.Item>
+
+                            <Form.Item name="image" label="Restaurant image" initialValue={image} >
+                            <Input className="res-input" placeholder="Enter image url here"/>
+                                <UploadAndDisplayImage/>
+                            </Form.Item>
 
                     <Form.Item name="deliveryFee" label="Restaurant delivery Fee" initialValue={deliveryFee}
                                rules={
@@ -129,73 +133,77 @@ function GenericRestaurantEditor({props}) {
                         <Input className="res-input" placeholder="Enter restaurant delivery Fee here"/>
                     </Form.Item>
 
-                    <Form.Item name="minDeliveryMinutes" label="Restaurant minimum Delivery Minutes"
-                               initialValue={minDeliveryMinutes}
-                               rules={
-                                   [{required: true,}, {
-                                       validator: (_, value) =>
-                                           Number(value) >= 30
-                                               ? Promise.resolve() :
-                                               Promise.reject(new Error('minDeliveryMinutes must be greater than 30'))
-                                   }]
-                               } required
-                    >
-                        <InputNumber className="res-input"/>
-                    </Form.Item>
+                            <Form.Item name="minDeliveryMinutes" label="Restaurant minimum Delivery Minutes"
+                                       initialValue={minDeliveryMinutes}
+                                       rules={
+                                           [{required: true,}, {
+                                               validator: (_, value) =>
+                                                   Number(value) >= 30
+                                                       ? Promise.resolve() :
+                                                       Promise.reject(new Error('minDeliveryMinutes must be greater than 30'))
+                                           }]
+                                       } required
+                            >
+                                <InputNumber className="res-input"/>
+                            </Form.Item>
 
-                    <Form.Item name="maxDeliveryMinutes" label="Restaurant maximum Delivery Minutes"
-                               initialValue={maxDeliveryMinutes}
-                               rules={
-                                   [{required: true}, {
-                                       validator: (_, value) =>
-                                           Number(value) >= 30
-                                               ? Promise.resolve() :
-                                               Promise.reject(new Error('maxDeliveryMinutes must be greater than 30'))
+                            <Form.Item name="maxDeliveryMinutes" label="Restaurant maximum Delivery Minutes"
+                                       initialValue={maxDeliveryMinutes}
+                                       rules={
+                                           [{required: true}, {
+                                               validator: (_, value) =>
+                                                   Number(value) >= 30
+                                                       ? Promise.resolve() :
+                                                       Promise.reject(new Error('maxDeliveryMinutes must be greater than 30'))
 
-                                   }]
+                                           }]
 
-                               } required>
-                        <InputNumber className="res-input" />
-                    </Form.Item>
+                                       } required>
+                                <InputNumber className="res-input"/>
+                            </Form.Item>
 
-                    <Form.Item name="address" label="Restaurant address" initialValue={address} required>
-                        <Input className="res-input" placeholder="Enter restaurant address here"/>
-                    </Form.Item>
+                            <Form.Item name="address" label="Restaurant address" initialValue={address} required>
+                                <Input className="res-input" placeholder="Enter restaurant address here"/>
+                            </Form.Item>
 
-                    <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" required>
-                        <Switch defaultChecked={!!isOpen} className="res-switch"
-                        />
-                    </Form.Item>
-
-
-                    <Form.Item>
-                        <Button className="res-button" type="primary" htmlType="submit">Submit</Button>
-                    </Form.Item>
-                </Form>
+                            <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" required>
+                                <Switch defaultChecked={!!isOpen} className="res-switch"
+                                />
+                            </Form.Item>
 
 
-            <Button
-                onClick={() => Auth.signOut()}
-                style={{textAlign: "center", color: 'gray', backgroundColor: "white"
-                  ,fontWeight:500, border: 'none'}}>
-                Sign out
-            </Button>
+                            <Form.Item>
+                                <Button className="res-button" type="primary" htmlType="submit">Submit</Button>
+                            </Form.Item>
+                        </Form>
 
-            <Button onClick={async () => {
-                await DataStore.stop()
-                await DataStore.stop()
-                await DataStore.clear()
-                await DataStore.start()
-            }}
-                    style={{textAlign: "center", color: 'gray',backgroundColor: "white"
-                        ,fontWeight:500, border: 'none'}}
-            >
-                clear
-            </Button>
-            </Card>
-        </div>
-    )
 
-}
+                        <Button
+                            onClick={() => Auth.signOut()}
+                            style={{
+                                textAlign: "center", color: 'gray', backgroundColor: "white"
+                                , fontWeight: 500, border: 'none'
+                            }}>
+                            Sign out
+                        </Button>
 
+                        <Button onClick={async () => {
+                            await DataStore.stop()
+                            await DataStore.stop()
+                            await DataStore.clear()
+                            await DataStore.start()
+                        }}
+                                style={{
+                                    textAlign: "center", color: 'gray', backgroundColor: "white"
+                                    , fontWeight: 500, border: 'none'
+                                }}
+                        >
+                            clear
+                        </Button>
+                    </Card>
+                </div>
+            )
+
+
+    }
 export default GenericRestaurantEditor;
