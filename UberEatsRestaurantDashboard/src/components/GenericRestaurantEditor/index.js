@@ -53,38 +53,40 @@ function GenericRestaurantEditor({props}) {
 
             Geocode.setApiKey(process.env.REACT_APP_API_KEY)
             Geocode.fromAddress(address + '')
-                .then(async response => {
-                    const {lat, lng} = response.results[0].geometry.location;
-                    const draft_restaurant = {
-                        name: name,
-                        image: image,
-                        deliveryFee: parseFloat(deliveryFee),
-                        minDeliveryMinutes: parseInt(minDeliveryMinutes),
-                        maxDeliveryMinutes: parseInt(maxDeliveryMinutes),
-                        isOpen: isOpen,
-                        isDeleted: false,
-                        ownerID: dbOwner.id,
-                        location: {
-                            address: address,
-                            lat: parseFloat(lat),
-                            lng: parseFloat(lng),
+                .then(async (response) => {
+                    if(response?.status === "OK") {
+
+                        const {lat, lng} = response.results[0].geometry.location;
+                        const draft_restaurant = {
+                            name: name,
+                            image: image,
+                            deliveryFee: parseFloat(deliveryFee),
+                            minDeliveryMinutes: parseInt(minDeliveryMinutes),
+                            maxDeliveryMinutes: parseInt(maxDeliveryMinutes),
+                            isOpen: isOpen,
+                            isDeleted: false,
+                            ownerID: dbOwner.id,
+                            location: {
+                                address: response.results[0]['formatted_address'] || address,
+                                lat: parseFloat(lat),
+                                lng: parseFloat(lng),
+                            }
                         }
-                    }
 
-                    switch (props.type) {
+                        switch (props.type) {
 
-                        case "NEW":
-                            await createNewRestaurant(draft_restaurant)
-                            break;
+                            case "NEW":
+                                await createNewRestaurant(draft_restaurant)
+                                break;
 
-                        case "EDIT":
-                            await editRestaurant(draft_restaurant)
-                            break;
+                            case "EDIT":
+                                await editRestaurant(draft_restaurant)
+                                break;
 
-                        default:
-                            console.log("wrong idea..")
-                    }
-                })
+                            default:
+                                console.log("wrong idea..")
+                        }
+                    }})
 
         } catch (e) {
             console.error("error on GenericRestaurantEditor")
@@ -162,7 +164,7 @@ function GenericRestaurantEditor({props}) {
                         <Input className="res-input" placeholder="Enter restaurant address here"/>
                     </Form.Item>
 
-                    <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" required>
+                    <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" initialValue={!!isOpen} required>
                         <Switch defaultChecked={!!isOpen} className="res-switch"
                         />
                     </Form.Item>

@@ -139,6 +139,7 @@ function GenericDishEditor({props}) {
                 <Form.Item label="Dish is Active"
                            name="isActive"
                            valuePropName="checked"
+                           initialValue={!!isActive}
                            required>
                     <Switch
                         defaultChecked={!!isActive}

@@ -5,7 +5,7 @@ import {Courier} from "../models";
 const AuthContext = createContext({});
 
 const AuthContextProvider = ({children}) => {
-    const [authUser, setAuthUser] = useState(null);
+    const [authUser, setAuthUser] = useState(null)
     const [dbCourier, setDbCourier] = useState(null)
     const sub = authUser?.attributes?.sub;
 
@@ -40,12 +40,13 @@ const AuthContextProvider = ({children}) => {
 
     useEffect(() => {
         if (sub) {
-            DataStore.query(Courier, (courier) => courier.sub.eq(sub))
+            DataStore.query(Courier, c => c.sub.eq(sub))
                 .then((couriers) => {
                     if(couriers.length>0) {
                         setDbCourier(couriers[0])
                     }else{
                         console.log("no courier was found")
+                        
                     }
                 })
         }
