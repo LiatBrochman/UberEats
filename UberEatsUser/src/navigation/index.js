@@ -14,8 +14,6 @@ import {AntDesign, FontAwesome5, Foundation} from "@expo/vector-icons";
 import {Text} from "@react-native-material/core";
 
 
-
-
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {

@@ -1,11 +1,24 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
-import {getDate, getTime} from "../../contexts/Queries"
 import {useEffect, useState} from "react";
 
 import {DataStore} from "aws-amplify";
 import {Restaurant} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
+
+
+const getDate = ({order}) => {
+    if (order && order?.createdAt) {
+        let date = new Date(order.createdAt)
+        return date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear()
+    }
+}
+const getTime = ({order}) => {
+    if (order && order?.createdAt) {
+        let date = new Date(order.createdAt)
+        return date.getHours() + ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
+    }
+}
 
 const OrderListItem = ({order}) => {
 

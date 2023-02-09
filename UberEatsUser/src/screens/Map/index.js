@@ -196,8 +196,9 @@ const Map = () => {
                         )}
                     </Svg>
                     <View style={styles.time}>
-                        {remainingTime!==0 &&
-                        <Text style={{fontSize: 36}}>{Math.floor(remainingTime / 60) + 1}</Text>
+                        {
+                            remainingTime !== 0 &&
+                            <Text style={{fontSize: 36}}>{Math.floor(remainingTime / 60) + 1}</Text>
                         }
                     </View>
                 </View>
