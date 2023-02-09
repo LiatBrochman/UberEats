@@ -3,12 +3,12 @@ import {Auth, DataStore, Hub} from "aws-amplify";
 import {Customer} from "../models";
 
 
-const AuthContext = createContext({});
+const AuthContext = createContext({})
 
 const AuthContextProvider = ({children}) => {
-    const [authUser, setAuthUser] = useState(null);
-    const [dbCustomer, setDbCustomer] = useState(null);
-    const sub = authUser?.attributes?.sub;
+    const [authUser, setAuthUser] = useState(null)
+    const [dbCustomer, setDbCustomer] = useState(null)
+    const sub = authUser?.attributes?.sub
 
 
     useEffect(() => {
@@ -33,6 +33,7 @@ const AuthContextProvider = ({children}) => {
                     break;
                 case 'configured':
                     console.log('the Auth module is configured')
+                    break;
             }
         })
 
@@ -46,7 +47,7 @@ const AuthContextProvider = ({children}) => {
             })
         // return subscription?.customer?.unsubscribe()
 
-    }, [sub]);
+    }, [sub])
 
 
     return (
@@ -56,6 +57,6 @@ const AuthContextProvider = ({children}) => {
     );
 };
 
-export default AuthContextProvider;
+export default AuthContextProvider
 
 export const useAuthContext = () => useContext(AuthContext);
