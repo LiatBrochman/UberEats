@@ -12,6 +12,18 @@ import Svg, {Defs, LinearGradient, Path, Stop} from "react-native-svg";
 import * as Constants from "constants";
 
 
+// const {
+//     path,
+//     pathLength,
+//     stroke,
+//     strokeDashoffset,
+//     remainingTime,
+//     elapsedTime,
+//     size,
+//     strokeWidth,
+// } = useCountdown({ isPlaying: true, duration: 7, colors: '#abc' })
+
+
 const Map = () => {
     const duration = 60;
     const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth, onComplete}
@@ -152,26 +164,28 @@ const Map = () => {
                 }
 
             </MapView>
+            <View style={{height:60, backgroundColor:"white"}}></View>
 
-            {duration && <View style={styles.container}>
+          {duration && <View style={styles.container}>
+
                 <View style={{width: size, height: size}}>
                     <Svg width={size} height={size}>
                         <Defs>
-                            <LinearGradient id="your-unique-id" x1="1" y1="0" x2="0" y2="0">
-                                <Stop offset="5%" stopColor="gold"/>
-                                <Stop offset="95%" stopColor="red"/>
+                            <LinearGradient id="your-unique-id" x1="0" y1="1" x2="0" y2="0">
+                                <Stop offset="5%" stopColor="#96CEB4"/>
+                                <Stop offset="95%" stopColor="#96CEB4"/>
                             </LinearGradient>
                         </Defs>
                         <Path
                             d={path}
-                            fill="none"
-                            stroke="#d9d9d9"
+                            fill="#d9d9d9"
+                            stroke="white"
                             strokeWidth={strokeWidth}
                         />
                         {elapsedTime !== duration && (
                             <Path
                                 d={path}
-                                fill="none"
+                                fill="#d9d9d9"
                                 stroke={stroke}
                                 strokeLinecap="butt"
                                 strokeWidth={strokeWidth}
@@ -186,9 +200,12 @@ const Map = () => {
                             <Text style={{fontSize: 36}}>{Math.floor(remainingTime / 60) + 1}</Text>
                         }
                     </View>
+
                 </View>
-            </View>
+
+          </View>
             }
+
         </>
 
     )
@@ -197,13 +214,16 @@ const Map = () => {
 export default Map
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingTop: Constants.statusBarHeight,
-        backgroundColor: 'transparent',
+        // flex: 1,
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // paddingTop: Constants.statusBarHeight,
+        // paddingTop: 637,
+        // backgroundColor: 'transparent',
         position: 'absolute',
-        padding: 8,
+        // paddingLeft: 120,
+        top: "76%",
+        left: "28%"
     },
     time: {
         display: 'flex',

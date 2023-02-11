@@ -883,6 +883,22 @@ export const schema = {
                     "isRequired": true,
                     "attributes": []
                 },
+                "destinations": {
+                    "name": "destinations",
+                    "isArray": true,
+                    "type": "String",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
+                "timeToArrive": {
+                    "name": "timeToArrive",
+                    "isArray": true,
+                    "type": "Int",
+                    "isRequired": false,
+                    "attributes": [],
+                    "isArrayNullable": true
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -976,5 +992,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.3.5",
-    "version": "5f3d7716ed44cd5fe4874ba1f8662232"
+    "version": "e9183e9638e35c92077ca26594d7bc78"
 };

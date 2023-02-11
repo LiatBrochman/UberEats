@@ -298,6 +298,8 @@ type EagerCourier = {
   readonly Orders?: (Order | null)[] | null;
   readonly isDeleted: boolean;
   readonly isActive: boolean;
+  readonly destinations?: (string | null)[] | null;
+  readonly timeToArrive?: (number | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -315,6 +317,8 @@ type LazyCourier = {
   readonly Orders: AsyncCollection<Order>;
   readonly isDeleted: boolean;
   readonly isActive: boolean;
+  readonly destinations?: (string | null)[] | null;
+  readonly timeToArrive?: (number | null)[] | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
