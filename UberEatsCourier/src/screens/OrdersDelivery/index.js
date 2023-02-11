@@ -1,4 +1,4 @@
-import {useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import BottomSheet from "@gorhom/bottom-sheet";
 import {ActivityIndicator, Pressable, Text, useWindowDimensions, View} from "react-native";
@@ -9,6 +9,7 @@ import MapViewDirections from "react-native-maps-directions";
 import {useNavigation} from "@react-navigation/native";
 import {GOOGLE_API_KEY} from '@env';
 import {useOrderContext} from "../../contexts/OrderContext";
+import {useAuthContext} from "../../contexts/AuthContext";
 
 
 function degreesToRadians(degrees) {
@@ -42,10 +43,11 @@ const OrdersDelivery = () => {
         assignToCourier,
         driverLocation,
         completeOrder,
-        dishes
+        dishes,
+        setWaypointDurations
     } = useOrderContext()
 
-
+    const {dbCourier} = useAuthContext()
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)
     const distanceRef = useRef(null)
@@ -55,6 +57,7 @@ const OrdersDelivery = () => {
 
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const navigation = useNavigation()
+
 
     // const changeStatusToCompleted = ({id, newStatus}) => {
     //     DataStore.query(Order, id)
@@ -215,16 +218,17 @@ const OrdersDelivery = () => {
             >
                 <MapViewDirections
                     origin={driverLocation}
+                    mode={dbCourier.transportationMode}
                     destination={getDestination()}
                     strokeWidth={10}
                     waypoints={getWaypoints()}
                     strokeColor="#96CEB4"
                     apikey={GOOGLE_API_KEY}
                     onReady={(result) => {
-                        // setDistance(result.distance)
-                        distanceRef.current = result.distance
                         setTotalMinutes(result.duration)
                         setTotalKm(result.distance)
+                        distanceRef.current = result.distance
+                        setWaypointDurations(result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, ""))))
                     }}
                 />
                 <Marker
@@ -232,7 +236,13 @@ const OrdersDelivery = () => {
                     title={restaurant?.name}
                     description={restaurant?.location.address}
                 >
-                    <View style={{backgroundColor: 'white', padding: 5, borderRadius: 20, borderWidth: 2, borderColor: '#FFAD60'}}>
+                    <View style={{
+                        backgroundColor: 'white',
+                        padding: 5,
+                        borderRadius: 20,
+                        borderWidth: 2,
+                        borderColor: '#FFAD60'
+                    }}>
                         <Entypo name="shop" size={24} color="#FFAD60"/>
                     </View>
                 </Marker>
@@ -241,7 +251,13 @@ const OrdersDelivery = () => {
                     title={customer?.name}
                     description={customer?.location.address}
                 >
-                    <View style={{backgroundColor: 'white', padding: 6, borderRadius: 20, borderWidth: 2, borderColor: '#D9534F'}}>
+                    <View style={{
+                        backgroundColor: 'white',
+                        padding: 6,
+                        borderRadius: 20,
+                        borderWidth: 2,
+                        borderColor: '#D9534F'
+                    }}>
                         <MaterialIcons name="person" size={20} color="#D9534F"/>
                     </View>
                 </Marker>
