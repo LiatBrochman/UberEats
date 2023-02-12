@@ -1,14 +1,21 @@
 import * as Location from "expo-location";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import {Entypo} from "@expo/vector-icons";
+import {AntDesign, Entypo} from "@expo/vector-icons";
 import {StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useCourierContext} from "../../contexts/CourierContext";
 import {Icon} from "@react-native-material/core";
 import {useCountdown} from 'react-native-countdown-circle-timer';
-import Svg, {Defs, LinearGradient, Path, Stop} from "react-native-svg";
+// import Svg, {Defs, LinearGradient, Path, Stop} from "react-native-svg";
+import * as PropTypes from "prop-types";
+// import OrderListItem from "../../components/OrderListItem";
+import {useOrderContext} from "../../contexts/OrderContext";
+import {GestureHandlerRootView} from 'react-native-gesture-handler'
+import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
+import { MessageOutlined } from '@ant-design/icons';
+
 
 // const {
 //     path,
@@ -22,21 +29,40 @@ import Svg, {Defs, LinearGradient, Path, Stop} from "react-native-svg";
 // } = useCountdown({ isPlaying: true, duration: 7, colors: '#abc' })
 
 
+
+
+BottomSheet.propTypes = {
+    snapPoints: PropTypes.any,
+    ref: PropTypes.any,
+    children: PropTypes.node
+};
+
+
+
+BottomSheetFlatList.propTypes = {
+    renderItem: PropTypes.func,
+    data: PropTypes.any
+};
+
+
+
 const Map = () => {
     const navigation = useNavigation()
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
     const {courier, duration} = useCourierContext()
     const [customerLocation, setCustomerLocation] = useState(null)
+    const bottomSheetRef = useRef({})
+    const snapPoints = useMemo(() => ["12%", "95%"], [])
 
 
-    const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth}
-        = useCountdown({isPlaying: true, duration: duration*60 || 10000, colors: 'url(#your-unique-id)'})
-    const onCalloutPress = (restaurant) => {
-        setRestaurant(restaurant)
-        navigation.navigate("Restaurant")
-
-    }
+    // const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth}
+    //     = useCountdown({isPlaying: true, duration: duration*60 || 10000, colors: 'url(#your-unique-id)'})
+    // const onCalloutPress = (restaurant) => {
+    //     setRestaurant(restaurant)
+    //     navigation.navigate("Restaurant")
+    //
+    // }
 
     useEffect(() => {
 
@@ -81,7 +107,9 @@ const Map = () => {
     }
 
     return (
-        <>
+<>
+    {
+        <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
             {/*<View style={{display:"flex"}}>*/}
             <MapView
                 style={{height, width, flex: 3.5}}
@@ -159,52 +187,85 @@ const Map = () => {
                     </View>
                 </Marker>
                 }
-
             </MapView>
+            <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
+                <View style={{marginLeft: 30, marginBottom: 30}}>
+                    <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                      DELIVERY TIME
+                    </Text>
+                    <View style={{flexDirection:"row", paddingTop: 10 }}>
+                    <AntDesign
+                        name="clockcircle"
+                        size={20}
+                        color={"gray"}
+                        style={{marginRight:10, alignSelf: "center"}}
+                    />
+                    <Text style={{
+                        fontSize: 20, fontWeight: '600', letterSpacing: 0.5
+                    }}>54 Min</Text>
+                    </View>
+                    <View style={{flexDirection:"row", paddingTop:10 }}>
+                    <AntDesign
+                        name="checkcircle"
+                        size={25}
+                        color={"#96CEB4"}
+                        style={{marginRight:10, alignSelf: "center"}}
+                    />
+                    <View>
+                    <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
+                        Order confirmed
+                    </Text>
+                        <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                            Your order has been received
+                        </Text>
 
-
-            {duration &&
-            <View style={styles.container}>
-
-                <View style={{width: size, height: size}}>
-                    <Svg width={size} height={size}>
-                        <Defs>
-                            <LinearGradient id="your-unique-id" x1="0" y1="1" x2="0" y2="0">
-                                <Stop offset="5%" stopColor="#96CEB4"/>
-                                <Stop offset="95%" stopColor="#96CEB4"/>
-                            </LinearGradient>
-                        </Defs>
-                        <Path
-                            d={path}
-                            fill="#d9d9d9"
-                            stroke="white"
-                            strokeWidth={strokeWidth}
-                        />
-                        {elapsedTime !== duration && (
-                            <Path
-                                d={path}
-                                fill="#d9d9d9"
-                                stroke={stroke}
-                                strokeLinecap="butt"
-                                strokeWidth={strokeWidth}
-                                strokeDasharray={pathLength}
-                                strokeDashoffset={strokeDashoffset}
-                            />
-                        )}
-                    </Svg>
-                    <View style={styles.time}>
-                        {
-                            remainingTime !== 0 &&
-                            <Text style={{fontSize: 36}}>{Math.floor(remainingTime / 60) + 1}</Text>
-                        }
                     </View>
 
+                    </View>
+                    <View style={{ borderWidth: 0.5, borderColor:'lightgray', marginTop:10, width: "90%"}}></View>
+                    <View style={{flexDirection:"row", paddingTop:20 }}>
+                        <AntDesign
+                            name="checkcircle"
+                            size={25}
+                            color={"#96CEB4"}
+                            style={{marginRight:10, alignSelf: "center"}}
+                        />
+                        <View>
+                            <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
+                                Order prepared
+                            </Text>
+                            <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                                Your order has been prepared
+                            </Text>
+
+                        </View>
+
+                    </View>
+                    <View style={{ borderWidth: 0.5, borderColor:'lightgray', marginTop:10, width: "90%"}}></View>
+                    <View style={{flexDirection:"row", paddingTop: 20 }}>
+                        <AntDesign
+                            name="minuscircle"
+                            size={25}
+                            color={"#D9534F"}
+                            style={{marginRight:10, alignSelf: "center"}}
+                        />
+                        <View>
+                            <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
+                                Delivery in progress
+                            </Text>
+                            <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                                Hang on! Your food is on the way.
+                            </Text>
+
+                        </View>
+
+                    </View>
+                    <View style={{ borderWidth: 0.5, borderColor:'lightgray', marginTop:10, width: "90%"}}></View>
                 </View>
-
-            </View>
-            }
-
-        </>
+            </BottomSheet>
+        </GestureHandlerRootView>
+    }
+</>
 
     )
 }
@@ -220,7 +281,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'transparent',
         position: 'absolute',
         // paddingLeft: 120,
-        top: "76%",
+        top: "82%",
         left: "28%"
     },
     time: {
