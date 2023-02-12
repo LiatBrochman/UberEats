@@ -3,9 +3,7 @@
 eas.json
 
 #auto generated stuff:
-node_modules/
 .expo/
-dist/
 npm-debug.*
 *.jks
 *.p8
@@ -29,7 +27,10 @@ amplify/backend/.temp
 build/
 dist/
 node_modules/
-aws-exports.js
+
+
+#aws-exports.js!!
+
 awsconfiguration.json
 amplifyconfiguration.json
 amplifyconfiguration.dart

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {ActivityIndicator, Pressable, StyleSheet, Text, View,} from "react-native";
+import {ActivityIndicator, Image, Pressable, StyleSheet, Text, View,} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
@@ -47,6 +47,10 @@ const DishDetailsScreen = () => {
 
     return (
         <View style={styles.page}>
+
+            <Image source={{uri: dish?.image}} style={styles.image}/>
+
+
             <Text style={styles.name}>{dish?.name}</Text>
             <Text style={styles.description}>{dish?.description}</Text>
             <View style={styles.separator}/>
@@ -66,6 +70,7 @@ const DishDetailsScreen = () => {
                     onPress={onPlus}
                 />
             </View>
+
 
             <Pressable onPress={onAddToBasket} style={styles.button}>
                 <Text style={styles.buttonText}>
@@ -120,6 +125,12 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontSize: 18,
     },
+    image:{
+        width: "100%",
+        aspectRatio: 5 / 3,
+        borderTopRightRadius: 40,
+        borderTopLeftRadius: 40,
+    }
 });
 
 export default DishDetailsScreen;

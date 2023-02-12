@@ -33,7 +33,7 @@ const RestaurantItem = ({restaurant}) => {
                             size={15}
                             color={"#96CEB4"}
                         />
-                        <Text style={{fontWeight: "600", color: "black"}}> {restaurant?.rating.toFixed(1)}</Text>
+                        <Text style={{fontWeight: "600", color: "black"}}> {restaurant?.rating?.toFixed(1)}</Text>
                     </Text>
                 </View>
 

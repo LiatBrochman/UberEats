@@ -1,5 +1,5 @@
 import {Alert, Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Auth, DataStore} from "aws-amplify";
 import {Customer} from '../../models'
@@ -10,11 +10,16 @@ import Geocoder from 'react-native-geocoding';
 
 const Profile = () => {
 
-    const {dbCustomer} = useAuthContext()
-    const [name, setName] = useState(dbCustomer?.name || "")
-    const [address, setAddress] = useState(dbCustomer?.location?.address || "")
-    const {sub, setDbCustomer} = useAuthContext()
     const navigation = useNavigation()
+    const {dbCustomer} = useAuthContext()
+    const {sub, setDbCustomer} = useAuthContext()
+    const [address, setAddress] = useState()
+    const [name, setName] = useState()
+
+    useEffect(() => {
+       setAddress(dbCustomer?.location?.address || "")
+        setName(dbCustomer?.name || "")
+    }, [dbCustomer])
 
 
     function validateSave() {
@@ -31,30 +36,36 @@ const Profile = () => {
             return
         }
 
-        Geocoder.init(process.env.GOOGLE_API_KEY)
-        Geocoder.from(address + '')
-            .then(json => {
-                const location = json?.results?.[0]?.geometry?.location
+        if (dbCustomer?.location?.lat && dbCustomer?.location?.address !== address) {
 
-                if (validateCoordinates({location})) {
+            Geocoder.init(process.env.GOOGLE_API_KEY)
+            Geocoder.from(address + '')
+                .then(json => {
+                    const location = json?.results?.[0]?.geometry?.location
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(json?.results?.[0]?.['formatted_address'], null, 4))
 
-                    if (dbCustomer) {
-                        updateCustomer({lat: location.lat, lng: location.lng, address: address})
+                    if (validateCoordinates({location})) {
+
+                        if (dbCustomer) {
+                            updateCustomer({lat: location.lat, lng: location.lng, address: json?.results?.[0]?.['formatted_address']})
+                        } else {
+                            createNewCustomer({lat: location.lat, lng: location.lng, address: json?.results?.[0]?.['formatted_address']})
+                        }
+
+                        navigation.navigate("Home")
                     } else {
-                        createNewCustomer({lat: location.lat, lng: location.lng, address: address})
+                        console.error("coordinates are not valid!")
                     }
+                })
+                .catch(error => console.warn(error))
+        } else {
+            updateCustomer()
 
-                    navigation.navigate("Home")
-                } else {
-                    console.error("coordinates are not valid!")
-                }
-            })
-            .catch(error => console.warn(error))
-
+        }
 
     }
 
-    const updateCustomer = ({lat, lng, address}) => {
+    const updateCustomer = ({lat, lng, address}=dbCustomer.location) => {
         DataStore.query(Customer, dbCustomer.id).then(dbCustomer =>
             DataStore.save(
                 Customer.copyOf(dbCustomer, (updated) => {
@@ -126,17 +137,18 @@ const Profile = () => {
                 {/*    placeholder="Longitude"*/}
                 {/*    style={styles.input}*/}
                 {/*/>*/}
-                <Pressable onPress={onSave} style={styles.button}>
-                    <Text style={styles.buttonText}>Save</Text>
-                </Pressable>
-                <Text
-                    onPress={() => Auth.signOut()}
-                    style={{textAlign: "center", color: 'black', margin: 10}}>
-                    Sign out
-                </Text>
-                <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
-                } title="Amplify.DataStore.clear()"/>
             </SafeAreaView>
+            <Pressable onPress={onSave} style={styles.button} title="Save">
+                <Text style={styles.buttonText}>Save</Text>
+            </Pressable>
+            <Text
+                onPress={() => Auth.signOut()}
+                style={{textAlign: "center", color: 'black', margin: 10}}>
+                Sign out
+            </Text>
+            <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
+            } title="Amplify.DataStore.clear()"/>
+
         </View>
     );
 };
@@ -163,10 +175,12 @@ const styles = StyleSheet.create({
     },
     button: {
         backgroundColor: "#FFAD60",
-        marginTop: "auto",
+        // marginTop: "auto",
         padding: 10,
         alignItems: "center",
-        margin: 10,
+        marginTop: 50,
+        marginRight: 10,
+        marginLeft: 10,
         borderRadius: 20,
     },
     buttonText: {
