@@ -1,16 +1,14 @@
 import * as Location from "expo-location";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {Entypo} from "@expo/vector-icons";
-import {Button, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View} from 'react-native';
+import {StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useCourierContext} from "../../contexts/CourierContext";
 import {Icon} from "@react-native-material/core";
 import {useCountdown} from 'react-native-countdown-circle-timer';
 import Svg, {Defs, LinearGradient, Path, Stop} from "react-native-svg";
-import * as Constants from "constants";
-
 
 // const {
 //     path,
@@ -25,16 +23,15 @@ import * as Constants from "constants";
 
 
 const Map = () => {
-    const duration = 60;
-    const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth, onComplete}
-        = useCountdown({isPlaying: true, duration: duration || 10000, colors: 'url(#your-unique-id)'})
+    const navigation = useNavigation()
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
-    const [customerLocation, setCustomerLocation] = useState()
-    const navigation = useNavigation()
+    const {courier, duration} = useCourierContext()
+    const [customerLocation, setCustomerLocation] = useState(null)
 
-    const {courier} = useCourierContext()
 
+    const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth}
+        = useCountdown({isPlaying: true, duration: duration*60 || 10000, colors: 'url(#your-unique-id)'})
     const onCalloutPress = (restaurant) => {
         setRestaurant(restaurant)
         navigation.navigate("Restaurant")
@@ -164,9 +161,10 @@ const Map = () => {
                 }
 
             </MapView>
-            <View style={{height:60, backgroundColor:"white"}}></View>
 
-          {duration && <View style={styles.container}>
+
+            {duration &&
+            <View style={styles.container}>
 
                 <View style={{width: size, height: size}}>
                     <Svg width={size} height={size}>
@@ -203,7 +201,7 @@ const Map = () => {
 
                 </View>
 
-          </View>
+            </View>
             }
 
         </>

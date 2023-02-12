@@ -10,11 +10,11 @@ const CourierContext = createContext({})
 const CourierContextProvider = ({children}) => {
     const {orders} = useOrderContext()
     const [courier, setCourier] = useState(null)
-
+    const [duration,setDuration]=useState(null)
 
     useEffect(() => {
         if (orders) {
-            const orderWithCourier = orders?.length > 0 && orders.find(o => {
+            const orderWithCourier = orders?.length && orders.find(o => {
                 if (o?.courierID && o?.courierID !== "null") {
                     return o?.courierID
                 }
@@ -23,8 +23,11 @@ const CourierContextProvider = ({children}) => {
 
                 subscription.courier = DataStore.observeQuery(Courier, c => c.id.eq(orderWithCourier.courierID))
                     .subscribe(({items, isSynced}) => {
-                        // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updated courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items?.[0],null,4))
-                        isSynced && setCourier(items?.[0])
+                      if  (isSynced){
+                          setCourier(items?.[0])
+                          const totalTime = items?.[0].timeToArrive.reduce((total,current)=>total+current)
+                          setDuration(totalTime)
+                      }
                     })
             }
         }
@@ -33,7 +36,8 @@ const CourierContextProvider = ({children}) => {
 
     return (
         <CourierContext.Provider value={{
-            courier
+            courier,
+            duration
         }}>
             {children}
         </CourierContext.Provider>
