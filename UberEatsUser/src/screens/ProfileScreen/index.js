@@ -6,7 +6,7 @@ import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import Geocoder from 'react-native-geocoding';
-
+Geocoder.init(process.env.GOOGLE_API_KEY)
 
 const Profile = () => {
 
@@ -36,36 +36,54 @@ const Profile = () => {
             return
         }
 
-        if (dbCustomer?.location?.lat && dbCustomer?.location?.address !== address) {
 
-            Geocoder.init(process.env.GOOGLE_API_KEY)
-            Geocoder.from(address + '')
-                .then(json => {
-                    const location = json?.results?.[0]?.geometry?.location
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(json?.results?.[0]?.['formatted_address'], null, 4))
+        switch(!!dbCustomer){
 
-                    if (validateCoordinates({location})) {
+            case true:
+                if(dbCustomer?.location?.address === address){
+                    /**
+                     * update name only
+                     */
+                    updateCustomer()
+                    break;
+                }
+                /**
+                 * update name and location
+                 */
+                Geocoder.from(address + '')
+                    .then(json => {
+                        const location = json?.results?.[0]?.geometry?.location
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(json?.results?.[0]?.['formatted_address'], null, 4))
 
-                        if (dbCustomer) {
-                            updateCustomer({lat: location.lat, lng: location.lng, address: json?.results?.[0]?.['formatted_address']})
-                        } else {
-                            createNewCustomer({lat: location.lat, lng: location.lng, address: json?.results?.[0]?.['formatted_address']})
+                        if (validateCoordinates({location})) {
+                            updateCustomer({
+                                lat: location?.lat,
+                                lng: location?.lng,
+                                address: json?.results?.[0]?.['formatted_address']
+                            })
                         }
+                    })
+            break;
 
-                        navigation.navigate("Home")
-                    } else {
-                        console.error("coordinates are not valid!")
-                    }
-                })
-                .catch(error => console.warn(error))
-        } else {
-            updateCustomer()
 
+            case false:
+                /**
+                 * create new
+                 */
+                Geocoder.from(address + '')
+                    .then(json => {
+                        const location = json?.results?.[0]?.geometry?.location
+                        if (validateCoordinates({location})) {
+                            createNewCustomer({lat: location?.lat, lng: location?.lng, address: json?.results?.[0]?.['formatted_address']})
+                        }
+                    })
+            break;
         }
 
+        navigation.navigate("Home")
     }
 
-    const updateCustomer = ({lat, lng, address}=dbCustomer.location) => {
+    const updateCustomer = ({lat, lng, address}=dbCustomer?.location) => {
         DataStore.query(Customer, dbCustomer.id).then(dbCustomer =>
             DataStore.save(
                 Customer.copyOf(dbCustomer, (updated) => {

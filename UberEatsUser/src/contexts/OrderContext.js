@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useRef, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Dish, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
@@ -13,10 +13,10 @@ const OrderContextProvider = ({children}) => {
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
     const {totalPrice, basketDishes, setBasketDishes, setTotalPrice, setTotalBasketQuantity} = useBasketContext()
-    const [order, setOrder] = useState({})
+    const [order, setOrder] = useState(null)
     const [orders, setOrders] = useState([])
     const [orderDishes, setOrderDishes] = useState([])
-
+    const status = useRef()
 
     /**
      init order context
@@ -47,9 +47,9 @@ const OrderContextProvider = ({children}) => {
             )).subscribe(({items, isSynced}) => {
                 isSynced && setOrderDishes(items)
             })
+            status.current=order.status
         }
         // return subscription?.order?.unsubscribe()
-
     }, [order])
 
     function checkIfPriceIsValid({totalPrice}) {
@@ -149,7 +149,8 @@ const OrderContextProvider = ({children}) => {
             orders,
             orderDishes,
             order,
-            setOrder
+            setOrder,
+            status
         }}>
             {children}
         </OrderContext.Provider>

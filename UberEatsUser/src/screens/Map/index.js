@@ -7,14 +7,12 @@ import {StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useCourierContext} from "../../contexts/CourierContext";
 import {Icon} from "@react-native-material/core";
-import {useCountdown} from 'react-native-countdown-circle-timer';
 // import Svg, {Defs, LinearGradient, Path, Stop} from "react-native-svg";
 import * as PropTypes from "prop-types";
 // import OrderListItem from "../../components/OrderListItem";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
-import { MessageOutlined } from '@ant-design/icons';
 
 
 // const {
@@ -29,14 +27,11 @@ import { MessageOutlined } from '@ant-design/icons';
 // } = useCountdown({ isPlaying: true, duration: 7, colors: '#abc' })
 
 
-
-
 BottomSheet.propTypes = {
     snapPoints: PropTypes.any,
     ref: PropTypes.any,
     children: PropTypes.node
 };
-
 
 
 BottomSheetFlatList.propTypes = {
@@ -45,16 +40,30 @@ BottomSheetFlatList.propTypes = {
 };
 
 
-
 const Map = () => {
     const navigation = useNavigation()
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
+    const {status} = useOrderContext()
     const {courier, duration} = useCourierContext()
     const [customerLocation, setCustomerLocation] = useState(null)
     const bottomSheetRef = useRef({})
     const snapPoints = useMemo(() => ["12%", "95%"], [])
+    const [counter, setCounter] = useState(0)
 
+    useEffect(() => {
+        switch (status) {
+            case "ACCEPTED":
+                setCounter(1)
+                break;
+            case "COOKING":
+                setCounter(2)
+                break;
+            case "PICKED_UP":
+                setCounter(3)
+                break;
+        }
+    }, [status])
 
     // const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth}
     //     = useCountdown({isPlaying: true, duration: duration*60 || 10000, colors: 'url(#your-unique-id)'})
@@ -91,7 +100,7 @@ const Map = () => {
                     },
                     ({coords}) => {
                         setCustomerLocation({
-                            latitude: coords.latitude,
+                            latitude: coords?.latitude,
                             longitude: coords.longitude,
                         })
                     })
@@ -107,165 +116,184 @@ const Map = () => {
     }
 
     return (
-<>
-    {
-        <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
-            {/*<View style={{display:"flex"}}>*/}
-            <MapView
-                style={{height, width, flex: 3.5}}
-                provider={PROVIDER_GOOGLE}
-                followUserLocation={true}
-                showsUserLocation={true}
-                showsCompass={true}
-                pitchEnabled={true}
-                scrollEnabled={true}
-                initialRegion={{
-                    latitude:
-                    // 32.1975652,
-                        customerLocation?.latitude || 32.1975652,
-                    longitude:
-                    // 34.8775085,
-                        customerLocation?.longitude || 34.8775085,
-                    latitudeDelta: 0.12,
-                    longitudeDelta: 0.12
-                }}
-
-                showsMyLocationButton={true}
-                zoomControlEnabled={true}
-            >
-                {restaurants.length > 0 && restaurants.map(restaurant =>
-                    <Marker
-                        key={restaurant.id}
-                        title={restaurant.name}
-                        description={restaurant.location.address}
-                        coordinate={{
-                            latitude: restaurant.location.lat,
-                            longitude: restaurant.location.lng
+        <>
+            {
+                <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
+                    {/*<View style={{display:"flex"}}>*/}
+                    <MapView
+                        style={{height, width, flex: 3.5}}
+                        provider={PROVIDER_GOOGLE}
+                        followUserLocation={true}
+                        showsUserLocation={true}
+                        showsCompass={true}
+                        pitchEnabled={true}
+                        scrollEnabled={true}
+                        initialRegion={{
+                            latitude:
+                            // 32.1975652,
+                                customerLocation?.latitude || 32.1975652,
+                            longitude:
+                            // 34.8775085,
+                                customerLocation?.longitude || 34.8775085,
+                            latitudeDelta: 0.12,
+                            longitudeDelta: 0.12
                         }}
-                        onCalloutPress={() => onCalloutPress(restaurant)}
+
+                        showsMyLocationButton={true}
+                        zoomControlEnabled={true}
                     >
-                        <View style={{
-                            backgroundColor: 'white',
-                            padding: 5,
-                            borderRadius: 20,
-                            borderWidth: 2,
-                            borderColor: '#FFAD60'
-                        }}>
-                            <Entypo name="shop" size={24} color="#FFAD60"/>
-                        </View>
-                    </Marker>
-                )}
-                {courier &&
-                <Marker
-                    key={courier.id}
-                    title={courier.name}
-                    description={courier.transportationMode}
-                    coordinate={{
-                        latitude: courier.location.lat,
-                        longitude: courier.location.lng
-                    }}>
-                    <View style={{padding: 5, borderRadius: 20}}>
-                        {courier?.transportationMode === "DRIVING" &&
-                        <View style={{
-                            backgroundColor: 'white',
-                            padding: 3,
-                            borderRadius: 20,
-                            borderWidth: 2,
-                            borderColor: '#96CEB4'
-                        }}>
-                            <Icon name="car" size={30} color="#96CEB4"/>
-                        </View>}
+                        {restaurants.length > 0 && restaurants.map(restaurant =>
+                            <Marker
+                                key={restaurant.id}
+                                title={restaurant.name}
+                                description={restaurant.location.address}
+                                coordinate={{
+                                    latitude: restaurant?.location?.lat,
+                                    longitude: restaurant?.location?.lng
+                                }}
+                                onCalloutPress={() => onCalloutPress(restaurant)}
+                            >
+                                <View style={{
+                                    backgroundColor: 'white',
+                                    padding: 5,
+                                    borderRadius: 20,
+                                    borderWidth: 2,
+                                    borderColor: '#FFAD60'
+                                }}>
+                                    <Entypo name="shop" size={24} color="#FFAD60"/>
+                                </View>
+                            </Marker>
+                        )}
+                        {courier &&
+                        <Marker
+                            key={courier.id}
+                            title={courier.name}
+                            description={courier.transportationMode}
+                            coordinate={{
+                                latitude: courier?.location?.lat,
+                                longitude: courier?.location?.lng
+                            }}>
+                            <View style={{padding: 5, borderRadius: 20}}>
+                                {courier?.transportationMode === "DRIVING" &&
+                                <View style={{
+                                    backgroundColor: 'white',
+                                    padding: 3,
+                                    borderRadius: 20,
+                                    borderWidth: 2,
+                                    borderColor: '#96CEB4'
+                                }}>
+                                    <Icon name="car" size={30} color="#96CEB4"/>
+                                </View>}
 
-                        {courier?.transportationMode === "BICYCLING" &&
-                        <View style={{
-                            backgroundColor: 'white',
-                            padding: 3,
-                            borderRadius: 20,
-                            borderWidth: 2,
-                            borderColor: '#96CEB4'
-                        }}><Icon name="bicycle" size={30} color="#96CEB4"/></View>}
-                    </View>
-                </Marker>
-                }
-            </MapView>
-            <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
-                <View style={{marginLeft: 30, marginBottom: 30}}>
-                    <Text style={{letterSpacing: 0.5, color: 'gray'}}>
-                      DELIVERY TIME
-                    </Text>
-                    <View style={{flexDirection:"row", paddingTop: 10 }}>
-                    <AntDesign
-                        name="clockcircle"
-                        size={20}
-                        color={"gray"}
-                        style={{marginRight:10, alignSelf: "center"}}
-                    />
-                    <Text style={{
-                        fontSize: 20, fontWeight: '600', letterSpacing: 0.5
-                    }}>54 Min</Text>
-                    </View>
-                    <View style={{flexDirection:"row", paddingTop:10 }}>
-                    <AntDesign
-                        name="checkcircle"
-                        size={25}
-                        color={"#96CEB4"}
-                        style={{marginRight:10, alignSelf: "center"}}
-                    />
-                    <View>
-                    <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
-                        Order confirmed
-                    </Text>
-                        <Text style={{letterSpacing: 0.5, color: 'gray'}}>
-                            Your order has been received
-                        </Text>
+                                {courier?.transportationMode === "BICYCLING" &&
+                                <View style={{
+                                    backgroundColor: 'white',
+                                    padding: 3,
+                                    borderRadius: 20,
+                                    borderWidth: 2,
+                                    borderColor: '#96CEB4'
+                                }}><Icon name="bicycle" size={30} color="#96CEB4"/></View>}
+                            </View>
+                        </Marker>
+                        }
+                    </MapView>
 
-                    </View>
+                    <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
 
-                    </View>
-                    <View style={{ borderWidth: 0.5, borderColor:'lightgray', marginTop:10, width: "90%"}}></View>
-                    <View style={{flexDirection:"row", paddingTop:20 }}>
-                        <AntDesign
-                            name="checkcircle"
-                            size={25}
-                            color={"#96CEB4"}
-                            style={{marginRight:10, alignSelf: "center"}}
-                        />
-                        <View>
-                            <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
-                                Order prepared
-                            </Text>
+                        <View style={{marginLeft: 30, marginBottom: 30}}>
                             <Text style={{letterSpacing: 0.5, color: 'gray'}}>
-                                Your order has been prepared
+                                DELIVERY TIME
                             </Text>
+                            {duration && <View style={{flexDirection: "row", paddingTop: 10}}>
+                                <AntDesign
+                                    name="clockcircle"
+                                    size={20}
+                                    color={"gray"}
+                                    style={{marginRight: 10, alignSelf: "center"}}
+                                />
+                                <Text style={{
+                                    fontSize: 20, fontWeight: '600', letterSpacing: 0.5
+                                }}>{duration}</Text>
+                            </View>}
+                            <View style={{flexDirection: "row", paddingTop: 10}}>
+                                <AntDesign
+                                    name={counter >= 1 ? "checkcircle" : "minuscircle"}
+                                    size={25}
+                                    color={counter >= 1 ? "#96CEB4" : "#FFAD60"}
+                                    style={{marginRight: 10, alignSelf: "center"}}
+                                />
+                                <View>
+                                    <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
+                                        Order confirmed
+                                    </Text>
+                                    <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                                        Your order has been received
+                                    </Text>
 
+                                </View>
+
+                            </View>
+                            <View style={{
+                                borderWidth: 0.5,
+                                borderColor: 'lightgray',
+                                marginTop: 10,
+                                width: "90%"
+                            }}></View>
+                            <View style={{flexDirection: "row", paddingTop: 20}}>
+                                <AntDesign
+                                    name={counter >= 2 ? "checkcircle" : "minuscircle"}
+                                    size={25}
+                                    color={counter >= 2 ? "#96CEB4" : "#FFAD60"}
+                                    style={{marginRight: 10, alignSelf: "center"}}
+                                />
+                                <View>
+                                    <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
+                                        Order prepared
+                                    </Text>
+                                    <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                                        Your order has been prepared
+                                    </Text>
+
+                                </View>
+
+                            </View>
+                            <View style={{
+                                borderWidth: 0.5,
+                                borderColor: 'lightgray',
+                                marginTop: 10,
+                                width: "90%"
+                            }}></View>
+                            <View style={{flexDirection: "row", paddingTop: 20}}>
+                                <AntDesign
+                                    name={counter >= 3 ? "checkcircle" : "minuscircle"}
+                                    size={25}
+                                    color={counter >= 3 ? "#96CEB4" : "#FFAD60"}
+                                    style={{marginRight: 10, alignSelf: "center"}}
+                                />
+                                <View>
+                                    <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
+                                        Delivery in progress
+                                    </Text>
+                                    <Text style={{letterSpacing: 0.5, color: 'gray'}}>
+                                        Hang on! Your food is on the way.
+                                    </Text>
+
+                                </View>
+
+                            </View>
+                            <View style={{
+                                borderWidth: 0.5,
+                                borderColor: 'lightgray',
+                                marginTop: 10,
+                                width: "90%"
+                            }}></View>
                         </View>
 
-                    </View>
-                    <View style={{ borderWidth: 0.5, borderColor:'lightgray', marginTop:10, width: "90%"}}></View>
-                    <View style={{flexDirection:"row", paddingTop: 20 }}>
-                        <AntDesign
-                            name="minuscircle"
-                            size={25}
-                            color={"#D9534F"}
-                            style={{marginRight:10, alignSelf: "center"}}
-                        />
-                        <View>
-                            <Text style={{letterSpacing: 0.5, fontWeight: '600'}}>
-                                Delivery in progress
-                            </Text>
-                            <Text style={{letterSpacing: 0.5, color: 'gray'}}>
-                                Hang on! Your food is on the way.
-                            </Text>
+                    </BottomSheet>
 
-                        </View>
-
-                    </View>
-                    <View style={{ borderWidth: 0.5, borderColor:'lightgray', marginTop:10, width: "90%"}}></View>
-                </View>
-            </BottomSheet>
-        </GestureHandlerRootView>
-    }
-</>
+                </GestureHandlerRootView>
+            }
+        </>
 
     )
 }
