@@ -64,15 +64,14 @@ const RestaurantMenu = () => {
     )
 
     return (
-        <>{
-            restaurantDishes?.length &&
+        <>
             <Card title={"Menu"} style={{margin: 20}} extra={renderNewItemButton()}>
-                <Table
+               {restaurantDishes?.length && <Table
                     dataSource={restaurantDishes}
                     columns={tableColumns}
-                    rowKey="id"/>
+                    rowKey="id"/>}
             </Card>
-        }</>
+        </>
 
     )
 
