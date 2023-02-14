@@ -44,14 +44,21 @@ const Map = () => {
     const navigation = useNavigation()
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
-    const {status} = useOrderContext()
+    const {status, order} = useOrderContext()
     const {courier, duration} = useCourierContext()
     const [customerLocation, setCustomerLocation] = useState(null)
     const bottomSheetRef = useRef({})
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const [counter, setCounter] = useState(0)
 
+    useEffect(()=>{
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
+
+    },[order])
+
     useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(status, null, 4))
+
         switch (status) {
             case "ACCEPTED":
                 setCounter(1)
@@ -198,6 +205,7 @@ const Map = () => {
                         }
                     </MapView>
 
+                    {order &&
                     <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
 
                         <View style={{marginLeft: 30, marginBottom: 30}}>
@@ -213,7 +221,7 @@ const Map = () => {
                                 />
                                 <Text style={{
                                     fontSize: 20, fontWeight: '600', letterSpacing: 0.5
-                                }}>{duration}</Text>
+                                }}>{duration} minutes</Text>
                             </View>}
                             <View style={{flexDirection: "row", paddingTop: 10}}>
                                 <AntDesign
@@ -290,6 +298,8 @@ const Map = () => {
                         </View>
 
                     </BottomSheet>
+                    }
+
 
                 </GestureHandlerRootView>
             }

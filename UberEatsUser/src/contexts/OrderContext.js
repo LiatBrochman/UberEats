@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useRef, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Dish, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
@@ -16,7 +16,15 @@ const OrderContextProvider = ({children}) => {
     const [order, setOrder] = useState(null)
     const [orders, setOrders] = useState([])
     const [orderDishes, setOrderDishes] = useState([])
-    const status = useRef()
+    const [status, setStatus] = useState(null)
+
+    useEffect(() => {
+
+        order?.status &&
+        order.status !== status &&
+        setStatus(order?.status)
+
+    }, [order])
 
     /**
      init order context
@@ -47,7 +55,7 @@ const OrderContextProvider = ({children}) => {
             )).subscribe(({items, isSynced}) => {
                 isSynced && setOrderDishes(items)
             })
-            status.current=order.status
+            status.current = order.status
         }
         // return subscription?.order?.unsubscribe()
     }, [order])

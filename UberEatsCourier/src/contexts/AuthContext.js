@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {Auth, DataStore, Hub} from "aws-amplify";
 import {Courier} from "../models";
 
@@ -7,12 +7,15 @@ const AuthContext = createContext({});
 const AuthContextProvider = ({children}) => {
     const [authUser, setAuthUser] = useState(null)
     const [dbCourier, setDbCourier] = useState(null)
-    const sub = authUser?.attributes?.sub;
+    const [customState, setCustomState] = useState(null)
+    const sub = authUser?.attributes?.sub
+    const googleSignin = useCallback(() => {
+        Auth.federatedSignIn({provider: 'Google'}).then(setAuthUser)
+    }, [])
 
     useEffect(() => {
-        Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
 
-        Hub.listen('auth', (data) => {
+        const unsubscribe = Hub.listen('auth', (data) => {
 
             switch (data.payload.event) {
                 case 'signIn':
@@ -25,36 +28,44 @@ const AuthContextProvider = ({children}) => {
                     break;
                 case 'signOut':
                     console.log('user signed out')
+                    setAuthUser(null)
+                    break;
+                case "customOAuthState":
+                    setCustomState(data);
                     break;
                 case 'signIn_failure':
                     console.log('user sign in failed')
                     break;
                 case 'configured':
                     console.log('the Auth module is configured')
+                    Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
                     break;
             }
         })
+        Auth.currentAuthenticatedUser()
+            .then((currentUser) => setAuthUser(currentUser))
+            .catch(() => console.log("Not signed in"))
 
+        return unsubscribe
     }, [])
 
 
     useEffect(() => {
         if (sub) {
-            DataStore.query(Courier, c => c.sub.eq(sub))
-                .then((couriers) => {
-                    if(couriers.length>0) {
-                        setDbCourier(couriers[0])
+            subscription.courier = DataStore.observeQuery(Courier, c => c.sub.eq(sub))
+                .subscribe(({items,isSynced}) => {
+                    if(items?.length) {
+                        isSynced && setDbCourier(items[0])
                     }else{
                         console.log("no courier was found")
-                        
                     }
                 })
         }
-    }, [sub]);
+    }, [sub])
 
 
     return (
-        <AuthContext.Provider value={{authUser, dbCourier, sub, setDbCourier}}>
+        <AuthContext.Provider value={{authUser, dbCourier, sub, setDbCourier, googleSignin}}>
             {children}
         </AuthContext.Provider>
     )
