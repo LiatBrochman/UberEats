@@ -10,21 +10,22 @@ const OrderContext = createContext({})
 
 const OrderContextProvider = ({children}) => {
 
+    /** helper:
+     * order = current watch order
+     * onGoingOrder = live order
+     * orders = all of the customer's orders
+     */
+
+
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
     const {totalPrice, basketDishes, setBasketDishes, setTotalPrice, setTotalBasketQuantity} = useBasketContext()
     const [order, setOrder] = useState(null)
     const [orders, setOrders] = useState([])
     const [orderDishes, setOrderDishes] = useState([])
-    const [status, setStatus] = useState(null)
+    const [onGoingOrder, setOnGoingOrder] = useState(null)
+    const [liveStatus, setLiveStatus] = useState(null)
 
-    useEffect(() => {
-
-        order?.status &&
-        order.status !== status &&
-        setStatus(order?.status)
-
-    }, [order])
 
     /**
      init order context
@@ -55,10 +56,34 @@ const OrderContextProvider = ({children}) => {
             )).subscribe(({items, isSynced}) => {
                 isSynced && setOrderDishes(items)
             })
-            status.current = order.status
+            liveStatus.current = order.status
         }
         // return subscription?.order?.unsubscribe()
     }, [order])
+
+    /**
+     init on-going order
+     */
+    useEffect(() => {
+        const liveOrder = orders.find(o => o.status !== "DECLINED" && o.status !== "COMPLETED")
+        if (liveOrder) setOnGoingOrder(liveOrder)
+
+    }, [orders])
+
+
+    /**
+     * update live-status
+     */
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ onGoingOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(onGoingOrder, null, 4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~  onGoingOrder?.status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(onGoingOrder?.status, null, 4))
+
+        onGoingOrder?.status &&
+        onGoingOrder.status !== liveStatus &&
+        setLiveStatus(onGoingOrder.status)
+
+    }, [onGoingOrder])
+
 
     function checkIfPriceIsValid({totalPrice}) {
         if (totalPrice && totalPrice > restaurant?.deliveryFee) {
@@ -158,7 +183,8 @@ const OrderContextProvider = ({children}) => {
             orderDishes,
             order,
             setOrder,
-            status
+            liveStatus,
+            onGoingOrder
         }}>
             {children}
         </OrderContext.Provider>

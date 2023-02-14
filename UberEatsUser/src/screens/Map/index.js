@@ -44,22 +44,19 @@ const Map = () => {
     const navigation = useNavigation()
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
-    const {status, order} = useOrderContext()
+    const {liveStatus, onGoingOrder} = useOrderContext()
     const {courier, duration} = useCourierContext()
     const [customerLocation, setCustomerLocation] = useState(null)
     const bottomSheetRef = useRef({})
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const [counter, setCounter] = useState(0)
 
-    useEffect(()=>{
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
 
-    },[order])
 
     useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(status, null, 4))
-
-        switch (status) {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveStatus ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveStatus,null,4))
+        
+        switch (liveStatus) {
             case "ACCEPTED":
                 setCounter(1)
                 break;
@@ -70,7 +67,7 @@ const Map = () => {
                 setCounter(3)
                 break;
         }
-    }, [status])
+    }, [liveStatus])
 
     // const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth}
     //     = useCountdown({isPlaying: true, duration: duration*60 || 10000, colors: 'url(#your-unique-id)'})
@@ -205,7 +202,7 @@ const Map = () => {
                         }
                     </MapView>
 
-                    {order &&
+                    {onGoingOrder &&
                     <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
 
                         <View style={{marginLeft: 30, marginBottom: 30}}>
