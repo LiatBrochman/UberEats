@@ -11,14 +11,14 @@ Geocoder.init(process.env.GOOGLE_API_KEY)
 const Profile = () => {
 
     const navigation = useNavigation()
-    const {dbCustomer} = useAuthContext()
+    const {dbCustomer,authUser} = useAuthContext()
     const {sub, setDbCustomer} = useAuthContext()
     const [address, setAddress] = useState()
     const [name, setName] = useState()
 
     useEffect(() => {
        setAddress(dbCustomer?.location?.address || "")
-        setName(dbCustomer?.name || "")
+        setName(dbCustomer?.name || authUser?.attributes?.name || "")
     }, [dbCustomer])
 
 
