@@ -10,8 +10,11 @@ const AuthContextProvider = ({children}) => {
     const [dbCustomer, setDbCustomer] = useState(null)
     const [customState, setCustomState] = useState(null)
     const sub = authUser?.attributes?.sub
+    const cognitoSignIn = useCallback(() => {
+        Auth.federatedSignIn().then(setAuthUser)
+    }, [])
     const googleSignin = useCallback(() => {
-        Auth.federatedSignIn({provider: 'Google'}).then(setAuthUser)
+        Auth.federatedSignIn({provider: 'Google', options: { prompt: 'select_account' }}).then(setAuthUser)
     }, [])
 
     useEffect(() => {
@@ -63,6 +66,9 @@ const AuthContextProvider = ({children}) => {
         // return subscription?.customer?.unsubscribe()
     }, [sub])
 
+    const signOut = () => {
+        Auth.signOut({ global: true })
+    }
 
     return (
         <AuthContext.Provider value=
@@ -71,7 +77,9 @@ const AuthContextProvider = ({children}) => {
                                       dbCustomer,
                                       sub,
                                       setDbCustomer,
-                                      googleSignin
+                                      googleSignin,
+                                      cognitoSignIn,
+                                      signOut
                                   }}>
 
             {children}
