@@ -7,7 +7,7 @@ import RootNavigator from "./index";
 
 const ProtectedRoutes = () => {
 
-    const {authUser, googleSignin} = useAuthContext()
+    const {authUser, googleSignin , cognitoSignIn} = useAuthContext()
 
     return (authUser
             ?
@@ -18,6 +18,7 @@ const ProtectedRoutes = () => {
                     <SignIn/>
                     <View >
                         <Button title="Login with Google" onPress={googleSignin}/>
+                        {/*<Button title="Login with Cognito" onPress={cognitoSignIn}/>*/}
                     </View>
                 </Authenticator>
             </View>
