@@ -26,7 +26,7 @@ const OrdersScreen = () => {
                 <GestureHandlerRootView style={styles.container}>
 
                     <MapView
-                        style={{ ...StyleSheet.absoluteFillObject, height: height - 100, width }}
+                        style={{ ...StyleSheet.absoluteFillObject, height: height *0.95, width }}
                         provider={PROVIDER_GOOGLE}
                         followUserLocation={true}
                         showsUserLocation={true}

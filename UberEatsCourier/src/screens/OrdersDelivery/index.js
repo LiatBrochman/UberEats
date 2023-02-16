@@ -200,7 +200,7 @@ const OrdersDelivery = () => {
     return (
         <GestureHandlerRootView style={styles.container}>
             <MapView
-                style={{ ...StyleSheet.absoluteFillObject, height: height - 100, width }}
+                style={{ ...StyleSheet.absoluteFillObject, height: height *0.95, width }}
                 ref={mapRef}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={true}
