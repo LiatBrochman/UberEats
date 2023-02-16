@@ -257,10 +257,14 @@ const OrderContextProvider = ({children}) => {
         return await DataStore.save(
             Order.copyOf(order, (updated) => {
                 updated.status = "COMPLETED"
-            })).then(() => {
+            })).then(async () => {
             setOnGoingOrder(null)
+            DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id)//a must!
+                , updated => {
+                    updated.destinations = []
+                    updated.timeToArrive = []
+                })).then(setDbCourier)
         })
-
     }
 
 
