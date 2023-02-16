@@ -12,6 +12,7 @@ import * as PropTypes from "prop-types";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
+import {useNavigation} from "@react-navigation/native";
 
 
 // const {
@@ -49,10 +50,15 @@ const Map = () => {
     // const bottomSheetRef = useRef({})
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const [counter, setCounter] = useState(0)
+    const navigation = useNavigation()
 
+    const onCalloutPress = (restaurant) => {
+        setRestaurant(restaurant)
+        navigation.navigate("Restaurant")
+        }
 
     useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveStatus ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveStatus, null, 4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveStatus ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveStatus,null,4))
 
         switch (liveStatus) {
             case "ACCEPTED":
@@ -66,7 +72,6 @@ const Map = () => {
                 break;
         }
     }, [liveStatus])
-
     // const {path, pathLength, stroke, strokeDashoffset, remainingTime, elapsedTime, size, strokeWidth}
     //     = useCountdown({isPlaying: true, duration: duration*60 || 10000, colors: 'url(#your-unique-id)'})
     // const onCalloutPress = (restaurant) => {

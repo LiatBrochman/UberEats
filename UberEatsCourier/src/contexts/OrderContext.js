@@ -154,8 +154,10 @@ const OrderContextProvider = ({children}) => {
                 })
 
                 Promise.allSettled(promises).then((results) => {
+console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
 
-                    setORCD(results.map(res => res?.value && res.value))
+
+                    setORCD(results.map(res => res.hasOwnProperty('value') && res.value))
                     setCountUpdates(prev => prev + 1)
                 })
 
@@ -224,47 +226,38 @@ const OrderContextProvider = ({children}) => {
 
 
     const assignToCourier = async ({order}) => {
-        return await DataStore.save(
-            Order.copyOf(order, (updated) => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ assign order to courier ~~~~~~~~~~~~~~~~~~~~~ :")
+        DataStore.save(
+            Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
                 updated.courierID = dbCourier.id
             })
-        ).then(async savedOrder => {
-
-            setOnGoingOrder(savedOrder)
-
-            DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id)//a must!
-                , updated => {
-                    updated.location = {
-                        address: driverLocation?.address || "null",
-                        lat: driverLocation.latitude,
-                        lng: driverLocation.longitude,
-                    }
-                    updated.destinations = [restaurant.location.address, customer.location.address]
-                    updated.timeToArrive = waypointDurations
-                })).then(setDbCourier)
-        })
+        ).then(setOnGoingOrder)
+        DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id), updated => {
+            updated.location = {
+                lat: driverLocation.latitude,
+                lng: driverLocation.longitude,
+            }
+            updated.destinations = [restaurant.location.address, customer.location.address]
+            updated.timeToArrive = waypointDurations
+        })).then(setDbCourier)
     }
     const cancelOrder = async ({order}) => {
-        return await DataStore.save(
-            Order.copyOf(order, (updated) => {
-                updated.courierID = "null"
-            })
-        ).then(() => {
-            setOnGoingOrder(null)
-        })
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ cancelOrder ~~~~~~~~~~~~~~~~~~~~~ :")
+        DataStore.save(Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
+            updated.courierID = "null"
+        })).then(() => setOnGoingOrder(null))
     }
+
     const completeOrder = async ({order}) => {
-        return await DataStore.save(
-            Order.copyOf(order, (updated) => {
-                updated.status = "COMPLETED"
-            })).then(async () => {
-            setOnGoingOrder(null)
-            DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id)//a must!
-                , updated => {
-                    updated.destinations = []
-                    updated.timeToArrive = []
-                })).then(setDbCourier)
-        })
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ completeOrder ~~~~~~~~~~~~~~~~~~~~~ :")
+
+        DataStore.save(Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
+            updated.status = "COMPLETED"
+        })).then(() => setOnGoingOrder(null))
+        DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id), updated => {
+            updated.destinations = []
+            updated.timeToArrive = []
+        })).then(setDbCourier)
     }
 
 

@@ -25,7 +25,7 @@ const OrderContextProvider = ({children}) => {
     const [orderDishes, setOrderDishes] = useState([])
     const [onGoingOrder, setOnGoingOrder] = useState(null)
     const [liveStatus, setLiveStatus] = useState(null)
-
+    const [countUpdates,setCountUpdates] = useState(0)
 
     /**
      init order context
@@ -37,7 +37,10 @@ const OrderContextProvider = ({children}) => {
         if (dbCustomer?.id)
             subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
             ).subscribe(({items, isSynced}) => {
-                isSynced && setOrders(items)
+                if(isSynced) {
+                    setOrders(items)
+                    setCountUpdates(prev=>prev+1)
+                }
             })
         // return subscription?.orders?.unsubscribe()
 
@@ -70,7 +73,7 @@ const OrderContextProvider = ({children}) => {
             setOnGoingOrder(liveOrder)
         }
 
-    }, [orders])
+    }, [countUpdates])
 
 
     /**
