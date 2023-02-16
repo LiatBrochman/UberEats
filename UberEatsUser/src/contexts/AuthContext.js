@@ -57,6 +57,7 @@ const AuthContextProvider = ({children}) => {
         /**
          * set Customer ()
          */
+
         subscription.customer = DataStore.observeQuery(Customer, c => c.sub.eq(sub))
             .subscribe(({items, isSynced}) => {
                 isSynced && setDbCustomer(items[0])

@@ -66,7 +66,9 @@ const OrderContextProvider = ({children}) => {
      */
     useEffect(() => {
         const liveOrder = orders.find(o => o.status !== "DECLINED" && o.status !== "COMPLETED")
-        if (liveOrder) setOnGoingOrder(liveOrder)
+        if (liveOrder) {
+            setOnGoingOrder(liveOrder)
+        }
 
     }, [orders])
 
@@ -75,14 +77,21 @@ const OrderContextProvider = ({children}) => {
      * update live-status
      */
     useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ onGoingOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(onGoingOrder, null, 4))
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~  onGoingOrder?.status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(onGoingOrder?.status, null, 4))
-
         onGoingOrder?.status &&
         onGoingOrder.status !== liveStatus &&
         setLiveStatus(onGoingOrder.status)
 
     }, [onGoingOrder])
+
+    useEffect(() => {
+        if(liveStatus==="COMPLETED"||liveStatus==="DECLINED") {
+            setOnGoingOrder(null)
+            setLiveStatus(null)
+        }
+
+    }, [liveStatus]);
+
+
 
 
     function checkIfPriceIsValid({totalPrice}) {

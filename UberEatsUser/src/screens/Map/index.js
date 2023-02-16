@@ -1,10 +1,9 @@
 import * as Location from "expo-location";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {AntDesign, Entypo} from "@expo/vector-icons";
 import {StyleSheet, Text, useWindowDimensions, View} from 'react-native';
-import {useNavigation} from "@react-navigation/native";
 import {useCourierContext} from "../../contexts/CourierContext";
 import {Icon} from "@react-native-material/core";
 // import Svg, {Defs, LinearGradient, Path, Stop} from "react-native-svg";
@@ -41,20 +40,19 @@ BottomSheetFlatList.propTypes = {
 
 
 const Map = () => {
-    const navigation = useNavigation()
+    // const navigation = useNavigation()
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
     const {liveStatus, onGoingOrder} = useOrderContext()
     const {courier, duration} = useCourierContext()
     const [customerLocation, setCustomerLocation] = useState(null)
-    const bottomSheetRef = useRef({})
+    // const bottomSheetRef = useRef({})
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const [counter, setCounter] = useState(0)
 
 
-
     useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveStatus ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveStatus,null,4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveStatus ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveStatus, null, 4))
 
         switch (liveStatus) {
             case "ACCEPTED":
@@ -125,7 +123,7 @@ const Map = () => {
                 <GestureHandlerRootView style={styles.container}>
                     {/*<View style={{display:"flex"}}>*/}
                     <MapView
-                        style={{ ...StyleSheet.absoluteFillObject, height: height*0.95, width }}
+                        style={{...StyleSheet.absoluteFillObject, height: height * 0.95, width}}
                         provider={PROVIDER_GOOGLE}
                         followUserLocation={true}
                         showsUserLocation={true}
@@ -156,7 +154,7 @@ const Map = () => {
                         showsMyLocationButton={true}
                         zoomControlEnabled={true}
                     >
-                        <Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />
+                        <Marker coordinate={{latitude: 32.1975652, longitude: 34.8775085}}/>
                         {restaurants.length > 0 && restaurants.map(restaurant =>
                             <Marker
                                 key={restaurant.id}
@@ -216,7 +214,7 @@ const Map = () => {
                     {onGoingOrder &&
                     <BottomSheet isVisible={true} snapPoints={snapPoints}>
 
-                        <View style={{height: 500,marginLeft: 30, marginBottom: 30}}>
+                        <View style={{height: 500, marginLeft: 30, marginBottom: 30}}>
                             <Text style={{letterSpacing: 0.5, color: 'gray'}}>
                                 DELIVERY TIME
                             </Text>
