@@ -11,9 +11,9 @@ function App() {
     return (
         <div>
             <AppMenu/>
-                <Content>
-                    <ProtectedRoutes/>
-                </Content>
+            <Content>
+                <ProtectedRoutes/>
+            </Content>
         </div>
 
     )

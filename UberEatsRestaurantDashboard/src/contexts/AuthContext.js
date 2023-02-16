@@ -13,41 +13,53 @@ const AuthContextProvider = ({children}) => {
     useEffect(() => {
         Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
 
-                Hub.listen('auth', (data) => {
+        Hub.listen('auth', (data) => {
 
-                    switch (data.payload.event) {
-                        case 'signIn':
-                            console.log('user signed in')
-                            Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
-                            break;
-                        case 'signUp':
-                            console.log('user signed up')
-                            Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
-                            break;
-                        case 'signOut':
-                            console.log('user signed out')
-                            setAuthUser(null)
-                            break;
-                        case 'signIn_failure':
-                            console.log('user sign in failed')
-                            break;
-                        case 'configured':
-                            console.log('the Auth module is configured')
-                            break;
+            switch (data.payload.event) {
+                case 'signIn':
+                    console.log('user signed in')
+                    Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+                    break;
+                case 'signUp':
+                    console.log('user signed up')
+                    Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
+                    break;
+                case 'signOut':
+                    console.log('user signed out')
+                    setAuthUser(null)
+                    break;
+                case 'signIn_failure':
+                    console.log('user sign in failed')
+                    break;
+                case 'configured':
+                    console.log('the Auth module is configured')
+                    break;
 
-                    }
-                })
+            }
+        })
 
     }, [])
 
 
-    async function signOut() {
-        try {
-            await Auth.signOut()
-        } catch (error) {
-            console.log('Error signing out:', error)
+    useEffect(() => {
+        /**
+         * create owner \ get existing owner
+         */
+
+        if (sub) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ authUser ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(authUser?.attributes,null,4));
+
+            (async () => {
+              const tempOwner= await getOwner()
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ tempOwner ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(tempOwner,null,4))
+                setDbOwner(tempOwner)
+            })();
+
+
         }
-    }
+
+    }, [sub])
+
 
     const getOwner = async () => {
         return await getExistingOwner()
@@ -86,7 +98,8 @@ const AuthContextProvider = ({children}) => {
         try {
             return await DataStore.save(new Owner({
                 sub: sub,
-                isDeleted: false
+                isDeleted: false,
+                email: authUser.attributes.email,
             }))
         } catch (e) {
             throw new Error(e)
@@ -94,17 +107,13 @@ const AuthContextProvider = ({children}) => {
     }
 
 
-
-    useEffect(() => {
-        /**
-         * create owner \ get existing owner
-         */
-        if (sub) {
-            getOwner().then(setDbOwner)
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub,null,4))
+    async function signOut() {
+        try {
+            await Auth.signOut()
+        } catch (error) {
+            console.log('Error signing out:', error)
         }
-
-    }, [sub])
+    }
 
 
     return (

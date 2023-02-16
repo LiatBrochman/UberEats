@@ -41,9 +41,10 @@ const Profile = () => {
                 draft = {
                     ...draft,
                     location,
+                    email: authUser.attributes.email,
                     isDeleted: false,
                     isActive: true,
-                    sub,
+                    sub
                 };
                 await createCourier(draft);
             }

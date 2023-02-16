@@ -75,7 +75,8 @@ const Profile = () => {
                         createNewCustomer({
                             lat: coords?.latitude,
                             lng: coords?.longitude,
-                            address: fixedAddress
+                            address: fixedAddress,
+                            email: authUser.email
                         })
                         break;
 
@@ -123,7 +124,8 @@ const Profile = () => {
                         lat: parseFloat(lat),
                         lng: parseFloat(lng),
                     },
-                    isDeleted: false
+                    isDeleted: false,
+                    email: authUser.attributes.email
                 })
             ).then(setDbCustomer)
 
