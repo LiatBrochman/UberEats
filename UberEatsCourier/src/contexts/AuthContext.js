@@ -12,6 +12,12 @@ const AuthContextProvider = ({children}) => {
     const googleSignin = useCallback(() => {
         Auth.federatedSignIn({provider: 'Google'}).then(setAuthUser)
     }, [])
+    const cognitoSignIn = useCallback(() => {
+        Auth.federatedSignIn().then(setAuthUser)
+    }, [])
+    const signOut =  useCallback(() => {
+        Auth.signOut({ global: true }).then(()=>setAuthUser(null))
+    },[])
 
     useEffect(() => {
 
@@ -42,7 +48,7 @@ const AuthContextProvider = ({children}) => {
                     break;
             }
         })
-        Auth.currentAuthenticatedUser()
+        Auth.currentAuthenticatedUser({bypassCache: true})
             .then((currentUser) => setAuthUser(currentUser))
             .catch(() => console.log("Not signed in"))
 

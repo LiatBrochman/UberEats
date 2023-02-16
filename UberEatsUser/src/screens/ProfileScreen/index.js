@@ -1,33 +1,29 @@
 import {Alert, Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Auth, DataStore} from "aws-amplify";
+import {DataStore} from "aws-amplify";
 import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
-import Geocoder from 'react-native-geocoding';
+import {getAddressByCoords, getCoordsByAddress, getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
+
+
 
 const Profile = () => {
-    Geocoder.init(process.env.GOOGLE_API_KEY)
 
     const navigation = useNavigation()
-    const {dbCustomer,authUser} = useAuthContext()
-    const {sub, setDbCustomer} = useAuthContext()
+    const {dbCustomer, authUser, sub, setDbCustomer, signOut} = useAuthContext()
     const [address, setAddress] = useState()
     const [name, setName] = useState()
 
+
     useEffect(() => {
-       setAddress(dbCustomer?.location?.address || "")
+        setAddress(dbCustomer?.location?.address || "")
         setName(dbCustomer?.name || authUser?.attributes?.name || "")
     }, [dbCustomer])
 
-
     function validateSave() {
-        return ( name?.length >= 2 && typeof name === "string")
-    }
-
-    function validateCoordinates({location}) {
-        return (location?.lat && location?.lng)
+        return (address && typeof address === "string" && address?.length >= 2)
     }
 
     const onSave = async () => {
@@ -37,74 +33,69 @@ const Profile = () => {
         }
 
 
-        switch(!!dbCustomer){
+        switch (!!dbCustomer) {
 
-            /**
-             * updating existing customer
-             */
             case true:
-                if(dbCustomer?.location?.address === address){
+                if (dbCustomer?.location?.address === address) {
                     /**
                      * update name only
                      */
-                    updateCustomer()
+                    updateCustomer(dbCustomer.location)
                     break;
                 }
                 /**
                  * update name and location
                  */
-                Geocoder.from(address + '')
-                    .then(json => {
-                        const location = json?.results?.[0]?.geometry?.location
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(json?.results?.[0]?.['formatted_address'], null, 4))
 
-                        if (validateCoordinates({location})) {
-                            updateCustomer({
-                                lat: location?.lat,
-                                lng: location?.lng,
-                                address: json?.results?.[0]?.['formatted_address']
-                            })
-                        }
-                    })
-            break;
+                const coords = await getCoordsByAddress(address)
+                const fixedAddress = await getAddressByCoords(coords)
+                updateCustomer({
+                    lat: coords?.latitude,
+                    lng: coords?.longitude,
+                    address: fixedAddress
+                })
+                break;
 
 
             case false:
+
                 /**
-                 * create new customer
+                 * create a new Customer
                  */
 
-                switch(!!address){
+                switch (!!address) {
+
+
                     /**
-                     * address isn't empty
+                     * if address was set manually
                      */
                     case true:
-                        Geocoder.from(address + '')
-                            .then(json => {
-                                const location = json?.results?.[0]?.geometry?.location
-                                if (validateCoordinates({location})) {
-                                    createNewCustomer({lat: location?.lat, lng: location?.lng, address: json?.results?.[0]?.['formatted_address']})
-                                }
-                            })
+                        const coords = await getCoordsByAddress(address)
+                        const fixedAddress = await getAddressByCoords(coords)
+                        createNewCustomer({
+                            lat: coords?.latitude,
+                            lng: coords?.longitude,
+                            address: fixedAddress
+                        })
                         break;
 
 
                     /**
-                     * address is empty
+                     * if address is empty
                      */
                     case false:
-
+                            console.error('no address has been inserted')
 
                         break;
                 }
 
-            break;
+                break;
         }
 
         navigation.navigate("Home")
     }
 
-    const updateCustomer = ({lat, lng, address}=dbCustomer?.location) => {
+    const updateCustomer = ({lat, lng, address}) => {
         DataStore.query(Customer, dbCustomer.id).then(dbCustomer =>
             DataStore.save(
                 Customer.copyOf(dbCustomer, (updated) => {
@@ -141,6 +132,7 @@ const Profile = () => {
         }
     }
 
+
     return (
         <View style={{backgroundColor: "white", flex: 1}}>
             <SafeAreaView>
@@ -163,28 +155,16 @@ const Profile = () => {
                     placeholder="Address"
                     style={styles.input}
                 />
-                {/*<TextInput*/}
-                {/*    value={lat}*/}
-                {/*    onChangeText={setLat}*/}
-                {/*    placeholder="Latitude"*/}
-                {/*    style={styles.input}*/}
-                {/*    keyboardType="numeric"*/}
-                {/*/>*/}
-                {/*<TextInput*/}
-                {/*    value={lng}*/}
-                {/*    onChangeText={setLng}*/}
-                {/*    placeholder="Longitude"*/}
-                {/*    style={styles.input}*/}
-                {/*/>*/}
             </SafeAreaView>
             <Pressable onPress={onSave} style={styles.button} title="Save">
                 <Text style={styles.buttonText}>Save</Text>
             </Pressable>
             <Text
-                onPress={() => Auth.signOut()}
+                onPress={signOut}
                 style={{textAlign: "center", color: 'black', margin: 10}}>
                 Sign out
             </Text>
+            <Button onPress={async () => setAddress(await getAddressByCoords( await getCurrentPosition()))} title="Get My Location"/>
             <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
             } title="Amplify.DataStore.clear()"/>
 
