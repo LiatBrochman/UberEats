@@ -125,7 +125,7 @@ const Map = () => {
                 <GestureHandlerRootView style={styles.container}>
                     {/*<View style={{display:"flex"}}>*/}
                     <MapView
-                        style={{ ...StyleSheet.absoluteFillObject, height: height - 140, width }}
+                        style={{ ...StyleSheet.absoluteFillObject, height: height*0.95, width }}
                         provider={PROVIDER_GOOGLE}
                         followUserLocation={true}
                         showsUserLocation={true}
@@ -156,7 +156,7 @@ const Map = () => {
                         showsMyLocationButton={true}
                         zoomControlEnabled={true}
                     >
-                        <Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />//todo
+                        <Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />
                         {restaurants.length > 0 && restaurants.map(restaurant =>
                             <Marker
                                 key={restaurant.id}
@@ -213,7 +213,7 @@ const Map = () => {
                         }
                     </MapView>
 
-                    {onGoingOrder &&//todo : isvisible , ref={bottomSheetRef} ?
+                    {onGoingOrder &&
                     <BottomSheet isVisible={true} snapPoints={snapPoints}>
 
                         <View style={{height: 500,marginLeft: 30, marginBottom: 30}}>
