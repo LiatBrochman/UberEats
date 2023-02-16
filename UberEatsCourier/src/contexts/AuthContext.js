@@ -15,9 +15,9 @@ const AuthContextProvider = ({children}) => {
     const cognitoSignIn = useCallback(() => {
         Auth.federatedSignIn().then(setAuthUser)
     }, [])
-    const signOut =  useCallback(() => {
-        Auth.signOut({ global: true }).then(()=>setAuthUser(null))
-    },[])
+    const signOut = useCallback(() => {
+        Auth.signOut({global: true}).then(() => setAuthUser(null))
+    }, [])
 
     useEffect(() => {
 
@@ -59,10 +59,10 @@ const AuthContextProvider = ({children}) => {
     useEffect(() => {
         if (sub) {
             subscription.courier = DataStore.observeQuery(Courier, c => c.sub.eq(sub))
-                .subscribe(({items,isSynced}) => {
-                    if(items?.length) {
+                .subscribe(({items, isSynced}) => {
+                    if (items?.length) {
                         isSynced && setDbCourier(items[0])
-                    }else{
+                    } else {
                         console.log("no courier was found")
                     }
                 })
@@ -71,7 +71,7 @@ const AuthContextProvider = ({children}) => {
 
 
     return (
-        <AuthContext.Provider value={{authUser, dbCourier, sub, setDbCourier, googleSignin}}>
+        <AuthContext.Provider value={{authUser, dbCourier, sub, setDbCourier, googleSignin, cognitoSignIn, signOut}}>
             {children}
         </AuthContext.Provider>
     )

@@ -1,62 +1,109 @@
 import {Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import React, {useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Amplify, Auth, DataStore} from "aws-amplify";
+import {Amplify, DataStore} from "aws-amplify";
 import {Courier, TransportationModes} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
-import * as Location from "expo-location";
+import {getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
 
-
-function verifyDraft(draft) {
-    return (
-        typeof draft.name === 'string' &&
-        typeof draft.transportationMode === 'string' &&
-        typeof draft.location.lat === 'number' &&
-        typeof draft.location.lng === 'number'
-    )
-}
 
 const Profile = () => {
-    const {dbCourier, setDbCourier, sub} = useAuthContext();
+    const {authUser, dbCourier, setDbCourier, sub, signOut} = useAuthContext();
     const {driverLocation} = useOrderContext()
-    const [name, setName] = useState(dbCourier?.name || "");
+    const [name, setName] = useState(dbCourier?.name || authUser?.attributes?.name || "");
     const [transportationMode, setTransportationMode] = useState(dbCourier?.transportationMode || "DRIVING");
-
     const navigation = useNavigation()
 
-
     const onSave = async () => {
-        const draft = {
-            name, transportationMode, location: {
-                lat: parseFloat(driverLocation?.latitude),
-                lng: parseFloat(driverLocation?.longitude)
-            }}
-        if (!verifyDraft(draft)) {
-            console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ your trying to save an invalid courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft), null, 4)
-            return null
+        try {
+            let draft = {
+                name,
+                transportationMode,
+            };
+            let location = {lat: 0, lng: 0};
+
+            if (dbCourier) {
+                location = {
+                    lat: parseFloat(driverLocation?.latitude),
+                    lng: parseFloat(driverLocation?.longitude),
+                };
+                draft = {...draft, location};
+                await updateCourier(draft);
+            } else {
+                const currentPosition = await getCurrentPosition();
+                location = {
+                    lat: currentPosition.latitude,
+                    lng: currentPosition.longitude,
+                };
+                draft = {
+                    ...draft,
+                    location,
+                    isDeleted: false,
+                    isActive: true,
+                    sub,
+                };
+                await createCourier(draft);
+            }
+            navigation.navigate('OrdersScreen');
+        } catch (error) {
+            console.error(error);
         }
-        if (dbCourier) {
-            await updateCourier(draft)
-        } else {
-            draft.isDeleted = false
-            draft.isActive = true
-            draft.location.address = "null"
-            draft.sub = sub
-            await createCourier(draft)
-        }
-        navigation.navigate('OrdersScreen')
     }
 
+    function verifyDraft(draft) {
+
+        const passed = (
+            typeof draft.name === 'string' &&
+            typeof draft.transportationMode === 'string' &&
+            typeof draft.location.lat === 'number' &&
+            typeof draft.location.lng === 'number'
+        )
+        if (!passed) {
+            console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ you're trying to save an invalid courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft), null, 4)
+            return false
+        }
+        return true
+    }
+
+    // const onSave_original = async () => {
+    //
+    //     if (dbCourier) {
+    //         const draft = {
+    //             name,
+    //             transportationMode,
+    //             location: {lat: parseFloat(driverLocation?.latitude), lng: parseFloat(driverLocation?.longitude)}
+    //         }
+    //
+    //         verifyDraft(draft) &&
+    //         updateCourier(draft).then(() => navigation.navigate('OrdersScreen'))
+    //
+    //     } else {
+    //         const currentPosition = await getCurrentPosition()
+    //         const draft = {
+    //             name,
+    //             transportationMode,
+    //             location: {lat: currentPosition.latitude, lng: currentPosition.longitude},
+    //             isDeleted: false,
+    //             isActive: true,
+    //             sub
+    //         }
+    //         verifyDraft(draft) &&
+    //         createCourier(draft).then(() => navigation.navigate('OrdersScreen'))
+    //     }
+    // }
+
     const updateCourier = async draft => {
+        verifyDraft(draft) &&
         DataStore.save(Courier.copyOf(dbCourier, updated => Object.assign(updated, draft)))
             .then(setDbCourier)
     }
 
     const createCourier = async draft => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ draft on create a new Courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft, null, 4))
+        verifyDraft(draft) &&
         DataStore.save(new Courier(draft))
             .then(setDbCourier)
     }
@@ -113,7 +160,7 @@ const Profile = () => {
                     <Text style={styles.buttonText}>return without save</Text>
                 </Pressable>
                 <Text
-                    onPress={() => Auth.signOut()}
+                    onPress={signOut}
                     style={{textAlign: "center", color: 'black', margin: 10}}>
                     Sign out
                 </Text>
