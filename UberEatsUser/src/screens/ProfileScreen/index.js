@@ -5,44 +5,16 @@ import {DataStore} from "aws-amplify";
 import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
-import Geocoder from 'react-native-geocoding';
-import * as Location from 'expo-location';
+import {getAddressByCoords, getCoordsByAddress, getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
 
-const getCurrentLocation = async () => {
-    let {status} = await Location.requestForegroundPermissionsAsync()
 
-    switch (status === "granted") {
-
-        case true:
-            return await Location.getCurrentPositionAsync().then(({coords}) => ({
-                latitude: coords.latitude,
-                longitude: coords.longitude
-            }))
-
-        case false:
-            console.error('Permission to access location was denied, please try again')
-            return await getCurrentLocation()
-    }
-}
 
 const Profile = () => {
-    Geocoder.init(process.env.GOOGLE_API_KEY)
 
     const navigation = useNavigation()
     const {dbCustomer, authUser, sub, setDbCustomer, signOut} = useAuthContext()
     const [address, setAddress] = useState()
     const [name, setName] = useState()
-    const [locationOnPhone, setLocationOnPhone] = useState()
-
-    useEffect(() => {
-        getCurrentLocation().then(({latitude, longitude}) => {
-            Geocoder.from({latitude, longitude}).then(({results: [{'formatted_address': address}]}) => {
-                setLocationOnPhone(address)
-                // setLocationOnPhone({address, latitude, longitude})
-                // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ location on phone ~~~~~~~~~~~~~~~~~~~~~ :",address, latitude, longitude )
-            })
-        })
-    }, [])
 
 
     useEffect(() => {
@@ -52,10 +24,6 @@ const Profile = () => {
 
     function validateSave() {
         return (address && typeof address === "string" && address?.length >= 2)
-    }
-
-    function validateCoordinates({location}) {
-        return (location?.lat && location?.lng)
     }
 
     const onSave = async () => {
@@ -78,17 +46,14 @@ const Profile = () => {
                 /**
                  * update name and location
                  */
-                Geocoder.from(address + '')
-                    .then(json => {
-                        const location = json?.results?.[0]?.geometry?.location
-                        if (validateCoordinates({location})) {
-                            updateCustomer({
-                                lat: location?.lat,
-                                lng: location?.lng,
-                                address: json?.results?.[0]?.['formatted_address']
-                            })
-                        }
-                    })
+
+                const coords = await getCoordsByAddress(address)
+                const fixedAddress = await getAddressByCoords(coords)
+                updateCustomer({
+                    lat: coords?.latitude,
+                    lng: coords?.longitude,
+                    address: fixedAddress
+                })
                 break;
 
 
@@ -105,17 +70,13 @@ const Profile = () => {
                      * if address was set manually
                      */
                     case true:
-                        Geocoder.from(address + '')
-                            .then(json => {
-                                const location = json?.results?.[0]?.geometry?.location
-                                if (validateCoordinates({location})) {
-                                    createNewCustomer({
-                                        lat: location?.lat,
-                                        lng: location?.lng,
-                                        address: json?.results?.[0]?.['formatted_address']
-                                    })
-                                }
-                            })
+                        const coords = await getCoordsByAddress(address)
+                        const fixedAddress = await getAddressByCoords(coords)
+                        createNewCustomer({
+                            lat: coords?.latitude,
+                            lng: coords?.longitude,
+                            address: fixedAddress
+                        })
                         break;
 
 
@@ -123,15 +84,8 @@ const Profile = () => {
                      * if address is empty
                      */
                     case false:
-                        getCurrentLocation().then(({latitude, longitude}) => {
-                            Geocoder.from({latitude, longitude}).then(json => {
-                                createNewCustomer({
-                                    lat: latitude,
-                                    lng: longitude,
-                                    address: json?.results?.[0]?.['formatted_address']
-                                })
-                            })
-                        })
+                            console.error('no address has been inserted')
+
                         break;
                 }
 
@@ -210,7 +164,7 @@ const Profile = () => {
                 style={{textAlign: "center", color: 'black', margin: 10}}>
                 Sign out
             </Text>
-            <Button onPress={()=>setAddress(locationOnPhone)} title="Get My Location"/>
+            <Button onPress={async () => setAddress(await getAddressByCoords( await getCurrentPosition()))} title="Get My Location"/>
             <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
             } title="Amplify.DataStore.clear()"/>
 
