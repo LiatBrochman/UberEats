@@ -1,5 +1,5 @@
 import {useMemo, useRef} from "react";
-import {Button, Text, useWindowDimensions, View} from 'react-native';
+import {Button, Text, useWindowDimensions, View, StyleSheet} from 'react-native';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import OrderItem from '../../components/OrderItem';
@@ -23,10 +23,10 @@ const OrdersScreen = () => {
     return (
         <>
             {
-                <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
+                <GestureHandlerRootView style={styles.container}>
 
                     <MapView
-                        style={{height, width}}
+                        style={{ ...StyleSheet.absoluteFillObject, height: height - 100, width }}
                         provider={PROVIDER_GOOGLE}
                         followUserLocation={true}
                         showsUserLocation={true}
@@ -34,13 +34,25 @@ const OrdersScreen = () => {
                         showsCompass={true}
                         pitchEnabled={true}
                         scrollEnabled={true}
+                        zoomControlEnabled={true}
                         initialRegion={{
                             latitude: driverLocation?.latitude || 32.1722383,
                             longitude: driverLocation?.longitude || 34.869715,
                             latitudeDelta: 0.12,
                             longitudeDelta: 0.12
                         }}
+                        showsZoomControls={true}
+                        zoomControlOptions={{
+                            position: 9, // center-right position
+                            style: {
+                                height: 40,
+                                width: 40,
+                                top: height / 2 - 20,
+                                right: 10,
+                            },
+                        }}
                     >
+                        <Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />
                         {activeORCD && ORCD?.[0]?.restaurant?.id &&
                         ORCD.map(({restaurant},index) =>
                             <Marker
@@ -61,11 +73,11 @@ const OrdersScreen = () => {
                         onPress={() => navigation.navigate('Profile')}
                         name="arrow-back-circle"
                         size={45}
-                        color="white"
+                        color="black"
                         style={{top: 40, left: 15, position: 'absolute'}}
                     />
                     {ORCD?.[0]?.restaurant?.id &&
-                    <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
+                    <BottomSheet isVisible={true} ref={bottomSheetRef} snapPoints={snapPoints}>
                         <View style={{alignItems: 'center', marginBottom: 30}}>
                             <Text style={{
                                 fontSize: 20, fontWeight: '600', letterSpacing: 0.5, paddingBottom: 5
@@ -102,5 +114,12 @@ const OrdersScreen = () => {
         </>
     );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+
+})
 
 export default OrdersScreen;

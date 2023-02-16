@@ -55,7 +55,7 @@ const Map = () => {
 
     useEffect(() => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveStatus ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveStatus,null,4))
-        
+
         switch (liveStatus) {
             case "ACCEPTED":
                 setCounter(1)
@@ -122,10 +122,10 @@ const Map = () => {
     return (
         <>
             {
-                <GestureHandlerRootView style={{flex: 1, backgroundColor: 'lightblue'}}>
+                <GestureHandlerRootView style={styles.container}>
                     {/*<View style={{display:"flex"}}>*/}
                     <MapView
-                        style={{height, width, flex: 3.5}}
+                        style={{ ...StyleSheet.absoluteFillObject, height: height - 140, width }}
                         provider={PROVIDER_GOOGLE}
                         followUserLocation={true}
                         showsUserLocation={true}
@@ -139,13 +139,24 @@ const Map = () => {
                             longitude:
                             // 34.8775085,
                                 customerLocation?.longitude || 34.8775085,
+
                             latitudeDelta: 0.12,
                             longitudeDelta: 0.12
                         }}
-
+                        showsZoomControls={true}
+                        zoomControlOptions={{
+                            position: 9, // center-right position
+                            style: {
+                                height: 40,
+                                width: 40,
+                                top: height / 2 - 20,
+                                right: 10,
+                            },
+                        }}
                         showsMyLocationButton={true}
                         zoomControlEnabled={true}
                     >
+                        <Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />//todo
                         {restaurants.length > 0 && restaurants.map(restaurant =>
                             <Marker
                                 key={restaurant.id}
@@ -202,10 +213,10 @@ const Map = () => {
                         }
                     </MapView>
 
-                    {onGoingOrder &&
-                    <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}>
+                    {onGoingOrder &&//todo : isvisible , ref={bottomSheetRef} ?
+                    <BottomSheet isVisible={true} snapPoints={snapPoints}>
 
-                        <View style={{marginLeft: 30, marginBottom: 30}}>
+                        <View style={{height: 500,marginLeft: 30, marginBottom: 30}}>
                             <Text style={{letterSpacing: 0.5, color: 'gray'}}>
                                 DELIVERY TIME
                             </Text>
@@ -308,27 +319,9 @@ const Map = () => {
 export default Map
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-        // paddingTop: Constants.statusBarHeight,
-        // paddingTop: 637,
-        // backgroundColor: 'transparent',
-        position: 'absolute',
-        // paddingLeft: 120,
-        top: "82%",
-        left: "28%"
+        flex: 1,
     },
-    time: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%'
-    }
+
 })
 
 // Courier({

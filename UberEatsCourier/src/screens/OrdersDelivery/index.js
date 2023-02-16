@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useRef, useState} from "react";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import BottomSheet from "@gorhom/bottom-sheet";
-import {ActivityIndicator, Pressable, Text, useWindowDimensions, View} from "react-native";
+import {ActivityIndicator, Pressable, StyleSheet, Text, useWindowDimensions, View} from "react-native";
 import {Entypo, FontAwesome5, Fontisto, Ionicons, MaterialIcons} from '@expo/vector-icons';
 import styles from "./styles";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
@@ -200,8 +200,8 @@ const OrdersDelivery = () => {
     return (
         <GestureHandlerRootView style={styles.container}>
             <MapView
+                style={{ ...StyleSheet.absoluteFillObject, height: height - 100, width }}
                 ref={mapRef}
-                style={{width, height}}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={true}
                 followUserLocation={true}
@@ -209,13 +209,25 @@ const OrdersDelivery = () => {
                 showsCompass={true}
                 pitchEnabled={true}
                 scrollEnabled={true}
+                zoomControlEnabled={true}
                 initialRegion={{
                     latitude: driverLocation.latitude,
                     longitude: driverLocation.longitude,
                     latitudeDelta: 0.015,
                     longitudeDelta: 0.015
                 }}
+                showsZoomControls={true}
+                zoomControlOptions={{
+                    position: 9, // center-right position
+                    style: {
+                        height: 40,
+                        width: 40,
+                        top: height / 2 - 20,
+                        right: 10,
+                    },
+                }}
             >
+                <Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />
                 <MapViewDirections
                     origin={driverLocation}
                     mode={dbCourier.transportationMode}
@@ -270,7 +282,7 @@ const OrdersDelivery = () => {
                 style={{top: 40, left: 15, position: 'absolute'}}
             />
 
-            <BottomSheet ref={bottomSheetRef} snapPoints={snapPoints}
+            <BottomSheet isVisible={true} ref={bottomSheetRef} snapPoints={snapPoints}
                          handleIndicatorStyle={styles.handleIndicator}>
                 <View style={styles.handleIndicatorContainer}>
                     <Text style={styles.routeDetailsText}>{totalMinutes.toFixed(0)} min</Text>

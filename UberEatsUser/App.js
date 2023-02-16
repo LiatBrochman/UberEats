@@ -3,7 +3,6 @@ import {StatusBar} from "expo-status-bar";
 import {I18nManager, Platform} from "react-native";
 import * as Linking from 'expo-linking';
 import * as WebBrowser from "expo-web-browser";
-import * as Device from 'expo-device';
 import {Amplify} from "aws-amplify";
 import awsconfig from "./src/aws-exports";
 import {IconComponentProvider} from "@react-native-material/core";
@@ -28,8 +27,9 @@ async function urlOpener(url, redirectUrl) {
         return Linking.openURL(newUrl);
     }
 }
-const host = 'exp://'+Constants.manifest.debuggerHost;
-console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ host ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(host,null,4));
+
+const host = 'exp://' + Constants.manifest.debuggerHost;
+console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ host ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(host, null, 4));
 const updatedConfig = {
     ...awsconfig,
     oauth: {
@@ -43,22 +43,22 @@ Amplify.configure(updatedConfig);
 
 
 export default function App() {
-        return (
-            <IconComponentProvider IconComponent={MaterialCommunityIcons}>
-                <NavigationContainer>
-                    <AuthContextProvider>
-                        <RestaurantContextProvider>
-                            <BasketContextProvider>
-                                <OrderContextProvider>
-                                    <CourierContextProvider>
-                                        <ProtectedRoutes/>
-                                    </CourierContextProvider>
-                                </OrderContextProvider>
-                            </BasketContextProvider>
-                        </RestaurantContextProvider>
-                    </AuthContextProvider>
-                    <StatusBar style="light"/>
-                </NavigationContainer>
-            </IconComponentProvider>
-        )
-    }
+    return (
+        <IconComponentProvider IconComponent={MaterialCommunityIcons}>
+            <NavigationContainer>
+                <AuthContextProvider>
+                    <RestaurantContextProvider>
+                        <BasketContextProvider>
+                            <OrderContextProvider>
+                                <CourierContextProvider>
+                                    <ProtectedRoutes/>
+                                </CourierContextProvider>
+                            </OrderContextProvider>
+                        </BasketContextProvider>
+                    </RestaurantContextProvider>
+                </AuthContextProvider>
+                <StatusBar style="light"/>
+            </NavigationContainer>
+        </IconComponentProvider>
+    )
+}

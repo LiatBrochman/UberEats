@@ -6,9 +6,9 @@ import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import Geocoder from 'react-native-geocoding';
-Geocoder.init(process.env.GOOGLE_API_KEY)
 
 const Profile = () => {
+    Geocoder.init(process.env.GOOGLE_API_KEY)
 
     const navigation = useNavigation()
     const {dbCustomer,authUser} = useAuthContext()
@@ -23,7 +23,7 @@ const Profile = () => {
 
 
     function validateSave() {
-        return (address && typeof address === "string" && address?.length >= 2)
+        return ( name?.length >= 2 && typeof name === "string")
     }
 
     function validateCoordinates({location}) {
@@ -39,6 +39,9 @@ const Profile = () => {
 
         switch(!!dbCustomer){
 
+            /**
+             * updating existing customer
+             */
             case true:
                 if(dbCustomer?.location?.address === address){
                     /**
@@ -68,15 +71,33 @@ const Profile = () => {
 
             case false:
                 /**
-                 * create new
+                 * create new customer
                  */
-                Geocoder.from(address + '')
-                    .then(json => {
-                        const location = json?.results?.[0]?.geometry?.location
-                        if (validateCoordinates({location})) {
-                            createNewCustomer({lat: location?.lat, lng: location?.lng, address: json?.results?.[0]?.['formatted_address']})
-                        }
-                    })
+
+                switch(!!address){
+                    /**
+                     * address isn't empty
+                     */
+                    case true:
+                        Geocoder.from(address + '')
+                            .then(json => {
+                                const location = json?.results?.[0]?.geometry?.location
+                                if (validateCoordinates({location})) {
+                                    createNewCustomer({lat: location?.lat, lng: location?.lng, address: json?.results?.[0]?.['formatted_address']})
+                                }
+                            })
+                        break;
+
+
+                    /**
+                     * address is empty
+                     */
+                    case false:
+
+
+                        break;
+                }
+
             break;
         }
 

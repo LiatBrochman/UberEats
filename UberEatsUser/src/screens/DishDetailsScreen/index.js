@@ -74,7 +74,7 @@ const DishDetailsScreen = () => {
 
             <Pressable onPress={onAddToBasket} style={styles.button}>
                 <Text style={styles.buttonText}>
-                    Add {tempQuantity} to basket &#8226; ${dish.price * tempQuantity}
+                    Add {tempQuantity} to basket &#8226; ${(dish.price * tempQuantity).toFixed(2)}
                 </Text>
             </Pressable>
         </View>

@@ -91,6 +91,7 @@ const AuthContextProvider = ({children}) => {
          */
         if (sub) {
             getOwner().then(setDbOwner)
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub,null,4))
         }
 
     }, [sub])

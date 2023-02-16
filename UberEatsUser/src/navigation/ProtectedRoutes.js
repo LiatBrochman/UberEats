@@ -16,7 +16,7 @@ const ProtectedRoutes = () => {
             <View style={styles.container}>
                 <Authenticator hideDefault={true}>
                     <SignIn/>
-                    <View style={{paddingBottom: 300}}>
+                    <View >
                         <Button title="Login with Google" onPress={googleSignin}/>
                     </View>
                 </Authenticator>
@@ -31,5 +31,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
+        // margin: 10,
+        // padding: 10,
     },
 });
