@@ -3,6 +3,7 @@ type Owner @model @auth(rules: [{allow: public}]) {
   sub: String!
   isDeleted: Boolean!
   Restaurants: [Restaurant] @hasMany(indexName: "byOwner", fields: ["id"])
+  email: AWSEmail
 }
 
 type Restaurant @model @auth(rules: [{allow: public}]) {
@@ -46,6 +47,7 @@ type Customer @model @auth(rules: [{allow: public}]) {
   isDeleted: Boolean!
   Orders: [Order] @hasMany(indexName: "byCustomer", fields: ["id"])
   Baskets: [Basket] @hasMany(indexName: "byCustomer", fields: ["id"])
+  email: AWSEmail
 }
 
 enum OrderStatus {
@@ -102,5 +104,6 @@ type Courier @model @auth(rules: [{allow: public}]) {
   isActive: Boolean!
   destinations: [String]
   timeToArrive: [Int]
+  email: AWSEmail
 }
  

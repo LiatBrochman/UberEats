@@ -15,16 +15,19 @@ export declare type ValidationFunction<T> = (value: T, validationResponse: Valid
 export declare type OwnerCreateFormInputValues = {
     sub?: string;
     isDeleted?: boolean;
+    email?: string;
 };
 export declare type OwnerCreateFormValidationValues = {
     sub?: ValidationFunction<string>;
     isDeleted?: ValidationFunction<boolean>;
+    email?: ValidationFunction<string>;
 };
 export declare type PrimitiveOverrideProps<T> = Partial<T> & React.DOMAttributes<HTMLDivElement>;
 export declare type OwnerCreateFormOverridesProps = {
     OwnerCreateFormGrid?: PrimitiveOverrideProps<GridProps>;
     sub?: PrimitiveOverrideProps<TextFieldProps>;
     isDeleted?: PrimitiveOverrideProps<SwitchFieldProps>;
+    email?: PrimitiveOverrideProps<TextFieldProps>;
 } & EscapeHatchProps;
 export declare type OwnerCreateFormProps = React.PropsWithChildren<{
     overrides?: OwnerCreateFormOverridesProps | undefined | null;

@@ -26,6 +26,7 @@ const AuthContextProvider = ({children}) => {
                             break;
                         case 'signOut':
                             console.log('user signed out')
+                            setAuthUser(null)
                             break;
                         case 'signIn_failure':
                             console.log('user sign in failed')
@@ -38,6 +39,15 @@ const AuthContextProvider = ({children}) => {
                 })
 
     }, [])
+
+
+    async function signOut() {
+        try {
+            await Auth.signOut()
+        } catch (error) {
+            console.log('Error signing out:', error)
+        }
+    }
 
     const getOwner = async () => {
         return await getExistingOwner()
@@ -103,7 +113,8 @@ const AuthContextProvider = ({children}) => {
                 authUser,
                 dbOwner,
                 sub,
-                setDbOwner
+                setDbOwner,
+                signOut
             }
         }>
             {children}

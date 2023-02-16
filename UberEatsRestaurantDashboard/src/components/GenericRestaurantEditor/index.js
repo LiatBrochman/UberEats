@@ -12,7 +12,7 @@ import  './index.css';
 function GenericRestaurantEditor({props}) {
 
     const {restaurant, setRestaurant} = useRestaurantContext()
-    const {dbOwner} = useAuthContext()
+    const {dbOwner,signOut} = useAuthContext()
     const navigate = useNavigate()
 
     const createNewRestaurant = async (draft_restaurant) => {
@@ -177,7 +177,7 @@ function GenericRestaurantEditor({props}) {
 
 
             <Button
-                onClick={() => Auth.signOut()}
+                onClick={signOut}
                 style={{textAlign: "center", color: 'gray', backgroundColor: "white"
                   ,fontWeight:500, border: 'none'}}>
                 Sign out

@@ -32,9 +32,11 @@ export default function OwnerUpdateForm(props) {
   const initialValues = {
     sub: "",
     isDeleted: false,
+    email: "",
   };
   const [sub, setSub] = React.useState(initialValues.sub);
   const [isDeleted, setIsDeleted] = React.useState(initialValues.isDeleted);
+  const [email, setEmail] = React.useState(initialValues.email);
   const [errors, setErrors] = React.useState({});
   const resetStateValues = () => {
     const cleanValues = ownerRecord
@@ -42,6 +44,7 @@ export default function OwnerUpdateForm(props) {
       : initialValues;
     setSub(cleanValues.sub);
     setIsDeleted(cleanValues.isDeleted);
+    setEmail(cleanValues.email);
     setErrors({});
   };
   const [ownerRecord, setOwnerRecord] = React.useState(owner);
@@ -56,6 +59,7 @@ export default function OwnerUpdateForm(props) {
   const validations = {
     sub: [{ type: "Required" }],
     isDeleted: [{ type: "Required" }],
+    email: [{ type: "Email" }],
   };
   const runValidationTasks = async (
     fieldName,
@@ -84,6 +88,7 @@ export default function OwnerUpdateForm(props) {
         let modelFields = {
           sub,
           isDeleted,
+          email,
         };
         const validationResponses = await Promise.all(
           Object.keys(validations).reduce((promises, fieldName) => {
@@ -141,6 +146,7 @@ export default function OwnerUpdateForm(props) {
             const modelFields = {
               sub: value,
               isDeleted,
+              email,
             };
             const result = onChange(modelFields);
             value = result?.sub ?? value;
@@ -166,6 +172,7 @@ export default function OwnerUpdateForm(props) {
             const modelFields = {
               sub,
               isDeleted: value,
+              email,
             };
             const result = onChange(modelFields);
             value = result?.isDeleted ?? value;
@@ -180,6 +187,32 @@ export default function OwnerUpdateForm(props) {
         hasError={errors.isDeleted?.hasError}
         {...getOverrideProps(overrides, "isDeleted")}
       ></SwitchField>
+      <TextField
+        label="Email"
+        isRequired={false}
+        isReadOnly={false}
+        value={email}
+        onChange={(e) => {
+          let { value } = e.target;
+          if (onChange) {
+            const modelFields = {
+              sub,
+              isDeleted,
+              email: value,
+            };
+            const result = onChange(modelFields);
+            value = result?.email ?? value;
+          }
+          if (errors.email?.hasError) {
+            runValidationTasks("email", value);
+          }
+          setEmail(value);
+        }}
+        onBlur={() => runValidationTasks("email", email)}
+        errorMessage={errors.email?.errorMessage}
+        hasError={errors.email?.hasError}
+        {...getOverrideProps(overrides, "email")}
+      ></TextField>
       <Flex
         justifyContent="space-between"
         {...getOverrideProps(overrides, "CTAFlex")}

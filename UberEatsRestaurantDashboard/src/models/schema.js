@@ -40,6 +40,13 @@ export const schema = {
                         ]
                     }
                 },
+                "email": {
+                    "name": "email",
+                    "isArray": false,
+                    "type": "AWSEmail",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -769,6 +776,13 @@ export const schema = {
                         ]
                     }
                 },
+                "email": {
+                    "name": "email",
+                    "isArray": false,
+                    "type": "AWSEmail",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -899,6 +913,13 @@ export const schema = {
                     "attributes": [],
                     "isArrayNullable": true
                 },
+                "email": {
+                    "name": "email",
+                    "isArray": false,
+                    "type": "AWSEmail",
+                    "isRequired": false,
+                    "attributes": []
+                },
                 "createdAt": {
                     "name": "createdAt",
                     "isArray": false,
@@ -992,5 +1013,5 @@ export const schema = {
         }
     },
     "codegenVersion": "3.3.5",
-    "version": "e9183e9638e35c92077ca26594d7bc78"
+    "version": "aaba2a0221eb54b6d1ab0539167e14f0"
 };

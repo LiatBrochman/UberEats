@@ -42,6 +42,7 @@ type EagerOwner = {
   readonly sub: string;
   readonly isDeleted: boolean;
   readonly Restaurants?: (Restaurant | null)[] | null;
+  readonly email?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -55,6 +56,7 @@ type LazyOwner = {
   readonly sub: string;
   readonly isDeleted: boolean;
   readonly Restaurants: AsyncCollection<Restaurant>;
+  readonly email?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -259,6 +261,7 @@ type EagerCustomer = {
   readonly isDeleted: boolean;
   readonly Orders?: (Order | null)[] | null;
   readonly Baskets?: (Basket | null)[] | null;
+  readonly email?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -275,6 +278,7 @@ type LazyCustomer = {
   readonly isDeleted: boolean;
   readonly Orders: AsyncCollection<Order>;
   readonly Baskets: AsyncCollection<Basket>;
+  readonly email?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -300,6 +304,7 @@ type EagerCourier = {
   readonly isActive: boolean;
   readonly destinations?: (string | null)[] | null;
   readonly timeToArrive?: (number | null)[] | null;
+  readonly email?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
@@ -319,6 +324,7 @@ type LazyCourier = {
   readonly isActive: boolean;
   readonly destinations?: (string | null)[] | null;
   readonly timeToArrive?: (number | null)[] | null;
+  readonly email?: string | null;
   readonly createdAt?: string | null;
   readonly updatedAt?: string | null;
 }
