@@ -29,6 +29,34 @@ const getAddressByCoords = async ({latitude = null, longitude = null}) => {
     return address
 }
 
+const startWatchingLocation = async (setState) => {
+
+    let {status} = await Location.requestForegroundPermissionsAsync()
+    switch (status === "granted") {
+
+        case true:
+            return await Location.watchPositionAsync(
+                {
+                    accuracy: Location.Accuracy.High,
+                    distanceInterval: 100,
+                },
+                ({coords}) => {
+                    setState({
+                        latitude: coords?.latitude,
+                        longitude: coords.longitude,
+                    })
+                })
 
 
-export {getCoordsByAddress,getCurrentPosition,getAddressByCoords,}
+        case false:
+            console.error('Permission to access location was denied, please try again')
+            return await startWatchingLocation()
+
+    }
+
+
+}
+
+
+
+export {getCoordsByAddress,getCurrentPosition,getAddressByCoords,startWatchingLocation}

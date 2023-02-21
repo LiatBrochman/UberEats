@@ -31,7 +31,7 @@ const OrderListItem = ({order}) => {
 
     const navigation = useNavigation()
     const {setOrder} = useOrderContext()
-    const [restaurant, setRestaurant] = useState({})
+    const [restaurant, setRestaurant] = useState(null)
 
     useEffect(() => {
         DataStore.query(Restaurant, order.restaurantID).then(setRestaurant)

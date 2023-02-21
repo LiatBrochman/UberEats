@@ -3,8 +3,6 @@ import RestaurantItem from "../../components/RestaurantItem";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 
-// export var subscription = {}
-
 export default function HomeScreen() {
     const {restaurants} = useRestaurantContext()
 

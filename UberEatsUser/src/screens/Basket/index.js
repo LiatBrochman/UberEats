@@ -10,7 +10,7 @@ import {useEffect} from "react";
 const Basket = () => {
     const {basketDishes, totalPrice} = useBasketContext()
     const {restaurant} = useRestaurantContext()
-    const {createOrder} = useOrderContext()
+    const {createNewOrder} = useOrderContext()
     const navigation = useNavigation()
 
     useEffect(() => {
@@ -19,7 +19,7 @@ const Basket = () => {
 
     const onCreateOrder = async () => {
         if (totalPrice && restaurant?.deliveryFee && totalPrice > restaurant.deliveryFee) {
-            await createOrder()
+            await createNewOrder()
             navigation.goBack()
         }
     }

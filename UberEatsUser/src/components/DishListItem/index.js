@@ -4,7 +4,7 @@ import {useBasketContext} from "../../contexts/BasketContext";
 
 const DishListItem = ({dish}) => {
     const navigation = useNavigation()
-    const {setDish, setQuantity} = useBasketContext()
+    const {setDish} = useBasketContext()
     return (
         <Pressable
             onPress={() => {

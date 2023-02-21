@@ -8,16 +8,15 @@ const RestaurantContext = createContext({})
 const RestaurantContextProvider = ({children}) => {
 
     const {dbCustomer} = useAuthContext({})
+
     const [restaurants, setRestaurants] = useState([])
-    const [restaurant, setRestaurant] = useState({})
+    const [restaurant, setRestaurant] = useState(null)
     const [restaurantDishes, setRestaurantDishes] = useState([])
 
     useEffect(() => {
         if (dbCustomer?.id)
-            subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).subscribe(({
-                                                                                                                     items,
-                                                                                                                     isSynced
-                                                                                                                 }) => {
+            subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).
+            subscribe(({items, isSynced}) => {
                 isSynced && setRestaurants(items)
             })
         // return subscription?.restaurants?.unsubscribe()

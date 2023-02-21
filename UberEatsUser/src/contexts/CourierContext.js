@@ -8,62 +8,69 @@ const CourierContext = createContext({})
 
 
 const CourierContextProvider = ({children}) => {
-    const {orders, onGoingOrder} = useOrderContext()
-    const [courier, setCourier] = useState(null)
-    const [duration, setDuration] = useState(null)
 
+    const {liveOrders, countUpdates} = useOrderContext()
+
+
+    const [couriers, setCouriers] = useState([])
+    const [ETAs, setETAs] = useState([])
+
+
+    function fetchCouriers() {
+
+        subscription.couriers = liveOrders.map(liveOrder => DataStore.observeQuery(Courier, c => c.id.eq(liveOrder.courierID))
+            .subscribe(({items, isSynced}) => {
+                if (isSynced && items?.length) {
+                    const courier = items[0]
+                    setCouriers(prev => [...prev, courier])
+                    setETAs(prev => [...prev, {
+                        courierID: courier.id,
+                        ETA: courier.timeToArrive.reduce((total, current) => total + current)
+                    }])
+
+                }
+            }))
+
+    }
+
+    function needToFetchCouriers() {
+        /**
+         * sub/re-sub couriers whenever:
+         * 1. a courier accept our order (order gets an courier ID)
+         * 2. order has been completed/declined
+         */
+
+        const liveOrdersWithCourier = liveOrders.filter(o => o.courierID !== "null")
+
+        if (liveOrdersWithCourier.length === couriers.length) {
+            return false
+        }
+        /**
+         * here we cover both options:
+         * either our context couriers are LESS than the real amount of couriers: a new courier has arrived
+         * either our context couriers are MORE than the real amount of couriers: an order has been completed/declined
+         */
+        return true
+    }
 
     useEffect(() => {
-        /**
-         * init courier + subscribe him
-         */
-        if (onGoingOrder ) {
-            subscription.courier = DataStore.observeQuery(Courier, c => c.id.eq(onGoingOrder.courierID))
-                .subscribe(({items, isSynced}) => {
-                    if (isSynced && items?.[0]?.id === onGoingOrder?.courierID) {
-                            setCourier(items?.[0])
-                            const totalTime = items?.[0].timeToArrive.reduce((total, current) => total + current)
-                            setDuration(totalTime)
-                    }
-                })
-        } else {
+            if (liveOrders?.length === 0) return;
+
             /**
-             * onGoingOrder has changed to null => we need to stop subscribing to it
+             * init couriers + update couriers
              */
-            setCourier(null)
-            setDuration(null)
-            subscription?.courier?.unsubscribe()
-        }
 
-    }, [onGoingOrder]);
+            needToFetchCouriers() && fetchCouriers()
 
 
-    // useEffect(() => {
-    //     if (orders) {
-    //         const orderWithCourier = orders?.length && orders.find(o => {
-    //             if (o?.courierID && o?.courierID !== "null") {
-    //                 return o?.courierID
-    //             }
-    //         })
-    //         if (orderWithCourier && orderWithCourier?.courierID) {
-    //
-    //             subscription.courier = DataStore.observeQuery(Courier, c => c.id.eq(orderWithCourier.courierID))
-    //                 .subscribe(({items, isSynced}) => {
-    //                   if  (isSynced){
-    //                       setCourier(items?.[0])
-    //                       const totalTime = items?.[0].timeToArrive.reduce((total,current)=>total+current)
-    //                       setDuration(totalTime)
-    //                   }
-    //                 })
-    //         }
-    //     }
-    //     // return subscription?.courier?.unsubscribe()
-    // }, [orders])
+        },
+        [countUpdates])
+
 
     return (
         <CourierContext.Provider value={{
-            courier,
-            duration
+            couriers,
+            ETAs,
         }}>
             {children}
         </CourierContext.Provider>

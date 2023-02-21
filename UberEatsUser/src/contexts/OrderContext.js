@@ -10,91 +10,92 @@ const OrderContext = createContext({})
 
 const OrderContextProvider = ({children}) => {
 
-    /** helper:
-     * order = current watch order
-     * onGoingOrder = live order
-     * orders = all of the customer's orders
-     */
-
-
     const {dbCustomer} = useAuthContext()
     const {restaurant} = useRestaurantContext()
     const {totalPrice, basketDishes, setBasketDishes, setTotalPrice, setTotalBasketQuantity} = useBasketContext()
     const [order, setOrder] = useState(null)
-    const [orders, setOrders] = useState([])
+    const [completedOrders, setCompletedOrders] = useState([])
+    const [liveOrders, setLiveOrders] = useState([])
     const [orderDishes, setOrderDishes] = useState([])
-    const [onGoingOrder, setOnGoingOrder] = useState(null)
-    const [liveStatus, setLiveStatus] = useState(null)
-    const [countUpdates,setCountUpdates] = useState(0)
+    const [countUpdates, setCountUpdates] = useState(0)
 
-    /**
-     init order context
-     */
+
     useEffect(() => {
+        if (!dbCustomer) return;
+
         /**
-         listen to orders
+         * init live orders
          */
-        if (dbCustomer?.id)
-            subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
-            ).subscribe(({items, isSynced}) => {
-                if(isSynced) {
-                    setOrders(items)
-                    setCountUpdates(prev=>prev+1)
-                }
-            })
-        // return subscription?.orders?.unsubscribe()
+
+        subscribeToLiveOrders()
+
+        /**
+         * init the rest of the orders
+         */
+        DataStore.query(Order, o => o.and(o => [
+            o.customerID.eq(dbCustomer.id),
+            o.isDeleted.eq(false),
+            o.status.eq("COMPLETED"),
+            o.status.eq("DECLINED")
+        ])).then(setCompletedOrders)
 
     }, [dbCustomer])
 
-    /**
-     listen to current order's dishes
-     */
+
     useEffect(() => {
-        if (order?.id) {
-            if (subscription?.orderDishes) subscription.orderDishes.unsubscribe()
-            subscription.orderDishes = DataStore.observeQuery(Dish, d => d.and(d => [
-                    d.orderID.eq(order.id),
-                    d.isDeleted.eq(false)
-                ]
-            )).subscribe(({items, isSynced}) => {
-                isSynced && setOrderDishes(items)
-            })
-            liveStatus.current = order.status
-        }
-        // return subscription?.order?.unsubscribe()
+        if (!order) return;
+
+        /**
+         * init order dishes
+         */
+
+        DataStore.query(Dish, d => d.and(d => [
+            d.orderID.eq(order.id),
+            d.isDeleted.eq(false)
+        ])).then(setOrderDishes)
+
     }, [order])
 
-    /**
-     init on-going order
-     */
+
+    function subscribeToLiveOrders() {
+        subscription.liveOrders = DataStore.observeQuery(Order, o => o.and(o => [
+            o.customerID.eq(dbCustomer.id),
+            o.isDeleted.eq(false),
+            o.status.ne("COMPLETED"),
+            o.status.ne("DECLINED")
+        ])).subscribe(({items, isSynced}) => {
+            if (isSynced) {
+                setLiveOrders(items)
+                setCountUpdates(prev => prev + 1)
+            }
+        })
+    }
+
+
+    function reSubscribeToLiveOrders() {
+        subscription?.liveOrders && subscription.liveOrders.unsubscribe()
+        subscribeToLiveOrders()
+
+    }
+
+
     useEffect(() => {
-        const liveOrder = orders.find(o => o.status !== "DECLINED" && o.status !== "COMPLETED")
-        if (liveOrder) {
-            setOnGoingOrder(liveOrder)
-        }
+        if (countUpdates === 0) return;
+
+        /**
+         * remove completed order
+         */
+
+        liveOrders.some(liveOrder => {
+            if (liveOrder.status === "COMPLETED" || liveOrder.status === "DECLINED") {
+                setCompletedOrders(prev => [...prev, liveOrder])
+                reSubscribeToLiveOrders()
+                return true
+            }
+        })
+
 
     }, [countUpdates])
-
-
-    /**
-     * update live-status
-     */
-    useEffect(() => {
-        onGoingOrder?.status &&
-        onGoingOrder.status !== liveStatus &&
-        setLiveStatus(onGoingOrder.status)
-
-    }, [onGoingOrder])
-
-    useEffect(() => {
-        if(liveStatus==="COMPLETED"||liveStatus==="DECLINED") {
-            setOnGoingOrder(null)
-            setLiveStatus(null)
-        }
-
-    }, [liveStatus]);
-
-
 
 
     function checkIfPriceIsValid({totalPrice}) {
@@ -107,79 +108,79 @@ const OrderContextProvider = ({children}) => {
         }
     }
 
-    const createOrder = async () => {
 
-        if (checkIfPriceIsValid({totalPrice})) {
-
-            /**
-             create new Order:
-             */
-            await DataStore.save(new Order({
-                status: "NEW",
-                totalPrice: parseFloat(totalPrice),
-                totalQuantity: basketDishes.reduce((count, dish) => count + dish.quantity, 0),
-                restaurantLocation: restaurant.location,
-                customerLocation: dbCustomer.location,
-                isDeleted: false,
-                customerID: dbCustomer.id,
-                restaurantID: restaurant.id,
-                dishes: basketDishes,
-                courierID: "null",
-
-            })).then(async newOrder => {
-
-                /**
-                 set Orders
-                 */
-                if (subscription?.orders) subscription.orders.unsubscribe()
-                subscription.orders = DataStore.observeQuery(Order, o => o.customerID.eq(dbCustomer.id)
-                ).subscribe(({items, isSynced}) => {
-                    isSynced && setOrders(items)
-                })
-
-                /**
-                 stop listening to basketDishes
-                 */
-                subscription.basketDishes.unsubscribe()
-
-                /**
-                 clear basket
-                 */
-                setBasketDishes([])
-                setTotalPrice(Number(restaurant.deliveryFee.toFixed(2)))
-                setTotalBasketQuantity(0)
-
-                /**
-                 remove dishes from basket and create order dishes (by setting the basketID to null and the orderID to newOrder.id)
-                 */
-                const promises = basketDishes.map(async dish => await DataStore.save(
-                        Dish.copyOf(dish, updated => {
-                                updated.orderID = newOrder.id
-                                updated.basketID = 'null'
-                            }
-                        )
-                    )
-                )
-
-                Promise.allSettled(promises).then(() => {
-
-                    /**
-                     update OrderDishes
-                     */
-                    if (subscription?.orderDishes) subscription.orderDishes.unsubscribe()
-                    subscription.orderDishes = DataStore.observeQuery(Dish, d => d.and(d => [
-                            d.orderID.eq(newOrder.id),
-                            d.isDeleted.eq(false)
-                        ]
-                    )).subscribe(({items, isSynced}) => {
-                        isSynced && setOrderDishes(items)
-                    })
-                })
-            })
-        }
+    function clearBasket() {
+        setBasketDishes([])
+        setTotalPrice(Number(restaurant.deliveryFee.toFixed(2)))
+        setTotalBasketQuantity(0)
     }
 
-    const getOrder = async (id) => {
+
+    async function assignDishToOrder(dish, newOrder) {
+        return await DataStore.save(Dish.copyOf(await DataStore.query(Dish, dish.id), updated => {
+                    updated.orderID = newOrder.id
+                    updated.basketID = 'null'
+                }
+            )
+        )
+    }
+
+    async function assignDishesToOrder(dishes, newOrder) {
+
+        const assignedDishes = []
+
+        for await(const dish of dishes) {
+            assignedDishes.push(await assignDishToOrder(dish, newOrder))
+        }
+
+        setOrderDishes(assignedDishes)
+
+    }
+
+    const createNewOrder = async () => {
+
+        if (!checkIfPriceIsValid({totalPrice})) return;
+
+        /**
+         create new Order:
+         */
+        await DataStore.save(new Order({
+            status: "NEW",
+            totalPrice: parseFloat(totalPrice),
+            totalQuantity: basketDishes.reduce((count, dish) => count + dish.quantity, 0),
+            restaurantLocation: restaurant.location,
+            customerLocation: dbCustomer.location,
+            isDeleted: false,
+            customerID: dbCustomer.id,
+            restaurantID: restaurant.id,
+            dishes: basketDishes,
+            courierID: "null",
+
+        })).then(async newOrder => {
+
+            /**
+             update Live Orders
+             */
+            reSubscribeToLiveOrders()
+
+
+            /**
+             clear basket
+             */
+            clearBasket()
+
+
+            /**
+             move dishes from basket to the new order
+             */
+            await assignDishesToOrder(newOrder)
+
+
+        })
+
+    }
+
+    const getOrderByID = async (id) => {
         const order = await DataStore.query(Order, o => o.and(o => [
             o.id.eq(id),
             o.isDeleted.eq(false)
@@ -187,16 +188,46 @@ const OrderContextProvider = ({children}) => {
         return order?.[0]
     }
 
+    const getStageByStatus = async (status) => {
+
+        switch (status) {
+
+
+            case "NEW":
+            case "DECLINED":
+            case "COMPLETED":
+                return 0
+
+
+            case "ACCEPTED":
+                return 1
+
+
+            case "COOKING":
+            case "READY_FOR_PICKUP":
+                return 2
+
+
+            case "PICKED_UP":
+                return 3
+
+
+            default:
+                return -1
+        }
+    }
+
     return (
         <OrderContext.Provider value={{
-            createOrder,
-            getOrder,
-            orders,
-            orderDishes,
             order,
             setOrder,
-            liveStatus,
-            onGoingOrder
+            orderDishes,
+            liveOrders,
+            completedOrders,
+            countUpdates,
+            createNewOrder,
+            getOrderByID,
+            getStageByStatus
         }}>
             {children}
         </OrderContext.Provider>
