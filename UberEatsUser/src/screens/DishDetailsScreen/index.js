@@ -12,7 +12,7 @@ const DishDetailsScreen = () => {
     const id = route.params?.id;
 
     const {addDishToBasket, quantity: realQuantity, basket} = useBasketContext()
-    const {restaurantDishes} = useRestaurantContext()
+    const {restaurantDishes,restaurant} = useRestaurantContext()
     const [dish, setDish] = useState(restaurantDishes?.[0])
     const [tempQuantity, setTempQuantity] = useState(realQuantity || 1)
 

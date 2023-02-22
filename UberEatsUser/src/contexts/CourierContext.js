@@ -18,18 +18,27 @@ const CourierContextProvider = ({children}) => {
 
     function fetchCouriers() {
 
-        subscription.couriers = liveOrders.map(liveOrder => DataStore.observeQuery(Courier, c => c.id.eq(liveOrder.courierID))
-            .subscribe(({items, isSynced}) => {
-                if (isSynced && items?.length) {
-                    const courier = items[0]
-                    setCouriers(prev => [...prev, courier])
-                    setETAs(prev => [...prev, {
-                        courierID: courier.id,
-                        ETA: courier.timeToArrive.reduce((total, current) => total + current)
-                    }])
+        subscription.couriers = liveOrders.map(liveOrder => {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveOrder.id, null, 4))
 
-                }
-            }))
+                DataStore.observeQuery(Courier, c => c.id.eq(liveOrder.courierID))
+                    .subscribe(({items, isSynced}) => {
+                        if (isSynced) {
+                            if (items.length === 0) {
+                                setCouriers([])
+                                setETAs([])
+                            } else {
+                                const courier = items[0]
+                                setCouriers(prevCouriers => [...prevCouriers.filter(c => c.id !== courier.id), courier])
+                                setETAs(prev => [...prev, {
+                                    courierID: courier.id,
+                                    ETA: courier.timeToArrive.reduce((total, current) => total + current)
+                                }])
+                            }
+                        }
+                    })
+            }
+        )
 
     }
 
@@ -65,6 +74,11 @@ const CourierContextProvider = ({children}) => {
 
         },
         [countUpdates])
+
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ couriers.length ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers.length, null, 4))
+
+    }, [couriers.length])
 
 
     return (

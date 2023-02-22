@@ -2,6 +2,7 @@ import {Image, Pressable, StyleSheet, Text, View} from "react-native";
 import {useNavigation} from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {AntDesign} from "@expo/vector-icons";
+import {useBasketContext} from "../../contexts/BasketContext";
 
 const DEFAULT_IMAGE =
     "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/uber-eats/restaurant1.jpeg";
@@ -10,8 +11,13 @@ const DEFAULT_IMAGE =
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()
     const {setRestaurant} = useRestaurantContext()
-    const onPress = () => {
+    const {findExistingBasket , setBasket} = useBasketContext()
+
+    const onPress = async () => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ onPress---> restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant,null,4))
+
         setRestaurant(restaurant)
+        setBasket(findExistingBasket(restaurant.id))
         navigation.navigate("Restaurant", {id: restaurant?.id});
     }
     return (

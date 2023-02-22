@@ -13,17 +13,17 @@ const MapBottomSheet = () => {
 
     return (
         <BottomSheet isVisible={true} snapPoints={snapPoints}>
-            {liveOrders.length > 0 && ETAs.length > 0 && ETAs.map(({ETA, courierID}, index) => {
+            {liveOrders.length > 0 && liveOrders.map((liveOrder,index) =>{
 
-                    const stage = getStageByStatus(liveOrders[index].status)
+                    const stage = getStageByStatus(liveOrders?.[index]?.status)
 
-                    return (<View key={courierID}>
+                    return (<View key={index}>
 
                         <View style={{height: 500, marginLeft: 30, marginBottom: 30}}>
                             <Text style={{letterSpacing: 0.5, color: 'gray'}}>
                                 DELIVERY TIME
                             </Text>
-                            {ETA && <View style={{flexDirection: "row", paddingTop: 10}}>
+                            {ETAs.length >0 && ETAs[index] && <View style={{flexDirection: "row", paddingTop: 10}}>
                                 <AntDesign
                                     name="clockcircle"
                                     size={20}
@@ -32,7 +32,7 @@ const MapBottomSheet = () => {
                                 />
                                 <Text style={{
                                     fontSize: 20, fontWeight: '600', letterSpacing: 0.5
-                                }}>{ETA} minutes</Text>
+                                }}>{ETAs[index]} minutes</Text>
                             </View>}
                             <View style={{flexDirection: "row", paddingTop: 10}}>
                                 <AntDesign

@@ -102,9 +102,9 @@ const Map = () => {
                         </Marker>
                     )}
 
-                    {couriers.map(courier =>
+                    {couriers.map((courier,index) =>
                         <Marker
-                            key={courier.id}
+                            key={index}
                             title={courier.name}
                             description={courier.transportationMode}
                             coordinate={{

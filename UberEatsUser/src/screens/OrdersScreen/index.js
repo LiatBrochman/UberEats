@@ -3,12 +3,12 @@ import OrderListItem from "../../components/OrderListItem";
 import {useOrderContext} from "../../contexts/OrderContext";
 
 const OrderScreen = () => {
-    const {orders} = useOrderContext();
+    const {liveOrders, completedOrders} = useOrderContext();
 
     return (
         <View style={styles.container}>
             <FlatList
-                data={orders}
+                data={[...completedOrders,...liveOrders]}
                 renderItem={({item}) => <OrderListItem order={item}/>}
             />
         </View>

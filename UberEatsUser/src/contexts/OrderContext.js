@@ -110,6 +110,8 @@ const OrderContextProvider = ({children}) => {
 
 
     function clearBasket() {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ clearing the basket  ~~~~~~~~~~~~~~~~~~~~~ :")
+
         setBasketDishes([])
         setTotalPrice(Number(restaurant.deliveryFee.toFixed(2)))
         setTotalBasketQuantity(0)
@@ -144,7 +146,9 @@ const OrderContextProvider = ({children}) => {
         /**
          create new Order:
          */
-        await DataStore.save(new Order({
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~  create new Order:  restaurant?.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.id,null,4))
+
+         DataStore.save(new Order({
             status: "NEW",
             totalPrice: parseFloat(totalPrice),
             totalQuantity: basketDishes.reduce((count, dish) => count + dish.quantity, 0),
@@ -154,27 +158,31 @@ const OrderContextProvider = ({children}) => {
             customerID: dbCustomer.id,
             restaurantID: restaurant.id,
             dishes: basketDishes,
-            courierID: "null",
+            courierID: "null"
 
         })).then(async newOrder => {
+
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newOrder,null,4))
+
 
             /**
              update Live Orders
              */
             reSubscribeToLiveOrders()
 
-
-            /**
-             clear basket
-             */
-            clearBasket()
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ before clearing the basket ~~~~~~~~~~~~~~~~~~~~~ :")
 
 
             /**
              move dishes from basket to the new order
              */
-            await assignDishesToOrder(newOrder)
+            assignDishesToOrder(basketDishes,newOrder).then(()=>{
 
+                /**
+                 clear basket
+                 */
+                clearBasket()
+            })
 
         })
 
