@@ -92,7 +92,7 @@ const OrdersDelivery = () => {
 
             case "PICKED_UP":
 
-                if (distanceRef.current <= 0.1
+                if (distanceRef.current <= 1
                     // arrived(driverLocation, customer.location, 100)
                 ) {
                     await completeOrder({order})
@@ -128,7 +128,7 @@ const OrdersDelivery = () => {
          and, when the order isn't assigned (yet) to the courier (or to any other courier)
          */
         let isClickable = false
-
+console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current,null,4))
         switch (order.status) {
 
             case "ACCEPTED":
@@ -141,8 +141,8 @@ const OrdersDelivery = () => {
              * to complete an order, the courier must be near the customer's address (100meters)
              */
             case "PICKED_UP":
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current, null, 4))
-                isClickable = distanceRef.current <= 0.1
+                //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current, null, 4))
+                isClickable = distanceRef.current <= 1
                 break;
 
 
@@ -197,6 +197,11 @@ const OrdersDelivery = () => {
                 return []
         }
     }
+
+
+    useEffect(()=>{
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order.status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order.status,null,4))
+    },[order.status])
 
     return (
         <GestureHandlerRootView style={styles.container}>

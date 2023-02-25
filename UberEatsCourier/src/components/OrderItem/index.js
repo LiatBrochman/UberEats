@@ -2,6 +2,9 @@ import {Image, Pressable, Text, View} from "react-native";
 import {Entypo} from "@expo/vector-icons";
 import {useNavigation} from '@react-navigation/native'
 import {useOrderContext} from "../../contexts/OrderContext";
+import {useEffect} from "react";
+import {Order} from "../../models";
+import {DataStore} from "aws-amplify";
 
 
 const OrderItem = ({order, restaurant, customer, dishes}) => {
@@ -15,6 +18,11 @@ const OrderItem = ({order, restaurant, customer, dishes}) => {
     } = useOrderContext()
     const navigation = useNavigation()
 
+    useEffect(()=>{
+        DataStore.observe(Order,order.id).subscribe(({element})=>{
+            setOrder(element)
+        })
+    },[])
 
     return (
         activeORCD && restaurant?.id && (

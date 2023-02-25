@@ -98,10 +98,21 @@ const OrderContextProvider = ({children}) => {
                         case "COOKING":
                         case "READY_FOR_PICKUP":
                         case "PICKED_UP":
-                            if (ref.current.waypointDurations.length !== 0)
-                                console.log("updating courier's destinations + timeToArrive", ref.current.waypointDurations)
-                            updated.destinations = [ref.current.liveOrder.restaurantLocation.address, ref.current.liveOrder.customerLocation.address]
-                            updated.timeToArrive = ref.current.waypointDurations
+                            switch (ref.current.waypointDurations.length) {
+
+                                case 0:
+                                    break;
+
+                                case 1:
+                                    updated.timeToArrive = ref.current.waypointDurations
+                                    updated.destinations = [ref.current.liveOrder.customerLocation.address]
+                                    break;
+
+                                case 2:
+                                    updated.timeToArrive = ref.current.waypointDurations
+                                    updated.destinations = [ref.current.liveOrder.restaurantLocation.address, ref.current.liveOrder.customerLocation.address]
+                                    break;
+                            }
                             break;
 
                         case "COMPLETED":
@@ -316,6 +327,11 @@ const OrderContextProvider = ({children}) => {
     }
     const cancelOrder = async ({order}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ cancelOrder ~~~~~~~~~~~~~~~~~~~~~ :")
+
+
+        ref.current.liveOrder = null
+        ref.current.waypointDurations = []
+
         DataStore.save(Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
             updated.courierID = "null"
         })).then(() => setLiveOrder(null))
@@ -323,6 +339,10 @@ const OrderContextProvider = ({children}) => {
 
     const completeOrder = async ({order}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ completeOrder ~~~~~~~~~~~~~~~~~~~~~ :")
+
+
+        ref.current.liveOrder = null
+        ref.current.waypointDurations = []
 
         DataStore.save(Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
             updated.status = "COMPLETED"
@@ -343,7 +363,7 @@ const OrderContextProvider = ({children}) => {
             driverLocation,
             ORCD,
             activeORCD,
-            countUpdates: countOrderUpdates,
+            countOrderUpdates,
 
             setOrder,
             setDishes,
