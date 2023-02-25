@@ -50,7 +50,7 @@ const OrdersScreen = () => {
                     },
                 }}
             >
-                <Marker coordinate={{latitude: 32.1975652, longitude: 34.8775085}}/>
+                {/*<Marker coordinate={{latitude: 32.1975652, longitude: 34.8775085}}/>*/}
                 {activeORCD && ORCD?.[0]?.restaurant?.id &&
                 ORCD.map(({restaurant}, index) =>
                     <Marker

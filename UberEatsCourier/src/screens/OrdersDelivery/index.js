@@ -44,7 +44,8 @@ const OrdersDelivery = () => {
         driverLocation,
         completeOrder,
         dishes,
-        setWaypointDurations
+        setWaypointDurations,
+        ref
     } = useOrderContext()
 
     const {dbCourier} = useAuthContext()
@@ -227,7 +228,7 @@ const OrdersDelivery = () => {
                     },
                 }}
             >
-                <Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />
+                {/*<Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />*/}
                 <MapViewDirections
                     origin={driverLocation}
                     mode={dbCourier.transportationMode}
@@ -241,6 +242,7 @@ const OrdersDelivery = () => {
                         setTotalKm(result.distance)
                         distanceRef.current = result.distance
                         setWaypointDurations(result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, ""))))
+                        ref.current.waypointDurations=result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
                     }}
                 />
                 <Marker
