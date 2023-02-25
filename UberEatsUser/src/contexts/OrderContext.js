@@ -196,7 +196,7 @@ const OrderContextProvider = ({children}) => {
         return order?.[0]
     }
 
-    const getStageByStatus = async (status) => {
+    const getStageByStatus = (status) => {
 
         switch (status) {
 

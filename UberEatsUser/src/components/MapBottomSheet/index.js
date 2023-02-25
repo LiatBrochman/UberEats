@@ -17,13 +17,11 @@ const MapBottomSheet = () => {
 
                     const stage = getStageByStatus(liveOrders?.[index]?.status)
 
-                    return (<View key={index}>
-
-                        <View style={{height: 500, marginLeft: 30, marginBottom: 30}}>
+                    return <View key={index} style={{height: 500, marginLeft: 30, marginBottom: 30}}>
                             <Text style={{letterSpacing: 0.5, color: 'gray'}}>
                                 DELIVERY TIME
                             </Text>
-                            {ETAs.length >0 && ETAs[index] && <View style={{flexDirection: "row", paddingTop: 10}}>
+                            {ETAs.length >0 && <View style={{flexDirection: "row", paddingTop: 10}}>
                                 <AntDesign
                                     name="clockcircle"
                                     size={20}
@@ -32,7 +30,7 @@ const MapBottomSheet = () => {
                                 />
                                 <Text style={{
                                     fontSize: 20, fontWeight: '600', letterSpacing: 0.5
-                                }}>{ETAs[index]} minutes</Text>
+                                }}>{ETAs[index]?.ETA} minutes</Text>
                             </View>}
                             <View style={{flexDirection: "row", paddingTop: 10}}>
                                 <AntDesign
@@ -107,8 +105,6 @@ const MapBottomSheet = () => {
                                 width: "90%"
                             }}></View>
                         </View>
-
-                    </View>)
                 }
 
                 // return ( <BottomSheet key={ETA.courierID} isVisible={true} snapPoints={snapPoints}>

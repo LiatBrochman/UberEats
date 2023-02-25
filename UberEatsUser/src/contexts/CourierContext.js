@@ -32,7 +32,7 @@ const CourierContextProvider = ({children}) => {
                                 setCouriers(prevCouriers => [...prevCouriers.filter(c => c.id !== courier.id), courier])
                                 setETAs(prev => [...prev, {
                                     courierID: courier.id,
-                                    ETA: courier.timeToArrive.reduce((total, current) => total + current)
+                                    ETA: courier.timeToArrive.reduce((total, current) => total + current,0)
                                 }])
                             }
                         }

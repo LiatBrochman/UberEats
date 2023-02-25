@@ -78,7 +78,7 @@ const Orders = () => {
         }
     ]
 
-    return (orders?.length &&
+    return (
         <Card title={'Orders'} style={{margin: 20}}>
             <Table
                 dataSource={activeOrders}
