@@ -19,6 +19,11 @@ const OrderContextProvider = ({children}) => {
     const [orderDishes, setOrderDishes] = useState([])
     const [countUpdates, setCountUpdates] = useState(0)
 
+    useEffect(()=>{
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ completedOrders ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(completedOrders,null,4))
+
+    },[completedOrders])
+
 
     useEffect(() => {
         if (!dbCustomer) return;
@@ -35,8 +40,10 @@ const OrderContextProvider = ({children}) => {
         DataStore.query(Order, o => o.and(o => [
             o.customerID.eq(dbCustomer.id),
             o.isDeleted.eq(false),
-            o.status.eq("COMPLETED"),
-            o.status.eq("DECLINED")
+            o.or(o=>[
+                o.status.eq("COMPLETED"),
+                o.status.eq("DECLINED")
+            ])
         ])).then(setCompletedOrders)
 
     }, [dbCustomer])
@@ -88,7 +95,7 @@ const OrderContextProvider = ({children}) => {
 
         liveOrders.some(liveOrder => {
             if (liveOrder.status === "COMPLETED" || liveOrder.status === "DECLINED") {
-                setCompletedOrders(prev => [...prev, liveOrder])
+                setCompletedOrders(prev => [...prev, {...liveOrder}])
                 reSubscribeToLiveOrders()
                 return true
             }
