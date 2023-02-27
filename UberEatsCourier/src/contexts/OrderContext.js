@@ -13,18 +13,14 @@ const OrderContextProvider = ({children}) => {
 
     const {dbCourier, setDbCourier} = useAuthContext()
     const [order, setOrder] = useState(null)
-    const [liveOrder, setLiveOrder] = useState(null)
     const [dishes, setDishes] = useState([])
     const [customer, setCustomer] = useState(null)
     const [restaurant, setRestaurant] = useState(null)
     const [driverLocation, setDriverLocation] = useState(null)
     const [ORCD, setORCD] = useState([])
     const [activeORCD, setActiveORCD] = useState([])
-    const [distance,setDistance] = useState(10)
     const [countOrderUpdates, setCountOrderUpdates] = useState(0)
-    const [waypointDurations, setWaypointDurations] = useState([])
-
-    const ref = useRef({liveOrder, waypointDurations, distance})
+    const ref = useRef({liveOrder: null, waypointDurations: [], distance: 10})
 
 
     useEffect(() => {
@@ -41,7 +37,6 @@ const OrderContextProvider = ({children}) => {
             ])
         ])).subscribe(({items: [foundLiveOrder], isSynced}) => {
             if (foundLiveOrder && isSynced) {
-                setLiveOrder(foundLiveOrder)
                 ref.current.liveOrder = foundLiveOrder
             }
         })
@@ -61,7 +56,7 @@ const OrderContextProvider = ({children}) => {
         /**
          * update driver location also in the DB every 100meters
          */
-        dbCourier &&console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~before updating DB of courier: ref.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ref.current,null,4))
+        dbCourier && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~before updating DB of courier: ref.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ref.current, null, 4))
 
         dbCourier && DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id)
             , updated => {
@@ -314,42 +309,49 @@ const OrderContextProvider = ({children}) => {
 
     const assignToCourier = async ({order}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ assign order to courier ~~~~~~~~~~~~~~~~~~~~~ :")
+
         DataStore.save(
             Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
                 updated.courierID = dbCourier.id
             })
-        ).then(setLiveOrder)
+        ).then(updatedOrder => {
+            ref.current.liveOrder = updatedOrder
+        })
+
         DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id), updated => {
             updated.location = {
                 lat: driverLocation.latitude,
                 lng: driverLocation.longitude,
             }
             updated.destinations = [restaurant.location.address, customer.location.address]
-            updated.timeToArrive = waypointDurations
+            updated.timeToArrive = ref.current.waypointDurations
         })).then(setDbCourier)
     }
+
+    function clearLiveOrder() {
+        ref.current.liveOrder = null
+        ref.current.waypointDurations = []
+        ref.current.distance = 10
+    }
+
     const cancelOrder = async ({order}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ cancelOrder ~~~~~~~~~~~~~~~~~~~~~ :")
 
-
-        ref.current.liveOrder = null
-        ref.current.waypointDurations = []
-
         DataStore.save(Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
             updated.courierID = "null"
-        })).then(() => setLiveOrder(null))
+        })).then(() => clearLiveOrder())
+        DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id), updated => {
+            updated.destinations = []
+            updated.timeToArrive = []
+        })).then(setDbCourier)
     }
 
     const completeOrder = async ({order}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ completeOrder ~~~~~~~~~~~~~~~~~~~~~ :")
 
-
-        ref.current.liveOrder = null
-        ref.current.waypointDurations = []
-
         DataStore.save(Order.copyOf(await DataStore.query(Order, order.id), (updated) => {
             updated.status = "COMPLETED"
-        })).then(() => setLiveOrder(null))
+        })).then(() => clearLiveOrder())
         DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id), updated => {
             updated.destinations = []
             updated.timeToArrive = []
@@ -377,8 +379,6 @@ const OrderContextProvider = ({children}) => {
             assignToCourier,
             completeOrder,
 
-            setWaypointDurations,
-            setDistance,
             ref
         }}>
             {children}

@@ -17,7 +17,7 @@ export var subscription = {}
 const OrdersScreen = () => {
     const navigation = useNavigation()
     const {dbCourier} = useAuthContext()
-    const {driverLocation, ORCD, activeORCD, ref, setWaypointDurations, setDistance} = useOrderContext()
+    const {driverLocation, ORCD, activeORCD, ref } = useOrderContext()
     const bottomSheetRef = useRef({})
     const {width, height} = useWindowDimensions()
     const snapPoints = useMemo(() => ["12%", "95%"], [])
