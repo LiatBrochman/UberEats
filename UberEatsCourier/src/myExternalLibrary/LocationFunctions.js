@@ -41,11 +41,34 @@ const getAddressByCoords = async ({latitude = null, longitude = null}) => {
     }
 
 }
+const startWatchingLocation = async (setState) => {
 
+    let {status} = await Location.requestForegroundPermissionsAsync()
+    switch (status === "granted") {
+
+        case true:
+            return await Location.watchPositionAsync(
+                {
+                    accuracy: Location.Accuracy.High,
+                    distanceInterval: 100,
+                },
+                ({coords}) => {
+                    setState({
+                        latitude: coords?.latitude,
+                        longitude: coords.longitude,
+                    })
+                })
+
+
+        case false:
+            console.error('Permission to access location was denied, please try again')
+            return await startWatchingLocation()
+
+    }
+}
 function degreesToRadians(degrees) {
     return degrees * Math.PI / 180;
 }
-
 function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
     const earthRadiusKm = 6371;
 
@@ -60,10 +83,10 @@ function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return earthRadiusKm * c;
 }
-
 function arrived(driverLocation, customerLocation, minDistance) {
     return (distanceInKmBetweenEarthCoordinates(driverLocation.latitude, driverLocation.longitude, customerLocation.lat, customerLocation.lng) / 1000) <= minDistance
 }
 
 
-export {getCoordsByAddress, getCurrentPosition, getAddressByCoords}
+
+export {getCoordsByAddress, getCurrentPosition, getAddressByCoords,startWatchingLocation,degreesToRadians,distanceInKmBetweenEarthCoordinates,arrived}
