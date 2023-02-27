@@ -11,21 +11,26 @@ const DishDetailsScreen = () => {
     const route = useRoute();
     const id = route.params?.id;
 
-    const {addDishToBasket, quantity: realQuantity, basket} = useBasketContext()
-    const {restaurantDishes,restaurant} = useRestaurantContext()
-    const [dish, setDish] = useState(restaurantDishes?.[0])
-    const [tempQuantity, setTempQuantity] = useState(realQuantity || 1)
+    const {addDishToBasket, basket , basketDishes} = useBasketContext({basketDishes:[]})
+    const {restaurantDishes} = useRestaurantContext({restaurantDishes:[]})
+    const [restaurantDish, setRestaurantDish] = useState(null)
+    const [tempQuantity, setTempQuantity] = useState(1)
+
 
     useEffect(() => {
-        setTempQuantity(realQuantity || 1)
-    }, [realQuantity])
-    useEffect(() => {
-        restaurantDishes?.[0] && setDish(restaurantDishes.find(d => d.id === id))
+        if(restaurantDishes.length === 0) return;
+        setRestaurantDish(restaurantDishes.find(d => d.id === id))
+
+
+        if(basketDishes.length===0) return;
+        const existingDish = basketDishes.find(d=> d.originalID === id)
+        existingDish && setTempQuantity(existingDish.quantity)
+
     }, [restaurantDishes])
 
 
     const onAddToBasket = async () => {
-        const clonedDish = {dish: {...dish, quantity: tempQuantity, basketID: basket?.id}}
+        const clonedDish = {dish: {...restaurantDish, quantity: tempQuantity, basketID: basket?.id}}
         await addDishToBasket(clonedDish)
         navigation.goBack()
     }
@@ -41,18 +46,18 @@ const DishDetailsScreen = () => {
     }
 
 
-    if (!dish) {
+    if (!restaurantDish) {
         return <ActivityIndicator size="large" color="gray"/>;
     }
 
     return (
         <View style={styles.page}>
 
-            <Image source={{uri: dish?.image}} style={styles.image}/>
+            <Image source={{uri: restaurantDish?.image}} style={styles.image}/>
 
 
-            <Text style={styles.name}>{dish?.name}</Text>
-            <Text style={styles.description}>{dish?.description}</Text>
+            <Text style={styles.name}>{restaurantDish?.name}</Text>
+            <Text style={styles.description}>{restaurantDish?.description}</Text>
             <View style={styles.separator}/>
 
             <View style={styles.row}>
@@ -74,7 +79,7 @@ const DishDetailsScreen = () => {
 
             <Pressable onPress={onAddToBasket} style={styles.button}>
                 <Text style={styles.buttonText}>
-                    Add {tempQuantity} to basket &#8226; ${(dish.price * tempQuantity).toFixed(2)}
+                    Add {tempQuantity} to basket &#8226; ${(restaurantDish.price * tempQuantity).toFixed(2)}
                 </Text>
             </Pressable>
         </View>
@@ -125,7 +130,7 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         fontSize: 18,
     },
-    image:{
+    image: {
         width: "100%",
         aspectRatio: 5 / 3,
         borderTopRightRadius: 40,

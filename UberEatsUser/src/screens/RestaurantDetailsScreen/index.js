@@ -8,7 +8,6 @@ import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 
-
 const RestaurantDetailsPage = () => {
 
     const navigation = useNavigation()

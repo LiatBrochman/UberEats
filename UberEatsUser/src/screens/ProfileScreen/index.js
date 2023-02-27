@@ -8,7 +8,6 @@ import {useNavigation} from "@react-navigation/native";
 import {getAddressByCoords, getCoordsByAddress, getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
 
 
-
 const Profile = () => {
 
     const navigation = useNavigation()

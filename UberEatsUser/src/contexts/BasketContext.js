@@ -14,7 +14,7 @@ const BasketContextProvider = ({children}) => {
     const [basketDishes, setBasketDishes] = useState([])
     const [totalBasketQuantity, setTotalBasketQuantity] = useState(0)
     const [totalPrice, setTotalPrice] = useState(0)
-    const [quantity, setQuantity] = useState(0)
+    // const [quantity, setQuantity] = useState(0)
     const [basket, setBasket] = useState(null)
     const [dish, setDish] = useState(null)
 
@@ -171,9 +171,10 @@ const BasketContextProvider = ({children}) => {
             Dish.copyOf(await dish, updated => {
                 updated.isDeleted = true
             })
-        ).then(() => {
+        ).then((dish) => {
             setDish(null)
-            setQuantity(0)
+            setTotalBasketQuantity(prevQuantity=>prevQuantity-dish.quantity)
+            // setQuantity(0)
             reSubscribeToAllDishes(basket)
         })
     }
@@ -229,8 +230,8 @@ const BasketContextProvider = ({children}) => {
                 setTotalPrice,
                 totalPrice,
 
-                quantity,
-                setQuantity,
+                // quantity,
+                // setQuantity,
 
                 dish,
                 setDish,
