@@ -7,17 +7,59 @@ import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import {Entypo, Ionicons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useNavigation} from "@react-navigation/native";
+import MapViewDirections from "react-native-maps-directions";
+import {useAuthContext} from "../../contexts/AuthContext";
+import {GOOGLE_API_KEY} from '@env';
 
 
 export var subscription = {}
 
 const OrdersScreen = () => {
     const navigation = useNavigation()
-    const {driverLocation, ORCD, activeORCD} = useOrderContext()
+    const {dbCourier} = useAuthContext()
+    const {driverLocation, ORCD, activeORCD, ref, setWaypointDurations, setDistance} = useOrderContext()
     const bottomSheetRef = useRef({})
     const {width, height} = useWindowDimensions()
     const snapPoints = useMemo(() => ["12%", "95%"], [])
 
+
+    // const getDestination = () => {
+    //     /**
+    //      *THE TRICK HERE is to combine way points!
+    //      ACCEPTED \COOKING \READY_FOR_PICKUP = way point to restaurant , then to customer
+    //      PICKED_UP = no way points , just customer
+    //      */
+    //     switch (ref.current.liveOrder.status) {
+    //         case "ACCEPTED":
+    //         case "COOKING" :
+    //         case "READY_FOR_PICKUP":
+    //         case "PICKED_UP":
+    //             return {
+    //                 latitude: ref.current.liveOrder.customerLocation.location.lat,
+    //                 longitude: ref.current.liveOrder.customerLocation.location.lng
+    //             }
+    //         /**
+    //          NOTE THE WAY POINTS!!!
+    //          */
+    //         default:
+    //             return null
+    //     }
+    // }
+    // const getWaypoints = () => {
+    //     switch (ref.current.liveOrder.status) {
+    //         case "ACCEPTED":
+    //         case "COOKING":
+    //         case "READY_FOR_PICKUP":
+    //             return [{
+    //                 latitude: ref.current.liveOrder.restaurantLocation.location.lat,
+    //                 longitude: ref.current.liveOrder.restaurantLocation.location.lng
+    //             }]
+    //         case "PICKED_UP":
+    //             return []
+    //         default:
+    //             return []
+    //     }
+    // }
 
     return (
 
@@ -50,7 +92,27 @@ const OrdersScreen = () => {
                     },
                 }}
             >
-                {/*<Marker coordinate={{latitude: 32.1975652, longitude: 34.8775085}}/>*/}
+
+                {ref.current.liveOrder && <MapViewDirections
+                    origin={driverLocation}
+                    mode={dbCourier.transportationMode}
+                    destination={{
+                        latitude: ref.current.liveOrder.customerLocation.lat,
+                        longitude: ref.current.liveOrder.customerLocation.lng
+                    }}
+                    strokeWidth={10}
+                    waypoints={[{
+                        latitude: ref.current.liveOrder.restaurantLocation.lat,
+                        longitude: ref.current.liveOrder.restaurantLocation.lng
+                    }]}
+                    strokeColor="#96CEB4"
+                    apikey={GOOGLE_API_KEY}
+                    onReady={(result) => {
+                        ref.current.waypointDurations = result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
+                        ref.current.distance = result.distance
+                    }}
+                />}
+
                 {activeORCD && ORCD?.[0]?.restaurant?.id &&
                 ORCD.map(({restaurant}, index) =>
                     <Marker

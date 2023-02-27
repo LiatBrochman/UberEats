@@ -11,7 +11,6 @@ import {GOOGLE_API_KEY} from '@env';
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useAuthContext} from "../../contexts/AuthContext";
 
-
 function degreesToRadians(degrees) {
     return degrees * Math.PI / 180;
 }
@@ -35,6 +34,7 @@ function arrived(driverLocation, customerLocation, minDistance) {
     return (distanceInKmBetweenEarthCoordinates(driverLocation.latitude, driverLocation.longitude, customerLocation.lat, customerLocation.lng) / 1000) <= minDistance
 }
 
+
 const OrdersDelivery = () => {
     const {
         order,
@@ -44,14 +44,12 @@ const OrdersDelivery = () => {
         driverLocation,
         completeOrder,
         dishes,
-        setWaypointDurations,
         ref
     } = useOrderContext()
 
     const {dbCourier} = useAuthContext()
     const [totalMinutes, setTotalMinutes] = useState(0)
     const [totalKm, setTotalKm] = useState(0)
-    const distanceRef = useRef(null)
     const bottomSheetRef = useRef(null)
     const mapRef = useRef(null)
     const {width, height} = useWindowDimensions()
@@ -73,7 +71,6 @@ const OrdersDelivery = () => {
 
     const onButtonPressed = async () => {
 
-
         switch (order.status) {
 
             case "ACCEPTED":
@@ -92,7 +89,7 @@ const OrdersDelivery = () => {
 
             case "PICKED_UP":
 
-                if (distanceRef.current <= 1
+                if (ref.current.distance <= 1
                     // arrived(driverLocation, customer.location, 100)
                 ) {
                     await completeOrder({order})
@@ -123,26 +120,44 @@ const OrdersDelivery = () => {
 
     const isButtonDisabled = () => {
         /**
-         button is clickable only when status is :
-         ACCEPTED\COOKING\READY_FOR_PICKUP
-         and, when the order isn't assigned (yet) to the courier (or to any other courier)
+         button is clickable only when :
+         -an order is waiting for courier to take it
+         -the courier is at the door of the customer (for completing the order)
          */
         let isClickable = false
-console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current,null,4))
         switch (order.status) {
-
+//ref.current.liveOrder.status
             case "ACCEPTED":
             case "COOKING":
             case "READY_FOR_PICKUP":
-                isClickable = order.courierID === "null"
+
+                /**
+                 * when we see a new order waiting for courier to take it (the courier needs to click 'assign to order')
+                 *
+                 * !only 1 live order is allowed during this scenario
+                 */
+                if (!ref.current.liveOrder && order.courierID === "null") {
+                    isClickable = true
+                } else {
+                    isClickable = false
+                }
+
                 break;
 
             /**
              * to complete an order, the courier must be near the customer's address (100meters)
              */
             case "PICKED_UP":
-                //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(distanceRef.current, null, 4))
-                isClickable = distanceRef.current <= 1
+                /**
+                 * when the order is about to be finished (the courier needs to click 'order completed')
+                 */
+                //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ ref.current.distance ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ref.current.distance, null, 4))
+                if(ref.current.liveOrder && ref.current.distance <= 1){
+                    isClickable = true
+                }else{
+
+                }
+
                 break;
 
 
@@ -199,14 +214,14 @@ console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~
     }
 
 
-    useEffect(()=>{
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order.status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order.status,null,4))
-    },[order.status])
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order.status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order.status, null, 4))
+    }, [order.status])
 
     return (
         <GestureHandlerRootView style={styles.container}>
             <MapView
-                style={{ ...StyleSheet.absoluteFillObject, height: height *0.95, width }}
+                style={{...StyleSheet.absoluteFillObject, height: height * 0.95, width}}
                 ref={mapRef}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={true}
@@ -245,9 +260,8 @@ console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ distanceRef.current ~~~~~~~~~~~~~~~~~~~~
                     onReady={(result) => {
                         setTotalMinutes(result.duration)
                         setTotalKm(result.distance)
-                        distanceRef.current = result.distance
-                        setWaypointDurations(result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, ""))))
-                        ref.current.waypointDurations=result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
+                        ref.current.distance = result.distance
+                        ref.current.waypointDurations = result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
                     }}
                 />
                 <Marker
