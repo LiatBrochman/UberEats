@@ -55,6 +55,41 @@ else {
     }
 
 
+    function getRestaurantArrivalTime() {
+        if(courier) {
+            switch (courier.timeToArrive.length){
+
+                case 0:
+                 return ""
+
+                case 1:
+                   return ""
+
+                case 2:
+                 return courier.timeToArrive[0]
+            }
+        }
+        return ""
+    }
+
+
+    function getCustomerArrivalTime() {
+        if(courier) {
+            switch (courier.timeToArrive.length){
+
+                case 0:
+                    return ""
+
+                case 1:
+                    return courier.timeToArrive[0]
+
+                case 2:
+                    return courier.timeToArrive[1]
+            }
+        }
+        return ""
+    }
+
     return (
         <>
             {customer && order && status &&
@@ -78,12 +113,12 @@ else {
                         </List.Item>
                         <List.Item style={{border: "none"}}>
                             <div>
-                                Restaurant Time:
+                                Restaurant Time: {getRestaurantArrivalTime()}
                             </div>
                         </List.Item>
                         <List.Item style={{border: "none"}}>
                             <div>
-                                Customer Time:
+                                Customer Time:  {getCustomerArrivalTime()}
                             </div>
                         </List.Item>
 
