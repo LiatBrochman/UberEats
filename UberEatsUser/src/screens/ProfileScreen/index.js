@@ -158,15 +158,18 @@ const Profile = () => {
                     style={styles.input}
                 />
             </SafeAreaView>
-            <Pressable onPress={onSave} style={styles.button} title="Save">
-                <Text style={styles.buttonText}>Save</Text>
+            <Pressable onPress={async () => setAddress(await getAddressByCoords( await getCurrentPosition()))} style={styles.buttonGetMyLocation} title="Get My Location">
+                <Text style={styles.buttonText}>Get My Location</Text>
             </Pressable>
+            <Pressable onPress={onSave} style={styles.buttonSave} title="Save">
+            <Text style={styles.buttonText}>Save</Text>
+        </Pressable>
             <Text
                 onPress={signOut}
                 style={{textAlign: "center", color: 'black', margin: 10}}>
                 Sign out
             </Text>
-            <Button onPress={async () => setAddress(await getAddressByCoords( await getCurrentPosition()))} title="Get My Location"/>
+
             <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
             } title="Amplify.DataStore.clear()"/>
 
@@ -194,12 +197,22 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         borderColor: "gray"
     },
-    button: {
+    buttonGetMyLocation: {
+        backgroundColor: "#96CEB4",
+        // marginTop: "auto",
+        padding: 10,
+        alignItems: "center",
+        marginTop: 15,
+        marginRight: 10,
+        marginLeft: 10,
+        borderRadius: 20,
+    },
+    buttonSave: {
         backgroundColor: "#FFAD60",
         // marginTop: "auto",
         padding: 10,
         alignItems: "center",
-        marginTop: 50,
+        marginTop: 15,
         marginRight: 10,
         marginLeft: 10,
         borderRadius: 20,
@@ -207,7 +220,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: "white",
         fontWeight: "600",
-        fontSize: 18,
+        fontSize: 16,
     },
 });
 export default Profile;
