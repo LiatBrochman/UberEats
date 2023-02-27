@@ -20,10 +20,11 @@ const OrderContextProvider = ({children}) => {
     const [driverLocation, setDriverLocation] = useState(null)
     const [ORCD, setORCD] = useState([])
     const [activeORCD, setActiveORCD] = useState([])
+    const [distance,setDistance] = useState(10)
     const [countOrderUpdates, setCountOrderUpdates] = useState(0)
     const [waypointDurations, setWaypointDurations] = useState([])
 
-    const ref = useRef({liveOrder, waypointDurations})
+    const ref = useRef({liveOrder, waypointDurations, distance})
 
 
     useEffect(() => {
@@ -60,6 +61,8 @@ const OrderContextProvider = ({children}) => {
         /**
          * update driver location also in the DB every 100meters
          */
+        dbCourier &&console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~before updating DB of courier: ref.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ref.current,null,4))
+
         dbCourier && DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id)
             , updated => {
                 updated.location = {
@@ -375,6 +378,7 @@ const OrderContextProvider = ({children}) => {
             completeOrder,
 
             setWaypointDurations,
+            setDistance,
             ref
         }}>
             {children}
