@@ -94,18 +94,18 @@ const OrdersScreen = () => {
             >
 
                 {ref.current.liveOrder && <MapViewDirections
-                    origin={driverLocation}
                     mode={dbCourier.transportationMode}
-                    destination={{
-                        latitude: ref.current.liveOrder.customerLocation.lat,
-                        longitude: ref.current.liveOrder.customerLocation.lng
-                    }}
-                    strokeWidth={10}
+                    origin={driverLocation}
                     waypoints={[{
                         latitude: ref.current.liveOrder.restaurantLocation.lat,
                         longitude: ref.current.liveOrder.restaurantLocation.lng
                     }]}
-                    strokeColor="#96CEB4"
+                    destination={{
+                        latitude: ref.current.liveOrder.customerLocation.lat,
+                        longitude: ref.current.liveOrder.customerLocation.lng
+                    }}
+                    strokeWidth={0}
+                    strokeColor="rgba(0,0,0,0)"
                     apikey={GOOGLE_API_KEY}
                     onReady={(result) => {
                         ref.current.waypointDurations = result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))

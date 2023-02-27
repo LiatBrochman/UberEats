@@ -18,24 +18,29 @@ const getCurrentPosition = async () => {
     return (await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.High})).coords
 }
 const getAddressByCoords = async ({latitude = null, longitude = null}) => {
-    try{
+    try {
         if (!latitude || !longitude) {
             !longitude && console.error("wrong longitude")
             !latitude && console.error("wrong latitude")
             return null
         }
-        const [{street, streetNumber, city, country,}] = await Location.reverseGeocodeAsync({latitude, longitude})
+        const result = await Location.reverseGeocodeAsync({latitude, longitude})
+        if (result.length === 0) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ null address ~~~~~~~~~~~~~~~~~~~~~ ")
+            return null
+        }
+
+        const [{street, streetNumber, city, country,}] = result
+
         const address = street + ' ' + streetNumber + ', ' + city + ', ' + country
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", address)
         return address
-    }catch (e) {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ : null ")
-        console.error(e)
-        return "null"
+    } catch (e) {
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ null address ~~~~~~~~~~~~~~~~~~~~~ ",e)
+        return null
     }
 
 }
 
 
-
-export {getCoordsByAddress,getCurrentPosition,getAddressByCoords,}
+export {getCoordsByAddress, getCurrentPosition, getAddressByCoords,}

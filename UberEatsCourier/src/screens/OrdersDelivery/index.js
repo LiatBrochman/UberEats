@@ -250,11 +250,11 @@ const OrdersDelivery = () => {
             >
                 {/*<Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />*/}
                 <MapViewDirections
-                    origin={driverLocation}
                     mode={dbCourier.transportationMode}
+                    origin={driverLocation}
+                    waypoints={getWaypoints()}
                     destination={getDestination()}
                     strokeWidth={10}
-                    waypoints={getWaypoints()}
                     strokeColor="#96CEB4"
                     apikey={GOOGLE_API_KEY}
                     onReady={(result) => {
