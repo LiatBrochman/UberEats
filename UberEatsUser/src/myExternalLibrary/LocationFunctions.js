@@ -18,45 +18,29 @@ const getCurrentPosition = async () => {
     return (await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.High})).coords
 }
 const getAddressByCoords = async ({latitude = null, longitude = null}) => {
-    if (!latitude || !longitude) {
-        !longitude && console.error("wrong longitude")
-        !latitude && console.error("wrong latitude")
+    try {
+        if (!latitude || !longitude) {
+            !longitude && console.error("wrong longitude")
+            !latitude && console.error("wrong latitude")
+            return null
+        }
+        const result = await Location.reverseGeocodeAsync({latitude, longitude})
+        if (result.length === 0) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ null address ~~~~~~~~~~~~~~~~~~~~~ ")
+            return null
+        }
+
+        const [{street, streetNumber, city, country,}] = result
+
+        const address = street + ' ' + streetNumber + ', ' + city + ', ' + country
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", address)
+        return address
+    } catch (e) {
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ null address ~~~~~~~~~~~~~~~~~~~~~ ",e)
         return null
     }
-    const [{street, streetNumber, city, country,}] = await Location.reverseGeocodeAsync({latitude, longitude})
-    const address = street + ' ' + streetNumber + ', ' + city + ', ' + country
-    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", address)
-    return address
-}
-
-const startWatchingLocation = async (setState) => {
-
-    let {status} = await Location.requestForegroundPermissionsAsync()
-    switch (status === "granted") {
-
-        case true:
-            return await Location.watchPositionAsync(
-                {
-                    accuracy: Location.Accuracy.High,
-                    distanceInterval: 100,
-                },
-                ({coords}) => {
-                    setState({
-                        latitude: coords?.latitude,
-                        longitude: coords.longitude,
-                    })
-                })
-
-
-        case false:
-            console.error('Permission to access location was denied, please try again')
-            return await startWatchingLocation()
-
-    }
-
 
 }
 
 
-
-export {getCoordsByAddress,getCurrentPosition,getAddressByCoords,startWatchingLocation}
+export {getCoordsByAddress, getCurrentPosition, getAddressByCoords,}
