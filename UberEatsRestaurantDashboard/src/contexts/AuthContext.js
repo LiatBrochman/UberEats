@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {Auth, DataStore, Hub} from "aws-amplify";
+import {Auth, DataStore, Hub, SortDirection} from "aws-amplify";
 import {Owner} from "../models";
 
 
@@ -78,7 +78,7 @@ const AuthContextProvider = ({children}) => {
         try {
             // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to find owner from sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub, null, 4))
 
-            const owners = await DataStore.query(Owner, o => o.sub.eq(sub))
+            const owners = await DataStore.query(Owner, o => o.sub.eq(sub),{sort: s=>s.createdAt(SortDirection.ASCENDING)})
 
             if (owners.length > 0) {
                 // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ found existing owner!! ~~~~~~~~~~~~~~~~~~~~~ ", JSON.stringify(owners[0], null, 4))
