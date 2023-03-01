@@ -1,4 +1,4 @@
-import {useEffect, useMemo, useRef, useState} from "react";
+import {useMemo, useRef, useState} from "react";
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
 import BottomSheet from "@gorhom/bottom-sheet";
 import {ActivityIndicator, Pressable, StyleSheet, Text, useWindowDimensions, View} from "react-native";
@@ -12,6 +12,9 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import {useAuthContext} from "../../contexts/AuthContext";
 
 const OrdersDelivery = () => {
+
+    const {width, height} = useWindowDimensions()
+    const {dbCourier} = useAuthContext()
     const {
         order,
         customer,
@@ -23,28 +26,24 @@ const OrdersDelivery = () => {
         ref
     } = useOrderContext()
 
-    const {dbCourier} = useAuthContext()
-    const [totalMinutes, setTotalMinutes] = useState(0)
-    const [totalKm, setTotalKm] = useState(0)
+    function initTotalMinutes() {
+        return ref.current?.waypointDurations
+
+            ? ref.current.waypointDurations[0] + ref.current.waypointDurations[1]
+
+            : 0
+    }
+
+    function initTotalKm() {
+        return ref.current?.distance || 999
+    }
+
+    const [totalMinutes, setTotalMinutes] = useState(initTotalMinutes)
+    const [totalKm, setTotalKm] = useState(Number(initTotalKm))
     const bottomSheetRef = useRef(null)
     const mapRef = useRef(null)
-    const {width, height} = useWindowDimensions()
-
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const navigation = useNavigation()
-
-
-    // const changeStatusToCompleted = ({id, newStatus}) => {
-    //     DataStore.query(Order, id)
-    //         .then(order => DataStore.save(
-    //                 Order.copyOf(order, (updated) => {
-    //                     updated.status = newStatus
-    //                 })
-    //             )
-    //         )
-    //     setStatus(newStatus)
-    // }
-
     const onButtonPressed = async () => {
 
         switch (order.status) {
@@ -93,7 +92,6 @@ const OrdersDelivery = () => {
         }
 
     }
-
     const isButtonDisabled = () => {
         /**
          button is clickable only when :
@@ -128,9 +126,9 @@ const OrdersDelivery = () => {
                  * when the order is about to be finished (the courier needs to click 'order completed')
                  */
                 //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ ref.current.distance ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ref.current.distance, null, 4))
-                if(ref.current.liveOrder && ref.current.distance <= 1){
+                if (ref.current.liveOrder && ref.current.distance <= 1) {
                     isClickable = true
-                }else{
+                } else {
 
                 }
 
@@ -150,12 +148,7 @@ const OrdersDelivery = () => {
         return !isClickable
         // return (status === "ACCEPTED" || status === "COOKING" || status === "READY_FOR_PICKUP" || order.courierID!=="null")
     }
-    const restaurantLocation = {latitude: restaurant?.location.lat, longitude: restaurant?.location.lng}
-    const deliveryLocation = {latitude: customer?.location.lat, longitude: customer?.location.lng}
 
-    if (!order || !driverLocation || !restaurant || !customer) {
-        return <ActivityIndicator size={"large"} color="gray"/>
-    }
 
     const getDestination = () => {
         /**
@@ -168,7 +161,10 @@ const OrdersDelivery = () => {
             case "COOKING" :
             case "READY_FOR_PICKUP":
             case "PICKED_UP":
-                return deliveryLocation
+                return {
+                    latitude: ref.current.liveOrder.customerLocation.lat,
+                    longitude: ref.current.liveOrder.customerLocation.lng
+                }
             /**
              NOTE THE WAY POINTS!!!
              */
@@ -181,7 +177,10 @@ const OrdersDelivery = () => {
             case "ACCEPTED":
             case "COOKING":
             case "READY_FOR_PICKUP":
-                return [restaurantLocation]
+                return [{
+                    latitude: ref.current.liveOrder.restaurantLocation.lat,
+                    longitude: ref.current.liveOrder.restaurantLocation.lng
+                }]
             case "PICKED_UP":
                 return []
             default:
@@ -189,10 +188,9 @@ const OrdersDelivery = () => {
         }
     }
 
-
-    useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order.status ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order.status, null, 4))
-    }, [order.status])
+    if (!order || !driverLocation || !restaurant || !customer) {
+        return <ActivityIndicator size={"large"} color="gray"/>
+    }
 
     return (
         <GestureHandlerRootView style={styles.container}>
@@ -224,7 +222,6 @@ const OrdersDelivery = () => {
                     },
                 }}
             >
-                {/*<Marker coordinate={{ latitude: 32.1975652, longitude: 34.8775085 }} />*/}
                 <MapViewDirections
                     mode={dbCourier.transportationMode}
                     origin={driverLocation}
@@ -256,7 +253,10 @@ const OrdersDelivery = () => {
                     </View>
                 </Marker>
                 <Marker
-                    coordinate={deliveryLocation}
+                    coordinate={{
+                        latitude: ref.current.liveOrder.customerLocation.lat,
+                        longitude: ref.current.liveOrder.customerLocation.lng
+                    }}
                     title={customer?.name}
                     description={customer?.location.address}
                 >

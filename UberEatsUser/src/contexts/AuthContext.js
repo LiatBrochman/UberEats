@@ -14,7 +14,7 @@ const AuthContextProvider = ({children}) => {
         Auth.federatedSignIn().then(setAuthUser)
     }, [])
     const googleSignin = useCallback(() => {
-        Auth.federatedSignIn({provider: 'Google', options: { prompt: 'select_account' }}).then(setAuthUser)
+        Auth.federatedSignIn({provider: 'Google', options: {prompt: 'select_account'}}).then(setAuthUser)
     }, [])
 
     useEffect(() => {
@@ -54,6 +54,7 @@ const AuthContextProvider = ({children}) => {
     }, [])
 
     useEffect(() => {
+        if (!sub) return;
         /**
          * set Customer ()
          */
@@ -68,7 +69,7 @@ const AuthContextProvider = ({children}) => {
     }, [sub])
 
     const signOut = () => {
-        Auth.signOut({ global: true })
+        Auth.signOut({global: true})
     }
 
     return (

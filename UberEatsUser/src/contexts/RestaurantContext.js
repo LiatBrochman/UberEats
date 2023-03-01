@@ -7,16 +7,18 @@ import {useAuthContext} from "./AuthContext";
 const RestaurantContext = createContext({})
 const RestaurantContextProvider = ({children}) => {
 
-    const {dbCustomer} = useAuthContext({})
+    const {dbCustomer} = useAuthContext()
 
     const [restaurants, setRestaurants] = useState([])
     const [restaurant, setRestaurant] = useState(null)
     const [restaurantDishes, setRestaurantDishes] = useState([])
 
     useEffect(() => {
-        if (dbCustomer?.id)
-            subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false)).
-            subscribe(({items, isSynced}) => {
+        if (!dbCustomer || subscription.hasOwnProperty("restaurants")) return;
+
+
+        subscription.restaurants = DataStore.observeQuery(Restaurant, r => r.isDeleted.eq(false))
+            .subscribe(({items, isSynced}) => {
                 isSynced && setRestaurants(items)
             })
         // return subscription?.restaurants?.unsubscribe()
@@ -25,16 +27,18 @@ const RestaurantContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (restaurant?.id)
-            subscription.restaurantDishes = DataStore.observeQuery(Dish, dish => dish.and(
-                dish =>
-                    [
-                        dish.restaurantID.eq(restaurant.id),
-                        dish.originalID.eq("null")
-                    ]
-            )).subscribe(({items, isSynced}) => {
-                isSynced && setRestaurantDishes(items)
-            })
+        if (!restaurant || subscription.hasOwnProperty("restaurantDishes")) return;
+
+
+        subscription.restaurantDishes = DataStore.observeQuery(Dish, dish => dish.and(
+            dish =>
+                [
+                    dish.restaurantID.eq(restaurant.id),
+                    dish.originalID.eq("null")
+                ]
+        )).subscribe(({items, isSynced}) => {
+            isSynced && setRestaurantDishes(items)
+        })
         // return subscription?.restaurantDishes?.unsubscribe()
 
     }, [restaurant])

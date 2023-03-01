@@ -9,7 +9,7 @@ const CourierContext = createContext({})
 
 const CourierContextProvider = ({children}) => {
 
-    const {liveOrders, countUpdates} = useOrderContext()
+    const {liveOrders, countUpdates} = useOrderContext({liveOrders:[],countUpdates:0})
 
 
     const [couriers, setCouriers] = useState([])
@@ -32,7 +32,7 @@ const CourierContextProvider = ({children}) => {
                                 setCouriers(prevCouriers => [...prevCouriers.filter(c => c.id !== courier.id), courier])
                                 setETAs(prev => [...prev, {
                                     courierID: courier.id,
-                                    ETA: courier.timeToArrive.reduce((total, current) => total + current,0)
+                                    ETA: courier.timeToArrive.reduce((total, current) => total + current, 0)
                                 }])
                             }
                         }
@@ -63,7 +63,7 @@ const CourierContextProvider = ({children}) => {
     }
 
     useEffect(() => {
-            if (liveOrders?.length === 0) return;
+            if (liveOrders.length === 0) return;
 
             /**
              * init couriers + update couriers
@@ -74,11 +74,6 @@ const CourierContextProvider = ({children}) => {
 
         },
         [countUpdates])
-
-    useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ couriers.length ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers.length, null, 4))
-
-    }, [couriers.length])
 
 
     return (

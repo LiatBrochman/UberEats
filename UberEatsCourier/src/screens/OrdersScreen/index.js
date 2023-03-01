@@ -17,7 +17,7 @@ export var subscription = {}
 const OrdersScreen = () => {
     const navigation = useNavigation()
     const {dbCourier} = useAuthContext()
-    const {driverLocation, ORCD, activeORCD, ref } = useOrderContext()
+    const {driverLocation, ORCD, activeORCD, ref} = useOrderContext()
     const bottomSheetRef = useRef({})
     const {width, height} = useWindowDimensions()
     const snapPoints = useMemo(() => ["12%", "95%"], [])
@@ -108,8 +108,8 @@ const OrdersScreen = () => {
                     strokeColor="rgba(0,0,0,0)"
                     apikey={GOOGLE_API_KEY}
                     onReady={(result) => {
-                        ref.current.waypointDurations = result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
                         ref.current.distance = result.distance
+                        ref.current.waypointDurations = result?.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
                     }}
                 />}
 

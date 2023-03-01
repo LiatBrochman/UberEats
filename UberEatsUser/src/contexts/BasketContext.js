@@ -40,19 +40,21 @@ const BasketContextProvider = ({children}) => {
      set total price
      set total basket quantity
      */
+
     useEffect(() => {
-        if (basket)
-            subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
-                    d.basketID.eq(basket.id),
-                    d.isDeleted.eq(false)
-                ]
-            )).subscribe(({items, isSynced}) => {
-                if (isSynced) {
-                    setBasketDishes(items)
-                    setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-                    setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-                }
-            })
+        if (!basket || subscription.hasOwnProperty("basketDishes")) return;
+
+        subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
+                d.basketID.eq(basket.id),
+                d.isDeleted.eq(false)
+            ]
+        )).subscribe(({items, isSynced}) => {
+            if (isSynced) {
+                setBasketDishes(items)
+                setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
+                setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
+            }
+        })
 
         // return subscription?.basketDishes?.unsubscribe()
     }, [basket])
@@ -63,7 +65,7 @@ const BasketContextProvider = ({children}) => {
     }
 
     function subscribeToAllDishes(basket) {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ basket ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(basket, null, 4))
+
         subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
                 d.basketID.eq(basket.id),
                 d.isDeleted.eq(false)
@@ -173,7 +175,7 @@ const BasketContextProvider = ({children}) => {
             })
         ).then((dish) => {
             setDish(null)
-            setTotalBasketQuantity(prevQuantity=>prevQuantity-dish.quantity)
+            setTotalBasketQuantity(prevQuantity => prevQuantity - dish.quantity)
             // setQuantity(0)
             reSubscribeToAllDishes(basket)
         })
@@ -229,9 +231,6 @@ const BasketContextProvider = ({children}) => {
 
                 setTotalPrice,
                 totalPrice,
-
-                // quantity,
-                // setQuantity,
 
                 dish,
                 setDish,

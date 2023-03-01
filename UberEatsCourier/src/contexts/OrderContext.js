@@ -24,9 +24,14 @@ const OrderContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (!dbCourier) return
+        /**
+         * find out if there is any live order (and subscribe to it)
+         *
+         * exit if there is no courier \ already has a live order
+         */
+        if (!dbCourier || ref.current.liveOrder) return
 
-        DataStore.observeQuery(Order, o => o.and(o => [
+        subscription.liveOrder = DataStore.observeQuery(Order, o => o.and(o => [
             o.isDeleted.eq(false),
             o.courierID.eq(dbCourier.id),
             o.or(o => [
@@ -40,96 +45,75 @@ const OrderContextProvider = ({children}) => {
                 ref.current.liveOrder = foundLiveOrder
             }
         })
+
     }, [dbCourier])
 
     const whenDriverIsMoving = async (coords, newAddress) => {
         if (!dbCourier) return
 
         /**
-         * update driver location in the context every 100meters
+         * every 100meters : update driver location both in the DB and in DriverLocation's state
          */
         setDriverLocation({
             latitude: coords.latitude,
             longitude: coords.longitude,
         })
 
-        /**
-         * update driver location also in the DB every 100meters
-         */
-        dbCourier && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~before updating DB of courier: ref.current ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ref.current, null, 4))
-
-        dbCourier && DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id)
-            , updated => {
-                updated.location = {
-                    address: newAddress || "null",
-                    lat: coords.latitude,
-                    lng: coords.longitude
-                }
-                // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving: liveOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveOrder, null, 4))
-                // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ ref.current.liveOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ref.current.liveOrder, null, 4))
-                // if (liveOrder) {
-                //     switch (liveOrder.status) {
-                //         case "ACCEPTED":
-                //         case "COOKING":
-                //         case "READY_FOR_PICKUP":
-                //         case "PICKED_UP":
-                //             console.log("updating courier's destinations + timeToArrive")
-                //             updated.destinations = [restaurant.location.address, customer.location.address]
-                //             updated.timeToArrive = waypointDurations
-                //             break;
-                //
-                //         case "COMPLETED":
-                //         case "DECLINED":
-                //         case "NEW":
-                //             break;
-                //
-                //         default:
-                //             console.error("default on liveOrder.status", liveOrder.status)
-                //
-                //     }
-                //
-                // } else
-                if (ref.current.liveOrder) {
-
-                    switch (ref.current.liveOrder.status) {
-                        case "ACCEPTED":
-                        case "COOKING":
-                        case "READY_FOR_PICKUP":
-                        case "PICKED_UP":
-                            switch (ref.current.waypointDurations.length) {
-
-                                case 0:
-                                    break;
-
-                                case 1:
-                                    updated.timeToArrive = ref.current.waypointDurations
-                                    updated.destinations = [ref.current.liveOrder.customerLocation.address]
-                                    break;
-
-                                case 2:
-                                    updated.timeToArrive = ref.current.waypointDurations
-                                    updated.destinations = [ref.current.liveOrder.restaurantLocation.address, ref.current.liveOrder.customerLocation.address]
-                                    break;
-                            }
-                            break;
-
-                        case "COMPLETED":
-                        case "DECLINED":
-                        case "NEW":
-                            break;
-
-                        default:
-                            console.error("default on liveOrder.status", ref.current.liveOrder.status)
-
+        if (dbCourier) {
+            DataStore.save(Courier.copyOf(await DataStore.query(Courier, dbCourier.id),
+                updated => {
+                    updated.location = {
+                        address: newAddress || "null",
+                        lat: coords.latitude,
+                        lng: coords.longitude
                     }
-                }
 
-            })).then(setDbCourier)
+                    if (ref.current.liveOrder) {
+
+                        switch (ref.current.liveOrder.status) {
+                            case "ACCEPTED":
+                            case "COOKING":
+                            case "READY_FOR_PICKUP":
+                            case "PICKED_UP":
+
+                                switch (ref.current.waypointDurations.length) {
+
+                                    case 0:
+                                        break;
+
+                                    case 1:
+                                        updated.timeToArrive = ref.current.waypointDurations
+                                        updated.destinations = [ref.current.liveOrder.customerLocation.address]
+                                        break;
+
+                                    case 2:
+                                        updated.timeToArrive = ref.current.waypointDurations
+                                        updated.destinations = [ref.current.liveOrder.restaurantLocation.address, ref.current.liveOrder.customerLocation.address]
+                                        break;
+                                }
+                                break;
+
+                            case "COMPLETED":
+                            case "DECLINED":
+                            case "NEW":
+                                break;
+
+                            default:
+                                console.error("default on liveOrder.status", ref.current.liveOrder.status)
+
+                        }
+                    }
+
+                }))
+                .then(setDbCourier)
+        }
+
     }
 
     const startWatchingDriverLocation = async () => {
 
         let {status} = await Location.requestForegroundPermissionsAsync()
+
 
         switch (status === "granted") {
 
@@ -138,12 +122,17 @@ const OrderContextProvider = ({children}) => {
                 //     latitude: coords.latitude,
                 //     longitude: coords.longitude
                 // }))
+
                 return await Location.watchPositionAsync(
                     {
                         accuracy: Location.Accuracy.High,
-                        distanceInterval: 100,
+                        distanceInterval: 100
                     },
                     async ({coords}) => {
+
+                        /**
+                         * this func will run also on initiation
+                         */
                         await whenDriverIsMoving(coords, await getAddressByCoords(coords))
 
                     })
@@ -154,22 +143,11 @@ const OrderContextProvider = ({children}) => {
         }
     }
 
-    // useEffect(() => {
-    //     // const lastOrder = ORCD?.[0]?.order?.[ORCD?.length - 1]
-    //
-    //     lastOrder?.status !== "COMPLETED" ||  lastOrder?.status !== "DECLINED" ||  lastOrder?.status !== "PICKED_UP" &&
-    //     setActiveOrders(prevOrders => [...prevOrders, lastOrder])
-    //
-    // }, [ORCD])
-
-
-    // useEffect(() => {
-    //     startWatchingDriverLocation().then(sub => subscription.watchPosition = sub)
-    //     // return () => subscription?.watchPosition?.remove()
-    //
-    // }, [])
 
     useEffect(() => {
+        /**
+         * set up all the active orders (available orders + the assigned order if there is any)
+         */
         if (ORCD.length === 0) return
 
         const filteredORCD = ORCD.filter((orcd) => {
@@ -190,10 +168,28 @@ const OrderContextProvider = ({children}) => {
 
     useEffect(() => {
 
+        /**
+         * set up the
+         *
+         * ORCD =
+         * [
+         *      { "order":{}, "restaurant":{}, "customer":{}, "dishes":[] },
+         *      {...},
+         *      {...},
+         *      {...}
+         * ]
+         *
+         *
+         * O: orders = listening to all the active + available orders
+         * R: restaurant = 1 restaurant, related to the order.
+         * C: customer = 1 customer,  related to the order.
+         * D: dishes = array of dishes, related to the order.
+         *
+         *
+         * ---------**only orders are being observed, while the rest are being queried whenever order is being updated.**----------*/
 
-        if (dbCourier && !(subscription?.ORCD)) {
-            // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~FIRST SUBSCRIPTION: subscription.ORCD ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription.ORCD, null, 4))
 
+        if (!dbCourier || subscription.hasOwnProperty("ORCD")) return;
 
             subscription.ORCD = DataStore.observeQuery(Order, o => o.and(o => [
                     o.isDeleted.eq(false),
@@ -204,15 +200,6 @@ const OrderContextProvider = ({children}) => {
                 ]
             )).subscribe(({items, isSynced}) => {
                 if (!isSynced) return
-                /** explanation:
-                 * ORCD =
-                 * [
-                 *      { "order":{}, "restaurant":{}, "customer":{}, "dishes":[] },
-                 *      {...},
-                 *      {...},
-                 *      {...}
-                 * ]
-                 */
 
                 const promises = []
 
@@ -243,7 +230,7 @@ const OrderContextProvider = ({children}) => {
             })
             startWatchingDriverLocation().then(sub => subscription.watchPosition = sub)
 
-        }
+
         // return () => {
         //     subscription?.ORCD?.unsubscribe()
         //     subscription?.watchPosition?.remove()
@@ -252,63 +239,8 @@ const OrderContextProvider = ({children}) => {
     }, [dbCourier])
 
 
-    // useEffect(() => {
-    //     /**
-    //      * update driver location in the DB every 100meters
-    //      */
-    //     if (dbCourier?.id && driverLocation?.latitude && driverLocation?.longitude) {
-    //         const newLocation = {
-    //             address: driverLocation?.address || "null",
-    //             lat: driverLocation.latitude,
-    //             lng: driverLocation.longitude
-    //         }
-    //         DataStore.query(Courier, dbCourier.id).then(dbCourier => {
-    //             DataStore.save(Courier.copyOf(dbCourier, updated => {
-    //                 updated.location = newLocation
-    //             })).then(updatedCourier => {
-    //                 //console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Courier after updated location ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updatedCourier, null, 4))
-    //                 setDbCourier(updatedCourier)
-    //             })
-    //         })
-    //
-    //
-    //     }
-    // }, [driverLocation])
-
-
-    // const startSendingDriverLocation = async () => {
-    //
-    //     let {status} = await Location.requestForegroundPermissionsAsync()
-    //
-    //     switch (status === "granted") {
-    //
-    //         case true:
-    //             return await Location.watchPositionAsync(
-    //                 {
-    //                     accuracy: Location.Accuracy.High,
-    //                     distanceInterval: 100,
-    //                 },
-    //                 ({coords}) => {
-    //                     setDriverLocation({
-    //                         latitude: coords.latitude,
-    //                         longitude: coords.longitude,
-    //                     })
-    //
-    //                     DataStore.save(Courier.copyOf(dbCourier, updated => {
-    //                             updated.location = driverLocation
-    //                         })
-    //                     )
-    //                 })
-    //
-    //         case false:
-    //             console.error('Permission to access location was denied, please try again')
-    //             return await startWatchingDriverLocation()
-    //     }
-    // }
-
-
     const assignToCourier = async ({order}) => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ assign order to courier ~~~~~~~~~~~~~~~~~~~~~ :")
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ assign order to courier ~~~~~~~~~~~~~~~~~~~~~ ETAs :", ref.current.waypointDurations)
 
         DataStore.save(
             Order.copyOf(await DataStore.query(Order, order.id), (updated) => {

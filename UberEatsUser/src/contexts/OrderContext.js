@@ -27,7 +27,7 @@ const OrderContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (!dbCustomer) return;
+        if (!dbCustomer || subscription.hasOwnProperty("liveOrders") ) return;
 
         /**
          * init live orders
