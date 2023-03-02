@@ -70,7 +70,7 @@ const Orders = () => {
                     onClick: () => {
                         // ref.current.order=orderItem
 
-                        setOrder({...orderItem})
+                        // setOrder({...orderItem})
                         navigate(`order/${orderItem.id}`)
 
                     },

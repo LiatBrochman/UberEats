@@ -12,18 +12,24 @@ const DetailedOrder = () => {
 
     const {orderID} = useParams()
     const {restaurant} = useRestaurantContext()
-    const {order, orderDishes, courier, customer} = useOrderContext()
+    const {order, orderDishes, courier, setCourier, customer, setOrder, liveOrders, couriers,completedOrders} = useOrderContext()
     const [status, setStatus] = useState(order?.status)
+
+    useEffect(() => {
+        !order &&
+        setOrder([...liveOrders,...completedOrders].find(o => o.id === orderID))
+    }, [liveOrders,completedOrders])
+
+    useEffect(()=>{
+        !courier &&
+        setCourier(couriers.find(c => c.id === order?.courierID))
+    },[couriers])
 
 
     useEffect(() => {
         order && setStatus(order.status)
     }, [order])
 
-    useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ orderDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(orderDishes, null, 4))
-
-    }, [orderDishes])
 
     const updateStatus = async ({id, newStatus}) => {
 

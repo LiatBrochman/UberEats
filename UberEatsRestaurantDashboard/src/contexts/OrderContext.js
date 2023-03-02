@@ -27,7 +27,7 @@ const OrderContextProvider = ({children}) => {
     const [couriers, setCouriers] = useState([])
 
 
-    const ref=useRef({order})
+    const ref = useRef({order})
 
 
     /**
@@ -52,7 +52,7 @@ const OrderContextProvider = ({children}) => {
                 .subscribe(({items, isSynced}) => {
                     if (isSynced) {
                         setLiveOrders(items)
-                        setLiveCouriersIDs(items.filter(o => o.courierID !== "null"))
+                        setLiveCouriersIDs(items.filter(o => o.courierID !== "null").map(o => o.courierID))
                         setCountLiveUpdates(prev => prev + 1)
                     }
                 })
@@ -96,11 +96,11 @@ const OrderContextProvider = ({children}) => {
     //     }
     //
     // }, [liveOrders.length])
-    useEffect(()=>{
-        if(oneOrMore_ContextCourier_isNotHere(liveCouriersIDs)){
+    useEffect(() => {
+        if (oneOrMore_ContextCourier_isNotHere(liveCouriersIDs)) {
             resSubscribeToLiveCouriers()
         }
-    },[countLiveUpdates])
+    }, [countLiveUpdates])
 
     /**
      * On Press (on order):
@@ -114,24 +114,27 @@ const OrderContextProvider = ({children}) => {
 
         DataStore.query(Customer, order.customerID).then(setCustomer)
         DataStore.query(Dish, d => d.and(d => [d.restaurantID.eq(restaurant.id), d.orderID.eq(order.id)])).then(setOrderDishes)
-        setCourier(couriers.find(c=>c.id===order.courierID))
+        setCourier(couriers.find(c => c.id === order.courierID))
 
     }, [order])
 
-    function resSubscribeToLiveCouriers(){
-        subscription?.couriers?.unsubscribe()
+    function resSubscribeToLiveCouriers() {
+        window.subscription?.couriers?.unsubscribe()
         subscribeToLiveCouriers()
     }
 
-    function subscribeToLiveCouriers(){
-        subscription.couriers = observeCouriers()
+    function subscribeToLiveCouriers() {
+        window.subscription.couriers = observeCouriers()
     }
 
     function observeCouriers() {
+
         return DataStore.observeQuery(Courier, c => c.or(c => [
             ...liveCouriersIDs.map(id => c.id.eq(id))
         ])).subscribe(({items, isSynced}) => {
-            isSynced && setCouriers(items)
+            if (isSynced) {
+                setCouriers(items)
+            }
         })
     }
 
@@ -144,6 +147,9 @@ const OrderContextProvider = ({children}) => {
         return !liveCouriersIDs.every(liveCourierID => localCouriers.has(liveCourierID))
     }
 
+    function getOrder(id) {
+        return liveOrders.find(o => o.id === id)
+    }
 
 
     return (
@@ -156,6 +162,8 @@ const OrderContextProvider = ({children}) => {
             courier,
             setCourier,
 
+            couriers,
+
             customer,
             setCustomer,
 
@@ -165,6 +173,8 @@ const OrderContextProvider = ({children}) => {
             liveOrders,
             completedOrders,
             countLiveUpdates,
+
+            getOrder
         }}>
             {children}
         </OrderContext.Provider>
