@@ -57,10 +57,10 @@ const BasketContextProvider = ({children}) => {
         })
 
         // return subscription?.basketDishes?.unsubscribe()
-    }, [basket])
+    }, [basket,restaurant])
 
     function reSubscribeToAllDishes(basket) {
-        subscription?.basketDishes && subscription.basketDishes.unsubscribe()
+        subscription?.basketDishes?.unsubscribe()
         subscribeToAllDishes(basket)
     }
 
@@ -73,6 +73,8 @@ const BasketContextProvider = ({children}) => {
         )).subscribe(({items, isSynced}) => {
 
             if (isSynced) {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setBasketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
+
                 setBasketDishes(items)
                 setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
                 setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
@@ -124,12 +126,25 @@ const BasketContextProvider = ({children}) => {
          *  ............ only problem is, AWS doesnt support setting\updating subscriptions (observed queries) yet.
          *  therefore, were gonna have to re-subscribe them all again.... (•_•)
          */
+
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dishAlreadyExists ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dishAlreadyExists,null,4))
         switch (!!dishAlreadyExists) {
 
             case true:
                 DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
-                    updated.quantity = dish.quantity
-                    updated.isDeleted = false
+                        updated.name= dish.name
+                        updated.price= dish.price
+                        updated.image= dish.image
+                        updated.description= dish.description
+                        updated.quantity= dish.quantity
+                        updated.restaurantID= dish.restaurantID
+                        updated.isActive= true
+                        updated.isDeleted= false
+                        updated.originalID= dish.id + ''
+                        updated.basketID= theBasket.id
+                        updated.orderID= 'null'
+                    // updated.quantity = dish.quantity
+                    // updated.isDeleted = false
                 }))
                     .then(() => {
                         /**

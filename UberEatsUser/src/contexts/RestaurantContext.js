@@ -27,9 +27,8 @@ const RestaurantContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (!restaurant || subscription.hasOwnProperty("restaurantDishes")) return;
-
-
+        if(!restaurant) return;
+        
         subscription.restaurantDishes = DataStore.observeQuery(Dish, dish => dish.and(
             dish =>
                 [

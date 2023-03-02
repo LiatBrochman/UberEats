@@ -17,7 +17,7 @@ const RestaurantItem = ({restaurant}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ onPress---> restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant,null,4))
 
         setRestaurant(restaurant)
-        setBasket(findExistingBasket(restaurant.id))
+        setBasket(findExistingBasket(restaurant?.id))
         navigation.navigate("Restaurant", {id: restaurant?.id});
     }
     return (
