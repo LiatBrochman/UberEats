@@ -263,7 +263,7 @@ const OrderContextProvider = ({children}) => {
     function clearLiveOrder() {
         ref.current.liveOrder = null
         ref.current.waypointDurations = []
-        ref.current.distance = 10
+        ref.current.distance = 999
     }
 
     const cancelOrder = async ({order}) => {

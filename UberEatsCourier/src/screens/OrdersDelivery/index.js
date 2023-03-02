@@ -162,8 +162,8 @@ const OrdersDelivery = () => {
             case "READY_FOR_PICKUP":
             case "PICKED_UP":
                 return {
-                    latitude: ref.current.liveOrder.customerLocation.lat,
-                    longitude: ref.current.liveOrder.customerLocation.lng
+                    latitude: order.customerLocation.lat ,
+                    longitude: order.customerLocation.lng
                 }
             /**
              NOTE THE WAY POINTS!!!
@@ -178,8 +178,8 @@ const OrdersDelivery = () => {
             case "COOKING":
             case "READY_FOR_PICKUP":
                 return [{
-                    latitude: ref.current.liveOrder.restaurantLocation.lat,
-                    longitude: ref.current.liveOrder.restaurantLocation.lng
+                    latitude: order.restaurantLocation.lat ,
+                    longitude: order.restaurantLocation.lng
                 }]
             case "PICKED_UP":
                 return []
@@ -254,8 +254,8 @@ const OrdersDelivery = () => {
                 </Marker>
                 <Marker
                     coordinate={{
-                        latitude: ref.current.liveOrder.customerLocation.lat,
-                        longitude: ref.current.liveOrder.customerLocation.lng
+                        latitude: order.customerLocation.lat ,
+                        longitude: order.customerLocation.lng
                     }}
                     title={customer?.name}
                     description={customer?.location.address}
