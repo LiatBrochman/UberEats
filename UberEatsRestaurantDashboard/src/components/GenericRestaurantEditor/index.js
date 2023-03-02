@@ -1,12 +1,12 @@
 import React from 'react';
 import {Button, Card, Form, Input, InputNumber, Switch} from "antd";
-import {Auth, DataStore} from "aws-amplify";
+import {DataStore} from "aws-amplify";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigate} from "react-router-dom";
 import Geocode from "react-geocode";
 import {Restaurant} from "../../models";
-import  './index.css';
+import './index.css';
 
 
 function GenericRestaurantEditor({props}) {

@@ -14,33 +14,34 @@ const RestaurantContextProvider = ({children}) => {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        if (dbOwner && !restaurant) {
-            DataStore.observeQuery(Restaurant, r => r.ownerID.eq(dbOwner.id))
-                .subscribe(({items, isSynced}) => {
-                    if(isSynced){
-                        setRestaurant(items[0])
-                        setLoading(false)
-                    }
-                })
-        }
+        if (!dbOwner || restaurant) return;
+
+        DataStore.observeQuery(Restaurant, r => r.ownerID.eq(dbOwner.id))
+            .subscribe(({items, isSynced}) => {
+                if (isSynced) {
+                    setRestaurant(items[0])
+                    setLoading(false)
+                }
+            })
+
     }, [dbOwner])
 
 
     useEffect(() => {
-        if (restaurant && restaurantDishes.length === 0) {
-            DataStore.observeQuery(Dish, dish => dish.and(
-                dish =>
+        if (restaurantDishes.length > 0 ) return;
+
+            DataStore.observeQuery(Dish, d => d.and(d =>
                     [
-                        dish.restaurantID.eq(restaurant.id),
-                        dish.originalID.eq("null"),
-                        dish.isDeleted.eq(false)
+                        d.restaurantID.eq(restaurant?.id),
+                        d.originalID.eq("null"),
+                        d.isDeleted.eq(false)
                     ]
             )).subscribe(({items, isSynced}) => {
                 if (isSynced) {
                     setRestaurantDishes(items)
                 }
             })
-        }
+
     }, [restaurant])
 
 

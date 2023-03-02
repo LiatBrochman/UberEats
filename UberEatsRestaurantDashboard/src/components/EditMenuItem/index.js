@@ -1,4 +1,3 @@
-
 import React from 'react';
 import GenericDishEditor from "../GenericDishEditor";
 import {useLocation} from 'react-router-dom'

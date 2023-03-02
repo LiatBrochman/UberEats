@@ -1,4 +1,4 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useContext, useEffect, useRef, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Courier, Customer, Dish, Order} from "../models";
 import {useRestaurantContext} from "./RestaurantContext";
@@ -7,115 +7,164 @@ import {useRestaurantContext} from "./RestaurantContext";
 const OrderContext = createContext({})
 
 const OrderContextProvider = ({children}) => {
-    const subscription = {}
     const {restaurant} = useRestaurantContext()
+
+    /**
+     * on press (not observed): order, courier, customer, orderDishes
+     */
     const [order, setOrder] = useState(null)
-    const [orders, setOrders] = useState([])
-    const [orderDishes, setOrderDishes] = useState([])
-    const [countOrderUpdates, setCountOrderUpdates] = useState(0)
-    // const [courierID, setCourierID] = useState(null)
     const [courier, setCourier] = useState(null)
     const [customer, setCustomer] = useState(null)
+    const [orderDishes, setOrderDishes] = useState([])
+
+    /**
+     * observed data : liveOrders, completedOrders, orderDishes
+     */
+    const [liveCouriersIDs, setLiveCouriersIDs] = useState([])
+    const [liveOrders, setLiveOrders] = useState([])
+    const [countLiveUpdates, setCountLiveUpdates] = useState(0)
+    const [completedOrders, setCompletedOrders] = useState([])
+    const [couriers, setCouriers] = useState([])
 
 
+    const ref=useRef({order})
+
+
+    /**
+     * init the :  liveOrders, completedOrders
+     */
     useEffect(() => {
+        if (!restaurant) return;
+
         /**
-         * Init "Order Dishes" (dishes that are related to this restaurant)
+         * set LiveOrders ( orders that should be prepared - status: new\accepted\cooking\ready to pick\picked up )
+         * set LiveCouriersIDs ( easier and more efficient to manage the couriers like this )
          */
-        if (restaurant && orderDishes.length === 0) {
-            DataStore.observeQuery(Dish, d => d.and(d => [
-                d.restaurantID.eq(restaurant.id),
-                d.orderID.ne("null")
-            ]))
+        if (liveOrders.length === 0) {
+            DataStore.observeQuery(Order, o => o.and(o =>
+                [
+                    o.restaurantID.eq(restaurant.id),
+                    o.status.ne("COMPLETED"),
+                    o.status.ne("DECLINED")
+
+                ]
+            ))
                 .subscribe(({items, isSynced}) => {
                     if (isSynced) {
-                        setOrderDishes(items)
+                        setLiveOrders(items)
+                        setLiveCouriersIDs(items.filter(o => o.courierID !== "null"))
+                        setCountLiveUpdates(prev => prev + 1)
                     }
                 })
         }
 
         /**
-         * Init "Orders" (orders that are related to the restaurant)
+         * Init Completed Orders
          */
-        if (restaurant && orders?.length === 0) {
-            DataStore.observeQuery(Order, o => o.restaurantID.eq(restaurant.id))
-                .subscribe(({items, isSynced}) => {
-                    if (isSynced) {
-                        setOrders(items)
-                        setCountOrderUpdates(prev => prev + 1)
-                    }
-                })
+        if (completedOrders.length === 0) {
+            DataStore.observeQuery(Order, o => o.and(o =>
+                [
+                    o.restaurantID.eq(restaurant.id),
+                    o.or(o => [
+                        o.status.eq("COMPLETED"),
+                        o.status.eq("DECLINED")
+                    ])
+                ]
+            )).subscribe(({items, isSynced}) => {
+                if (isSynced) {
+                    setCompletedOrders(items)
+                }
+            })
         }
+
+
     }, [restaurant])
+
 
     /**
      * Init Customer & Courier (for the specific Order)
      */
-    useEffect(() => {
-
-        if (order) {
-
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order?.courierID, null, 4))
-
-            DataStore.query(Customer, order.customerID).then(setCustomer)
-
-            if (order?.courierID && order.courierID !== 'null') {
-                subscription.courier = DataStore.observeQuery(Courier, c => c.id.eq(order.courierID))
-                    .subscribe(({items, isSynced}) => {
-                            isSynced && setCourier(items[0])
-                        }
-                    )
-            }
-
-            if (order.courierID === 'null' && courier) {
-                subscription?.courier?.unsubscribe()
-                setCourier(null)
-            }
-
+    // useEffect(() => {
+    //
+    //
+    //     const liveCouriersIDs = liveOrders.filter(({courierID}) => courierID !== "null")
+    //
+    //     if (oneOrMore_ContextCourier_isNotHere(liveCouriersIDs)) {
+    //
+    //         subscription?.couriers?.unsubscribe()
+    //         subscription.couriers = observeCouriers(liveCouriersIDs)
+    //     }
+    //
+    // }, [liveOrders.length])
+    useEffect(()=>{
+        if(oneOrMore_ContextCourier_isNotHere(liveCouriersIDs)){
+            resSubscribeToLiveCouriers()
         }
+    },[countLiveUpdates])
+
+    /**
+     * On Press (on order):
+     *
+     * set the related Customer
+     * set the related Dishes
+     * set the related Courier (from the observed list of couriers)
+     */
+    useEffect(() => {
+        if (!order) return;
+
+        DataStore.query(Customer, order.customerID).then(setCustomer)
+        DataStore.query(Dish, d => d.and(d => [d.restaurantID.eq(restaurant.id), d.orderID.eq(order.id)])).then(setOrderDishes)
+        setCourier(couriers.find(c=>c.id===order.courierID))
+
     }, [order])
 
-    // useEffect(() => {
-    //
-    //     order && DataStore.query(Customer, order?.customerID).then(setCustomer)
-    //
-    //     if (order?.courierID && order.courierID !== "null") {
-    //         setCourierID(order.courierID)
-    //     }
-    //
-    // }, [order])
-    // useEffect(() => {
-    //     if (courierID && courierID !== "null") {
-    //         DataStore.observeQuery(Courier, c => c.id.eq(order.courierID))
-    //             .subscribe(({items, isSynced}) => {
-    //                     isSynced && setCourier(items[0])
-    //                 }
-    //             )
-    //     }
-    // }, [courierID])
-
-    const getOrder = (orderID) => {
-        if (orders.length > 0) {
-            return setOrder(orders.find(o => o.id === orderID))
-        } else {
-            return DataStore.observeQuery(Order, o => o.id.eq(orderID))
-                .subscribe(({items, isSynced}) => isSynced && setOrder(items[0]))
-        }
+    function resSubscribeToLiveCouriers(){
+        subscription?.couriers?.unsubscribe()
+        subscribeToLiveCouriers()
     }
+
+    function subscribeToLiveCouriers(){
+        subscription.couriers = observeCouriers()
+    }
+
+    function observeCouriers() {
+        return DataStore.observeQuery(Courier, c => c.or(c => [
+            ...liveCouriersIDs.map(id => c.id.eq(id))
+        ])).subscribe(({items, isSynced}) => {
+            isSynced && setCouriers(items)
+        })
+    }
+
+    function oneOrMore_ContextCourier_isNotHere(liveCouriersIDs) {
+
+        if (couriers.length !== liveCouriersIDs.length) return true
+
+        const localCouriers = new Set(couriers.map(c => c.id))
+
+        return !liveCouriersIDs.every(liveCourierID => localCouriers.has(liveCourierID))
+    }
+
 
 
     return (
         <OrderContext.Provider value={{
+            ref,
+
             order,
             setOrder,
-            restaurant,
-            orderDishes,
-            orders,
-            countOrderUpdates,
+
             courier,
+            setCourier,
+
             customer,
             setCustomer,
-            getOrder
+
+            orderDishes,
+            setOrderDishes,
+
+            liveOrders,
+            completedOrders,
+            countLiveUpdates,
         }}>
             {children}
         </OrderContext.Provider>
