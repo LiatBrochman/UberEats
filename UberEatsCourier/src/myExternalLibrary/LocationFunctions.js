@@ -41,7 +41,7 @@ const getAddressByCoords = async ({latitude = null, longitude = null}) => {
     }
 
 }
-const startWatchingLocation = async (setState) => {
+const startWatchingLocation = async (setState,callback=null) => {
 
     let {status} = await Location.requestForegroundPermissionsAsync()
     switch (status === "granted") {
@@ -57,6 +57,9 @@ const startWatchingLocation = async (setState) => {
                         latitude: coords?.latitude,
                         longitude: coords.longitude,
                     })
+                    if(callback){
+                        callback(coords)
+                    }
                 })
 
 
@@ -86,7 +89,10 @@ function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
 function arrived(driverLocation, customerLocation, minDistance) {
     return (distanceInKmBetweenEarthCoordinates(driverLocation.latitude, driverLocation.longitude, customerLocation.lat, customerLocation.lng) / 1000) <= minDistance
 }
+function getETA_array(result) {
+    return result.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
+}
 
 
 
-export {getCoordsByAddress, getCurrentPosition, getAddressByCoords,startWatchingLocation,degreesToRadians,distanceInKmBetweenEarthCoordinates,arrived}
+export {getCoordsByAddress, getCurrentPosition, getAddressByCoords,startWatchingLocation,degreesToRadians,distanceInKmBetweenEarthCoordinates,arrived,getETA_array}

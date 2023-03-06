@@ -8,13 +8,15 @@ import {useNavigation} from "@react-navigation/native";
 import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
+import {useCourierContext} from "../../contexts/CourierContext";
 
 
 const Profile = () => {
-    const {authUser, dbCourier, setDbCourier, sub, signOut} = useAuthContext();
+    const {authUser, sub, signOut} = useAuthContext()
+    const {dbCourier, setDbCourier} = useCourierContext()
     const {driverLocation} = useOrderContext()
-    const [name, setName] = useState(dbCourier?.name || authUser?.attributes?.name || "");
-    const [transportationMode, setTransportationMode] = useState(dbCourier?.transportationMode || "DRIVING");
+    const [name, setName] = useState(dbCourier?.name || authUser?.attributes?.name || "")
+    const [transportationMode, setTransportationMode] = useState(dbCourier?.transportationMode || "DRIVING")
     const navigation = useNavigation()
 
     const onSave = async () => {
@@ -48,7 +50,7 @@ const Profile = () => {
                 };
                 await createCourier(draft);
             }
-            navigation.navigate('OrdersScreen');
+            navigation.navigate('MapViewScreen')
         } catch (error) {
             console.error(error);
         }
@@ -157,7 +159,7 @@ const Profile = () => {
                 <Pressable onPress={onSave} style={styles.buttonSave}>
                     <Text style={styles.buttonText}>Save</Text>
                 </Pressable>
-                <Pressable onPress={() => navigation.navigate("OrdersScreen")} style={styles.buttonReturn}>
+                <Pressable onPress={() => navigation.navigate("MapViewScreen")} style={styles.buttonReturn}>
                     <Text style={styles.buttonText}>return without save</Text>
                 </Pressable>
                 <Text
@@ -172,8 +174,8 @@ const Profile = () => {
 
             </SafeAreaView>
         </View>
-    );
-};
+    )
+}
 
 const styles = StyleSheet.create({
     title: {
@@ -211,6 +213,6 @@ const styles = StyleSheet.create({
         margin: 10,
         borderRadius: 20,
     },
-});
+})
 
 export default Profile;

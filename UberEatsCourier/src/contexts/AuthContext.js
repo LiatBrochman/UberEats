@@ -1,12 +1,10 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
-import {Auth, DataStore, Hub} from "aws-amplify";
-import {Courier} from "../models";
+import {Auth, Hub} from "aws-amplify";
 
 const AuthContext = createContext({});
 
 const AuthContextProvider = ({children}) => {
     const [authUser, setAuthUser] = useState(null)
-    const [dbCourier, setDbCourier] = useState(null)
     const [customState, setCustomState] = useState(null)
     const sub = authUser?.attributes?.sub
     const googleSignin = useCallback(() => {
@@ -56,22 +54,9 @@ const AuthContextProvider = ({children}) => {
     }, [])
 
 
-    useEffect(() => {
-        if (sub) {
-            subscription.courier = DataStore.observeQuery(Courier, c => c.sub.eq(sub))
-                .subscribe(({items, isSynced}) => {
-                    if (items?.length) {
-                        isSynced && setDbCourier(items[0])
-                    } else {
-                        console.log("no courier was found")
-                    }
-                })
-        }
-    }, [sub])
-
 
     return (
-        <AuthContext.Provider value={{authUser, dbCourier, sub, setDbCourier, googleSignin, cognitoSignIn, signOut}}>
+        <AuthContext.Provider value={{authUser, sub, googleSignin, cognitoSignIn, signOut}}>
             {children}
         </AuthContext.Provider>
     )
