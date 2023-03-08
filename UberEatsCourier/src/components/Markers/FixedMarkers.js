@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {useOrderContext} from "../../contexts/OrderContext";
 import RestaurantMarker from "./RestaurantMarker";
@@ -7,32 +7,40 @@ import {DataStore} from "aws-amplify";
 import {Restaurant} from "../../models";
 
 export const FixedMarkers = () => {
-    const {liveOrder, pressedOrder, ordersToCollect, restaurant, customer} = useOrderContext({
+    const {liveOrder, pressedOrder, ordersToCollect, pressedState} = useOrderContext({
         liveOrder: null,
         pressedOrder: null,
         ordersToCollect: []
     })
+    const [rest_toCollect,setRest_toCollect]=useState([])
+
+    useEffect(()=>{
+        if(ordersToCollect.length===0) return
+
+        DataStore.query(Restaurant, r => r.or(r =>
+            ordersToCollect.map(o => r.id.eq(o.restaurantID))
+        )).then(setRest_toCollect)
+
+    },[ordersToCollect.length])
 
     if (liveOrder || pressedOrder) {
 
-        return (<View>
-            <RestaurantMarker order={liveOrder || pressedOrder}  restaurant={restaurant}/>
-            <CustomerMarker order={liveOrder || pressedOrder} customer={customer}/>
-        </View>)
+        return (<>
+            <RestaurantMarker order={liveOrder || pressedOrder} restaurant={pressedState.restaurant}/>
+            <CustomerMarker order={liveOrder || pressedOrder} customer={pressedState.customer}/>
+        </>)
 
     } else {
         return (
             <View>
-                {Promise.all(
-                    ordersToCollect.map(async (order, index) => (
-                        <RestaurantMarker
-                            key={index}
-                            order={order}
-                            restaurant={await DataStore.query(Restaurant, order.restaurantID)}
+                {ordersToCollect.map( (order, index) => (
+                    <RestaurantMarker
+                        key={index}
+                        order={order}
+                        restaurant={rest_toCollect[index]}
+                    />
+                ))}
 
-                        />
-                    ))
-                )}
             </View>
         )
     }

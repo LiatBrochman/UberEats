@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import {StyleSheet, useWindowDimensions} from "react-native";
-import MapWithDirections from "../../components/MapWithDirections";
+import {MyDirections} from "../../components/MapWithDirections";
 import {Ionicons} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
 import {useOrderContext} from "../../contexts/OrderContext";
@@ -34,13 +34,20 @@ import {FixedMarkers} from "../../components/Markers/FixedMarkers";
 function MapViewScreen() {
     const {width, height} = useWindowDimensions()
     const navigation = useNavigation()
-    const {liveOrder, pressedOrder, setPressedOrder} = useOrderContext()
+    const {liveOrder, pressedOrder, clearPressedOrder, ordersToCollect} = useOrderContext({ordersToCollect: []})
     const {mapRef, origin} = useDirectionContext()
 
     useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveOrder, null, 4))
-
+        liveOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder was found! ~~~~~~~~~~~~~~~~~~~~~ ")
     }, [liveOrder])
+
+    useEffect(() => {
+        pressedOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ pressed Order was found! ~~~~~~~~~~~~~~~~~~~~~ ")
+    }, [pressedOrder])
+
+    useEffect(() => {
+        ordersToCollect.length > 0 && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ Collectable Orders were found! ~~~~~~~~~~~~~~~~~~~~~ ")
+    }, [ordersToCollect.length])
 
     return (
 
@@ -74,13 +81,13 @@ function MapViewScreen() {
                     },
                 }}
             >
-                <MapWithDirections/>
+                <MyDirections/>
                 <FixedMarkers/>
 
             </MapView>
             <Ionicons
                 onPress={() => {
-                    setPressedOrder(null)
+                    !liveOrder && clearPressedOrder()
                     navigation.navigate('Profile')
                 }}
                 name="arrow-back-circle"
@@ -89,7 +96,9 @@ function MapViewScreen() {
                 style={{top: 40, left: 15, position: 'absolute'}}
             />
 
-            {(!liveOrder && !pressedOrder) ? <BottomSheetOrdersList/> : <BottomSheetMapDirection/>}
+
+            {(liveOrder || pressedOrder) ? <BottomSheetMapDirection/> : ordersToCollect.length > 0 &&
+                <BottomSheetOrdersList/>}
 
         </GestureHandlerRootView>
 

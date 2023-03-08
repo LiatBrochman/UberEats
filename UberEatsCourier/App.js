@@ -38,6 +38,9 @@ const host = 'exp://' + Constants.manifest.debuggerHost;
 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ host ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(host, null, 4));
 const updatedConfig = {
     ...awsconfig,
+    Analytics: {
+        disabled: true,
+    },
     oauth: {
         ...awsconfig.oauth,
         redirectSignIn: host,

@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import BottomSheet from "@gorhom/bottom-sheet";
 import {Text, View} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
@@ -8,7 +8,12 @@ import {useOrderContext} from "../../contexts/OrderContext";
 const MapBottomSheet = () => {
     const snapPoints = useMemo(() => ["12%", "95%"], [])
     const {ETAs} = useCourierContext()
-    const {liveOrders, getStageByStatus} = useOrderContext()
+    const {liveOrders, getStageByStatus,countUpdates} = useOrderContext()
+
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ ETAs ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(ETAs,null,4))
+    }, [ETAs,countUpdates]);
+
 
 
     return (

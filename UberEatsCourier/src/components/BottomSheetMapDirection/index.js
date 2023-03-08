@@ -1,34 +1,33 @@
-import React, {useMemo, useRef} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Pressable, Text, View} from 'react-native';
 import styles from "./styles";
 import {FontAwesome5, Fontisto, Ionicons} from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useDirectionContext} from "../../contexts/DirectionContext";
-import {useNavigation} from "@react-navigation/native";
 import {useCourierContext} from "../../contexts/CourierContext";
-import {DataStore} from "aws-amplify";
-import {Customer, Dish, Restaurant} from "../../models";
 
 export const BottomSheetMapDirection = () => {
 
-    const navigation = useNavigation()
-    const {assignToCourier} = useCourierContext()
-    const { liveOrder, completeOrder, setLiveOrder} = useOrderContext()
+    const {assignToCourier, completeOrder} = useCourierContext()
+    const {liveOrder, pressedOrder, clearPressedOrder, pressedState}
+        = useOrderContext({pressedState: {order: null, restaurant: null, customer: null, dishes: []}})
     const {ETA_toRestaurant, ETA_toCustomer, distance, mapRef, origin} = useDirectionContext()
-
+    const [currentOrder, setCurrentOrder] = useState(liveOrder ?? pressedOrder)
     const bottomSheetRef = useRef(null)
     const snapPoints = useMemo(() => ["12%", "95%"], [])
 
-    if(!liveOrder) return
+    useEffect(() => {
+        liveOrder && setCurrentOrder(liveOrder)
+    }, [liveOrder])
 
-    const restaurant = liveOrder?.restaurant || DataStore.query(Restaurant, liveOrder?.restaurantID).then()
-    const customer = liveOrder?.customer || DataStore.query(Customer, liveOrder?.customerID).then()
-    const dishes = liveOrder?.dishes || DataStore.query(Dish, d => d.and(d => [d.orderID.eq(liveOrder?.id)])).then()
+    // const restaurant = DataStore.query(Restaurant, currentOrder.restaurantID).then()
+    // const customer =  DataStore.query(Customer, currentOrder.customerID).then()
+    // const dishes = DataStore.query(Dish, d => d.and(d => [d.orderID.eq(currentOrder.id)])).then()
 
     const onButtonPressed = () => {
 
-        switch (liveOrder.status) {
+        switch (currentOrder.status) {
 
             case "ACCEPTED":
             case "COOKING":
@@ -40,28 +39,27 @@ export const BottomSheetMapDirection = () => {
                     latitudeDelta: 0.01,
                     longitudeDelta: 0.01
                 })
-                assignToCourier({order: liveOrder, ETA: [ETA_toRestaurant, ETA_toCustomer]})
+                assignToCourier({order: currentOrder, ETA: [ETA_toRestaurant, ETA_toCustomer]})
                 break;
 
 
             case "PICKED_UP":
 
-                if (distance <= 1
+                if (liveOrder && distance <= 1
                 ) {
                     completeOrder({order: liveOrder})
                     bottomSheetRef.current?.collapse()
-                    navigation.goBack()
                 }
                 break;
 
 
             default:
-                console.warn(" wrong order status", liveOrder.status)
+                console.warn(" wrong order status", currentOrder.status)
         }
 
     }
     const renderButtonTitle = () => {
-        switch (liveOrder.status) {
+        switch (currentOrder.status) {
 
             case "READY_FOR_PICKUP":
             case "COOKING":
@@ -80,7 +78,7 @@ export const BottomSheetMapDirection = () => {
          -the courier is at the door of the customer (for completing the order)
          */
         let isClickable = false
-        switch (liveOrder?.status) {
+        switch (currentOrder.status) {
             case "ACCEPTED":
             case "COOKING":
             case "READY_FOR_PICKUP":
@@ -90,14 +88,11 @@ export const BottomSheetMapDirection = () => {
                  *
                  * !only 1 live order is allowed during this scenario
                  */
-                if (!liveOrder && liveOrder.courierID === "null") {
+                if (!liveOrder && currentOrder.courierID === "null") {
                     isClickable = true
                 } else {
-
-                    liveOrder.courierID === "null"
-                        ? console.log("\n\n cannot be pressed because : order.courierID === 'null'")
-                        : console.log("\n\n cannot be pressed because : liveOrder doesnt exists")
-
+                    //  currentOrder.courierID !== "null" && console.log("\n\n cannot be pressed because : order.courierID !== 'null' which means , it was taken by some1 else")
+                    // liveOrder && console.log("\n\n cannot be pressed because : liveOrder already exists, you cannot have more than 1 live order at once")
 
                     isClickable = false
                 }
@@ -128,58 +123,62 @@ export const BottomSheetMapDirection = () => {
                 break;
 
             default:
-                console.error("wrong status", liveOrder.status)
+                console.error("wrong status", currentOrder.status)
+
         }
 
         return !isClickable
         // return (status === "ACCEPTED" || status === "COOKING" || status === "READY_FOR_PICKUP" || order.courierID!=="null")
     }
 
+    if (pressedState.dishes.length)
+        return (
+            <BottomSheet isVisible={true} ref={bottomSheetRef} snapPoints={snapPoints}
+                         handleIndicatorStyle={styles.handleIndicator}>
+                <View>
+                    <Ionicons
+                        onPress={() => {
+                            !liveOrder && clearPressedOrder()
+                        }}
+                        name="arrow-back-circle"
+                        size={45}
+                        color="black"
+                        style={{top: 40, left: 15, position: 'absolute'}}
+                    />
+                    <View style={styles.handleIndicatorContainer}>
+                        <Text
+                            style={styles.routeDetailsText}>{(ETA_toCustomer + ETA_toRestaurant).toFixed(0)} min</Text>
+                        <FontAwesome5 name="shopping-bag" size={28} color="#96CEB4" style={{marginHorizontal: 10}}/>
+                        <Text style={styles.routeDetailsText}>{distance?.toFixed(2)} km</Text>
+                    </View>
+                    <View style={styles.deliveryDetailsContainer}>
+                        <Text style={styles.restaurantName}>{pressedState.restaurant.name}</Text>
+                        <View style={styles.addressContainer}>
+                            <Fontisto name="shopping-store" size={18} color="#D9534F"/>
+                            <Text style={styles.addressText}>{currentOrder.restaurantLocation.address}</Text>
+                        </View>
+                        <View style={styles.addressContainer}>
+                            <FontAwesome5 name="map-marker-alt" size={26} color="#D9534F"/>
+                            <Text style={styles.addressText}>{currentOrder.customerLocation.address}</Text>
+                        </View>
 
-    return (
-        <BottomSheet isVisible={true} ref={bottomSheetRef} snapPoints={snapPoints}
-                     handleIndicatorStyle={styles.handleIndicator}>
-
-            <View style={styles.handleIndicatorContainer}>
-
-                <Ionicons
-                    onPress={() => {
-                        setLiveOrder(null)
-                    }}
-                    name="arrow-back-circle"
-                    size={45}
-                    color="black"
-                    style={{top: 40, left: 15, position: 'absolute'}}
-                />
-
-                <Text style={styles.routeDetailsText}>{(ETA_toCustomer + ETA_toRestaurant).toFixed(0)} min</Text>
-                <FontAwesome5 name="shopping-bag" size={28} color="#96CEB4" style={{marginHorizontal: 10}}/>
-                <Text style={styles.routeDetailsText}>{distance?.toFixed(2)} km</Text>
-            </View>
-            <View style={styles.deliveryDetailsContainer}>
-                <Text style={styles.restaurantName}>{restaurant?.name}</Text>
-                <View style={styles.addressContainer}>
-                    <Fontisto name="shopping-store" size={18} color="#D9534F"/>
-                    <Text style={styles.addressText}>{restaurant?.location?.address}</Text>
+                        <View style={styles.orderDetailsContainer}>
+                            {pressedState.dishes.map(dish =>
+                                <Text style={styles.orderItemText}
+                                      key={dish.id}>{dish.name} x{dish.quantity}</Text>
+                            )}
+                        </View>
+                    </View>
+                    <Pressable
+                        style={{
+                            ...styles.buttonContainer,
+                            backgroundColor: isButtonDisabled() ? 'lightgrey' : '#FFAD60'
+                        }}
+                        onPress={onButtonPressed} disabled={isButtonDisabled()}>
+                        <Text style={styles.buttonText}>{renderButtonTitle()}</Text>
+                    </Pressable>
                 </View>
-                <View style={styles.addressContainer}>
-                    <FontAwesome5 name="map-marker-alt" size={26} color="#D9534F"/>
-                    <Text style={styles.addressText}>{customer?.location?.address}</Text>
-                </View>
-
-                <View style={styles.orderDetailsContainer}>
-                    {dishes?.length && dishes.map(dish =>
-                        <Text style={styles.orderItemText}
-                              key={dish.id}>{dish?.name} x{dish?.quantity}</Text>
-                    )}
-                </View>
-            </View>
-            <Pressable
-                style={{...styles.buttonContainer, backgroundColor: isButtonDisabled() ? 'lightgrey' : '#FFAD60'}}
-                onPress={onButtonPressed} disabled={isButtonDisabled()}>
-                <Text style={styles.buttonText}>{renderButtonTitle()}</Text>
-            </Pressable>
-        </BottomSheet>
-    )
+            </BottomSheet>
+        )
 };
 

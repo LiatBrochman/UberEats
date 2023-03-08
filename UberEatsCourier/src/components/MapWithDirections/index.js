@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import {useDirectionContext} from '../../contexts/DirectionContext';
@@ -41,29 +41,69 @@ const Directions = ({origin, destination, waypoints, apiKey}) => {
     )
 }
 
-const MapWithDirections = () => {
-    const {origin, waypoints, destination, tempOrigin, tempWaypoints, tempDestination, apiKey} = useDirectionContext()
+export const MyDirections =()=>{
+    const {origin, waypoints, destination,apiKey} = useDirectionContext()
     const {liveOrder, pressedOrder} = useOrderContext()
-
-
-    // if (!liveOrder || !pressedOrder) {
-    //     return (<></>)
-    // }
-
-    return (
-        <View>
-            {(liveOrder || pressedOrder) &&
+    return (<View>
+            {(liveOrder || pressedOrder) && origin &&
 
             <Directions
-                origin={origin || tempOrigin}
-                destination={destination || tempDestination}
-                waypoints={waypoints || tempWaypoints}
+                origin={origin}
+                destination={destination}
+                waypoints={waypoints}
                 apiKey={apiKey}/>
 
             }
         </View>
     )
-}
 
-export default MapWithDirections
+}
+// const MapWithDirections = () => {
+//     const {origin, waypoints, destination, tempWaypoints, tempDestination, apiKey} = useDirectionContext()
+//     const {liveOrder, pressedOrder} = useOrderContext()
+//
+//     const [currentDirection, setCurrentDirection] = useState({
+//         origin: null,
+//         waypoints: null,
+//         destination: null,
+//         tempOrigin: null,
+//         tempWaypoints: null,
+//         tempDestination: null
+//     })
+//     useEffect(() => {
+//         origin && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin, null, 4))
+//         tempWaypoints?.length && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ tempWaypoints ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(tempWaypoints, null, 4))
+//         tempDestination && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ tempDestination ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(tempDestination, null, 4))
+//
+//         if(liveOrder){
+//             setCurrentDirection(prev => Object.assign(prev, {
+//                 origin,
+//                 waypoints,
+//                 destination
+//             }))
+//         }
+//         if(pressedOrder)
+//         setCurrentDirection(prev => Object.assign(prev, {
+//             origin,
+//             tempWaypoints,
+//             tempDestination
+//         }))
+//
+//     }, [tempWaypoints, tempDestination])
+//
+//     return (<View>
+//             {(liveOrder || pressedOrder) && origin &&
+//
+//             <Directions
+//                 origin={origin}
+//                 destination={currentDirection.destination || currentDirection.tempDestination || origin}
+//                 waypoints={currentDirection.waypoints || currentDirection.tempWaypoints || []}
+//                 apiKey={apiKey}/>
+//
+//             }
+//         </View>
+//     )
+// }
+//
+// export default MapWithDirections
 

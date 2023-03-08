@@ -3,12 +3,11 @@ import {Marker} from "react-native-maps";
 import {Entypo} from "@expo/vector-icons";
 import {View} from "react-native";
 
-function RestaurantMarker({order, restaurant, key = null}) {
-console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant,null,4))
+function RestaurantMarker({order, restaurant}) {
 
     return (
         <Marker
-            key={key || restaurant?.id}
+            // key={key || restaurant?.id}
             title={restaurant?.name}
             description={order?.restaurantLocation?.address}
             coordinate={{

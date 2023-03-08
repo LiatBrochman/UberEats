@@ -1,6 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
-import {Courier} from "../models";
+import {Courier, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {updateCourier, updateOrder} from "../myExternalLibrary/genericUpdate";
 import {compareArrays} from "../myExternalLibrary/genericFunctions";
@@ -54,12 +54,43 @@ const CourierContextProvider = ({children}) => {
 
     }
 
+    const completeOrder = async (order)=>{
+        await updateCourier(dbCourier.id,{destinations:[],timeToArrive:[]})
+        await updateOrder(order.id,{status:"COMPLETED"})
+    }
+
+    const fixCourierOnInit = async ()=>{
+        if(!dbCourier) return
+
+        if(dbCourier.timeToArrive.length >0 || dbCourier.destinations.length >0){
+
+            if (await existingLiveOrder()) {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ existingLiveOrder was found ~~~~~~~~~~~~~~~~~~~~~ :")
+            }else{
+                await updateCourier(dbCourier.id,{destinations:[],timeToArrive:[]})
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ fixCourierOnInit ~~~~~~~~~~~~~~~~~~~~~ :")
+            }
+
+        }
+
+    }
+
+    const existingLiveOrder = async ()=>{
+       return !!(await DataStore.query(Order, o => o.and(o => [
+           o.courierID.eq(dbCourier.id),
+           o.status.ne("COMPLETED"),
+           o.status.ne("DECLINED")
+       ])))?.[0]
+    }
+
     return (
         <CourierContext.Provider value={{
             dbCourier,
             setDbCourier,
             updateCourierOnETAs,
             assignToCourier,
+            completeOrder,
+            fixCourierOnInit
         }}>
             {children}
         </CourierContext.Provider>

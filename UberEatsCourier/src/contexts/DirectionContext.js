@@ -22,9 +22,8 @@ const DirectionContextProvider = ({children}) => {
     const [origin, setOrigin] = useState(null)
     const [destination, setDestination] = useState(null)
     const [waypoints, setWaypoints] = useState([])
-    const [tempOrigin, setTempOrigin] = useState(null)
-    const [tempDestination, setTempDestination] = useState(null)
-    const [tempWaypoints, setTempWaypoints] = useState([])
+    // const [tempDestination, setTempDestination] = useState(null)
+    // const [tempWaypoints, setTempWaypoints] = useState([])
     const location = useRef()
 
     const setDirection = ({origin, waypoints, destination}) => {
@@ -33,17 +32,28 @@ const DirectionContextProvider = ({children}) => {
         setWaypoints(waypoints)
     }
 
-    const setTempDirection = ({origin, waypoints, destination}) => {
-        setTempOrigin(origin)
-        setTempDestination(destination)
-        setTempWaypoints(waypoints)
-    }
+    // const setTempDirection = ({origin, waypoints, destination}) => {
+    //     setTempDestination(destination)
+    //     setTempWaypoints(waypoints)
+    // }
 
     const whenDriverIsMoving = async (coords) => {
         if (!dbCourier) return
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving ~~~~~~~~~~~~~~~~~~~~~ :")
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving / on init ~~~~~~~~~~~~~~~~~~~~~ :", coords)
         setOrigin({latitude: coords.latitude, longitude: coords.longitude})
-        await updateCourier(dbCourier.id, {location: {lat: coords.latitude, lng: coords.longitude}})
+
+        // const areCoordsEqual = expect([coords.latitude, coords.longitude]).toEqual([dbCourier.lat, dbCourier.lng]);
+        const areCoordsEqual = (dbCourier.lat === coords.lat && dbCourier.lng === coords.lng)
+
+        if (areCoordsEqual) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ No need to update ~~~~~~~~~~~~~~~~~~~~~")
+        } else {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCourier.lat === coords.lat ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCourier.lat === coords.lat, null, 4))
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCourier.lng === coords.lng ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCourier.lng === coords.lng, null, 4))
+
+            await updateCourier(dbCourier.id, {location: {lat: coords.latitude, lng: coords.longitude}})
+        }
+
     }
 
     const startWatchingDriverLocation = async () => {
@@ -59,7 +69,7 @@ const DirectionContextProvider = ({children}) => {
                         distanceInterval: 100
                     },
                     async ({coords}) => {
-                        location.current={latitude: coords.latitude, longitude: coords.longitude}
+                        location.current = {latitude: coords.latitude, longitude: coords.longitude}
                         await whenDriverIsMoving(coords)
                     })
 
@@ -90,7 +100,7 @@ const DirectionContextProvider = ({children}) => {
             default:
                 return
         }
-        await updateCourierOnETAs(Prev_ETA_arr, ETA_arr)
+        liveOrder && await updateCourierOnETAs(Prev_ETA_arr, ETA_arr)
 
     }
 
@@ -99,36 +109,50 @@ const DirectionContextProvider = ({children}) => {
         /**
          * set Direction/TempDirection according to the current status (if there is a live order => the direction must be to its related destination)
          */
+        if (!liveOrder && !pressedOrder) return
 
-        if (liveOrder) {
-            setDirection({
-                origin: location.current,
-                waypoints: liveOrder.status === "PICKED_UP" ? [] : [{
-                    latitude: liveOrder.restaurantLocation.lat,
-                    longitude: liveOrder.restaurantLocation.lng
-                }],
-                destination: {
-                    latitude: liveOrder.customerLocation.lat,
-                    longitude: liveOrder.customerLocation.lng
-                }
-            })
-            setTempDirection({origin: null, waypoints: [], destination: null})
-        }
+        const order = liveOrder ?? pressedOrder
 
-        if (pressedOrder && !liveOrder) {
-            setTempDirection({
-                origin: origin,
-                waypoints: [{
-                    latitude: pressedOrder.restaurantLocation.lat,
-                    longitude: pressedOrder.restaurantLocation.lng
-                }],
-                destination: {
-                    latitude: pressedOrder.customerLocation.lat,
-                    longitude: pressedOrder.customerLocation.lng
-                }
-            })
-        }
+        setDirection({
+            origin: location.current,
+            waypoints: order.status === "PICKED_UP" ? [] : [{
+                latitude: order.restaurantLocation.lat,
+                longitude: order.restaurantLocation.lng
+            }],
+            destination: {
+                latitude: order.customerLocation.lat,
+                longitude: order.customerLocation.lng
+            }
+        })
 
+        // if (liveOrder) {
+        //     setDirection({
+        //         origin: location.current,
+        //         waypoints: liveOrder.status === "PICKED_UP" ? [] : [{
+        //             latitude: liveOrder.restaurantLocation.lat,
+        //             longitude: liveOrder.restaurantLocation.lng
+        //         }],
+        //         destination: {
+        //             latitude: liveOrder.customerLocation.lat,
+        //             longitude: liveOrder.customerLocation.lng
+        //         }
+        //     })
+        //     setTempDirection({origin: null, waypoints: null, destination: null})
+        // }
+        //
+        // if (pressedOrder && !liveOrder) {
+        //     setTempDirection({
+        //         origin: origin,
+        //         waypoints: [{
+        //             latitude: pressedOrder.restaurantLocation.lat,
+        //             longitude: pressedOrder.restaurantLocation.lng
+        //         }],
+        //         destination: {
+        //             latitude: pressedOrder.customerLocation.lat,
+        //             longitude: pressedOrder.customerLocation.lng
+        //         }
+        //     })
+        // }
 
     }, [liveOrder, pressedOrder])
 
@@ -143,13 +167,13 @@ const DirectionContextProvider = ({children}) => {
         <DirectionContext.Provider value={{
             startWatchingDriverLocation,
             setDirection,
-            setTempDirection,
+            // setTempDirection,
             onReady,
             ETA_toCustomer, setETA_toCustomer,
             ETA_toRestaurant, setETA_toRestaurant,
             distance, setDistance,
             origin, destination, waypoints,
-            tempOrigin, tempDestination, tempWaypoints,
+            // tempDestination, tempWaypoints,
             apiKey,
             mapRef
 

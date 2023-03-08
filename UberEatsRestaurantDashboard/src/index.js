@@ -15,7 +15,7 @@ window.subscription = {test:"ok"};
 awsconfig.oauth.redirectSignIn = window.location.origin
 awsconfig.oauth.redirectSignOut = window.location.origin
 
-Amplify.configure(awsconfig);
+Amplify.configure({...awsconfig, Analytics: {disabled: true}});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

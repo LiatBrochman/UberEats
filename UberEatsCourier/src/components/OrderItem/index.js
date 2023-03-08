@@ -1,21 +1,31 @@
 import {Image, Pressable, Text, View} from "react-native";
 import {Entypo} from "@expo/vector-icons";
-import {useNavigation} from '@react-navigation/native'
 import {useOrderContext} from "../../contexts/OrderContext";
 import {DataStore} from "aws-amplify";
 import {Customer, Restaurant} from "../../models";
+import {useEffect, useState} from "react";
 
 
 const OrderItem = ({order}) => {
     const {
-        setPressedOrder
+        pressOn_Order
     } = useOrderContext()
-    const navigation = useNavigation()
+    const [restaurant, setRestaurant] = useState(null)
+    const [customer, setCustomer] = useState(null)
 
-    if(!order) return
+    if (!order) return
 
-    const restaurant = order?.restaurant || DataStore.query(Restaurant,order?.restaurantID).then()
-    const customer = order?.customer || DataStore.query(Customer,order?.customerID).then()
+    useEffect(() => {
+        if (!order) return
+
+        DataStore.query(Restaurant, order.restaurantID)
+            .then(setRestaurant)
+
+        DataStore.query(Customer, order.customerID)
+            .then(setCustomer)
+
+    }, [order])
+
 
     return (
 
@@ -27,8 +37,8 @@ const OrderItem = ({order}) => {
             borderRadius: 12,
         }}
                    onPress={() => {
-                       setPressedOrder(order)
-                       navigation.navigate('OrdersDeliveryScreen')
+                       pressOn_Order(order)
+                       // navigation.navigate('OrdersDeliveryScreen')
                    }}
         >
             <Image
