@@ -24,7 +24,6 @@ const DirectionContextProvider = ({children}) => {
     const [waypoints, setWaypoints] = useState([])
     // const [tempDestination, setTempDestination] = useState(null)
     // const [tempWaypoints, setTempWaypoints] = useState([])
-    const location = useRef()
 
     const setDirection = ({origin, waypoints, destination}) => {
         setOrigin(origin)
@@ -69,7 +68,6 @@ const DirectionContextProvider = ({children}) => {
                         distanceInterval: 100
                     },
                     async ({coords}) => {
-                        location.current = {latitude: coords.latitude, longitude: coords.longitude}
                         await whenDriverIsMoving(coords)
                     })
 
@@ -114,7 +112,7 @@ const DirectionContextProvider = ({children}) => {
         const order = liveOrder ?? pressedOrder
 
         setDirection({
-            origin: location.current,
+            origin: origin,
             waypoints: order.status === "PICKED_UP" ? [] : [{
                 latitude: order.restaurantLocation.lat,
                 longitude: order.restaurantLocation.lng
@@ -125,34 +123,6 @@ const DirectionContextProvider = ({children}) => {
             }
         })
 
-        // if (liveOrder) {
-        //     setDirection({
-        //         origin: location.current,
-        //         waypoints: liveOrder.status === "PICKED_UP" ? [] : [{
-        //             latitude: liveOrder.restaurantLocation.lat,
-        //             longitude: liveOrder.restaurantLocation.lng
-        //         }],
-        //         destination: {
-        //             latitude: liveOrder.customerLocation.lat,
-        //             longitude: liveOrder.customerLocation.lng
-        //         }
-        //     })
-        //     setTempDirection({origin: null, waypoints: null, destination: null})
-        // }
-        //
-        // if (pressedOrder && !liveOrder) {
-        //     setTempDirection({
-        //         origin: origin,
-        //         waypoints: [{
-        //             latitude: pressedOrder.restaurantLocation.lat,
-        //             longitude: pressedOrder.restaurantLocation.lng
-        //         }],
-        //         destination: {
-        //             latitude: pressedOrder.customerLocation.lat,
-        //             longitude: pressedOrder.customerLocation.lng
-        //         }
-        //     })
-        // }
 
     }, [liveOrder, pressedOrder])
 
