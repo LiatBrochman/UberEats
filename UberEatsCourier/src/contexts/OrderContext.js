@@ -79,7 +79,6 @@ const OrderContextProvider = ({children}) => {
     function onFoundLiveOrder(items) {
 
         if (items.length === 0) {
-            setLiveOrder(null)
             return
         }
         setLiveOrder(items[0])
@@ -141,7 +140,7 @@ const OrderContextProvider = ({children}) => {
 
             clearPressedOrder,
             pressOn_Order,
-
+            setLiveOrder,
             liveOrder,
             ordersToCollect,
             setPressedOrder,

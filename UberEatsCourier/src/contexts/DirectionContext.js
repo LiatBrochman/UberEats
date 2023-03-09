@@ -36,19 +36,18 @@ const DirectionContextProvider = ({children}) => {
     //     setTempWaypoints(waypoints)
     // }
 
-    const whenDriverIsMoving = async (coords) => {
-        if (!dbCourier) return
-        const {latitude, longitude} = coords
-        if (!latitude || !longitude) return
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving / on init ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
-        setOrigin({latitude, longitude})
+    const whenDriverIsMoving = async ({latitude, longitude}) => {
+        if (dbCourier && latitude && longitude) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving / on init ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
+            setOrigin({latitude, longitude})
 
-        const areCoordsEqual = (dbCourier.lat === latitude && dbCourier.lng === longitude)
+            const areCoordsEqual = (dbCourier.lat === latitude && dbCourier.lng === longitude)
 
-        if (areCoordsEqual) {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ No need to update ~~~~~~~~~~~~~~~~~~~~~")
-        } else {
-            await updateCourier(dbCourier.id, {location: {lat: latitude, lng: longitude}})
+            if (areCoordsEqual) {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ No need to update ~~~~~~~~~~~~~~~~~~~~~")
+            } else {
+                await updateCourier(dbCourier.id, {location: {lat: latitude, lng: longitude}})
+            }
         }
 
     }
@@ -101,6 +100,11 @@ const DirectionContextProvider = ({children}) => {
 
     }
 
+    const clearDirections= ()=>{
+        setDestination(null)
+        setWaypoints([])
+    }
+
     useEffect(() => {
 
         /**
@@ -139,6 +143,7 @@ const DirectionContextProvider = ({children}) => {
         <DirectionContext.Provider value={{
             startWatchingDriverLocation,
             setDirection,
+            clearDirections,
             // setTempDirection,
             onReady,
             ETA_toCustomer, setETA_toCustomer,

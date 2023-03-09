@@ -54,10 +54,16 @@ const CourierContextProvider = ({children}) => {
 
     }
 
-    const completeOrder = async (order) => {
-        await updateCourier(dbCourier.id, {destinations: [], timeToArrive: []})
-        await updateOrder(order.id, {status: "COMPLETED"})
+    const completeOrder = (id) => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(id, null, 4))
+
+        return updateCourier(dbCourier.id, {destinations: [], timeToArrive: []})
+            .then(() =>
+                updateOrder(id, {status: "COMPLETED"})
+                    .then(() =>
+                        "finished"))
     }
+
 
     const fixCourierOnInit = async () => {
         if (!dbCourier) return

@@ -66,7 +66,7 @@ const Directions = ({origin, destination, waypoints, apiKey}) => {
 };
 
 export const MyDirections = () => {
-    const {origin, waypoints, destination, apiKey} = useDirectionContext({waypoints: []})
+    const {origin, waypoints, destination, apiKey } = useDirectionContext({waypoints: []})
     const {liveOrder, pressedOrder} = useOrderContext()
     const [prevDirection, setPrevDirection] = useState({origin: null, waypoints: [], destination: null})
     const [needToRenderMap, setNeedToRenderMap] = useState(false)

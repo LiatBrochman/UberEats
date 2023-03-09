@@ -6,13 +6,22 @@ import BottomSheet from "@gorhom/bottom-sheet";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useDirectionContext} from "../../contexts/DirectionContext";
 import {useCourierContext} from "../../contexts/CourierContext";
+import {arrived} from "../../myExternalLibrary/LocationFunctions";
 
 export const BottomSheetMapDirection = () => {
 
     const {assignToCourier, completeOrder} = useCourierContext()
-    const {liveOrder, pressedOrder, clearPressedOrder, pressedState}
+    const {liveOrder, setLiveOrder, pressedOrder, clearPressedOrder, pressedState}
         = useOrderContext({pressedState: {order: null, restaurant: null, customer: null, dishes: []}})
-    const {ETA_toRestaurant, ETA_toCustomer, distance, mapRef, origin} = useDirectionContext()
+    const {
+        ETA_toRestaurant,
+        ETA_toCustomer,
+        distance,
+        mapRef,
+        origin,
+        destination,
+        clearDirections
+    } = useDirectionContext()
     const [currentOrder, setCurrentOrder] = useState(liveOrder ?? pressedOrder)
     const bottomSheetRef = useRef(null)
     const snapPoints = useMemo(() => ["12%", "95%"], [])
@@ -45,9 +54,16 @@ export const BottomSheetMapDirection = () => {
 
             case "PICKED_UP":
 
-                if (liveOrder && distance <= 1
-                ) {
-                    completeOrder({order: liveOrder})
+                if (liveOrder) {
+                    console.log("\n\n xxxxx about to completeOrder  xxxxxx")
+
+                    completeOrder(liveOrder.id).then(result => {
+                        if (result === "finished") {
+                            setLiveOrder(null)
+                            clearPressedOrder()
+                            clearDirections()
+                        }
+                    })
                     bottomSheetRef.current?.collapse()
                 }
                 break;
@@ -107,7 +123,7 @@ export const BottomSheetMapDirection = () => {
                  * when the order is about to be finished (the courier needs to click 'order completed')
                  */
 
-                if (liveOrder && distance <= 1) {
+                if (liveOrder && arrived(origin, destination, 0.1)) {
                     isClickable = true
                 } else {
 

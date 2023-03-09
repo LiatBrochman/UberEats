@@ -71,8 +71,6 @@ const Profile = () => {
         return true
     }
 
-
-
     const updateCourier = async draft => {
         verifyDraft(draft) &&
         DataStore.save(Courier.copyOf(dbCourier, updated => Object.assign(updated, draft)))

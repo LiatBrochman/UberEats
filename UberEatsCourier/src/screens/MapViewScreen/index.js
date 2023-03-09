@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import {StyleSheet, useWindowDimensions} from "react-native";
@@ -37,21 +37,21 @@ function MapViewScreen() {
     const {liveOrder, pressedOrder, clearPressedOrder, ordersToCollect} = useOrderContext({ordersToCollect: []})
     const {mapRef, origin} = useDirectionContext()
 
-    // useEffect(()=>{
-    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin,null,4))
-    // },[origin])
-    //
-    // useEffect(() => {
-    //     liveOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder was found! ~~~~~~~~~~~~~~~~~~~~~ ")
-    // }, [liveOrder])
-    //
-    // useEffect(() => {
-    //     pressedOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ pressed Order was found! ~~~~~~~~~~~~~~~~~~~~~ ")
-    // }, [pressedOrder])
-    //
-    // useEffect(() => {
-    //     ordersToCollect.length > 0 && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ Collectable Orders were found! ~~~~~~~~~~~~~~~~~~~~~ ")
-    // }, [ordersToCollect.length])
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin, null, 4))
+    }, [origin])
+
+    useEffect(() => {
+        liveOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder was found! ~~~~~~~~~~~~~~~~~~~~~ ", liveOrder.id)
+    }, [liveOrder])
+
+    useEffect(() => {
+        pressedOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ pressed Order was found! ~~~~~~~~~~~~~~~~~~~~~ ")
+    }, [pressedOrder])
+
+    useEffect(() => {
+        ordersToCollect.length > 0 && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ Collectable Orders were found! ~~~~~~~~~~~~~~~~~~~~~ ")
+    }, [ordersToCollect.length])
 
     return (
 
@@ -92,7 +92,7 @@ function MapViewScreen() {
             <Ionicons
                 onPress={() => {
                     !liveOrder && clearPressedOrder()
-                    navigation.navigate("MainStack", { screen: "Profile" })
+                    navigation.navigate("MainStack", {screen: "Profile"})
                 }}
                 name="arrow-back-circle"
                 size={45}
