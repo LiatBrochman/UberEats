@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import {useDirectionContext} from '../../contexts/DirectionContext';
@@ -41,8 +41,10 @@ const Directions = ({origin, destination, waypoints, apiKey}) => {
     )
 }
 
-export const MyDirections =()=>{
-    const {origin, waypoints, destination,apiKey} = useDirectionContext()
+export const MyDirections = () => {
+    const {origin, waypoints, destination, apiKey} = useDirectionContext()
+    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin, null, 4))
+
     const {liveOrder, pressedOrder} = useOrderContext()
     return (<View>
             {(liveOrder || pressedOrder) && origin &&

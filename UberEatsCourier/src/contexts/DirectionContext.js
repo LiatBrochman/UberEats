@@ -24,9 +24,9 @@ const DirectionContextProvider = ({children}) => {
     const [waypoints, setWaypoints] = useState([])
     // const [tempDestination, setTempDestination] = useState(null)
     // const [tempWaypoints, setTempWaypoints] = useState([])
+    // const location = useRef()
 
-    const setDirection = ({origin, waypoints, destination}) => {
-        setOrigin(origin)
+    const setDirection = ({waypoints, destination}) => {
         setDestination(destination)
         setWaypoints(waypoints)
     }
@@ -38,19 +38,16 @@ const DirectionContextProvider = ({children}) => {
 
     const whenDriverIsMoving = async (coords) => {
         if (!dbCourier) return
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving / on init ~~~~~~~~~~~~~~~~~~~~~ :", coords)
-        setOrigin({latitude: coords.latitude, longitude: coords.longitude})
+        const {latitude, longitude} = coords
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving / on init ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
+        setOrigin({latitude, longitude})
 
-        // const areCoordsEqual = expect([coords.latitude, coords.longitude]).toEqual([dbCourier.lat, dbCourier.lng]);
-        const areCoordsEqual = (dbCourier.lat === coords.lat && dbCourier.lng === coords.lng)
+        const areCoordsEqual = (dbCourier.lat === latitude && dbCourier.lng === longitude)
 
         if (areCoordsEqual) {
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ No need to update ~~~~~~~~~~~~~~~~~~~~~")
         } else {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCourier.lat === coords.lat ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCourier.lat === coords.lat, null, 4))
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCourier.lng === coords.lng ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCourier.lng === coords.lng, null, 4))
-
-            await updateCourier(dbCourier.id, {location: {lat: coords.latitude, lng: coords.longitude}})
+            await updateCourier(dbCourier.id, {location: {lat: latitude, lng: longitude}})
         }
 
     }
@@ -68,6 +65,7 @@ const DirectionContextProvider = ({children}) => {
                         distanceInterval: 100
                     },
                     async ({coords}) => {
+                        // location.current = {latitude: coords.latitude, longitude: coords.longitude}
                         await whenDriverIsMoving(coords)
                     })
 
@@ -127,6 +125,9 @@ const DirectionContextProvider = ({children}) => {
     }, [liveOrder, pressedOrder])
 
     useEffect(() => {
+
+        Location.getCurrentPositionAsync().then(({coords: {latitude, longitude}}) => setOrigin({latitude, longitude}))
+
         startWatchingDriverLocation().then(unsub => subscription.location = unsub)
         // return ()=>{
         //     subscription.location.unsubscribe()

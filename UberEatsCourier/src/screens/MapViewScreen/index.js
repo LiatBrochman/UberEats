@@ -37,6 +37,10 @@ function MapViewScreen() {
     const {liveOrder, pressedOrder, clearPressedOrder, ordersToCollect} = useOrderContext({ordersToCollect: []})
     const {mapRef, origin} = useDirectionContext()
 
+    useEffect(()=>{
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin,null,4))
+    },[origin])
+
     useEffect(() => {
         liveOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder was found! ~~~~~~~~~~~~~~~~~~~~~ ")
     }, [liveOrder])
@@ -81,7 +85,7 @@ function MapViewScreen() {
                     },
                 }}
             >
-                <MyDirections/>
+                {origin && <MyDirections/>}
                 <FixedMarkers/>
 
             </MapView>
@@ -97,8 +101,8 @@ function MapViewScreen() {
             />
 
 
-            {(liveOrder || pressedOrder) ? <BottomSheetMapDirection/> : ordersToCollect.length > 0 &&
-                <BottomSheetOrdersList/>}
+            {origin && ((liveOrder || pressedOrder) ? <BottomSheetMapDirection/> : ordersToCollect.length > 0 &&
+                <BottomSheetOrdersList/>)}
 
         </GestureHandlerRootView>
 
