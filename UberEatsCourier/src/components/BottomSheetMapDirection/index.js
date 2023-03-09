@@ -34,7 +34,7 @@ export const BottomSheetMapDirection = () => {
     // const customer =  DataStore.query(Customer, currentOrder.customerID).then()
     // const dishes = DataStore.query(Dish, d => d.and(d => [d.orderID.eq(currentOrder.id)])).then()
 
-    const onButtonPressed = () => {
+    const onButtonPressed = async () => {
 
         switch (currentOrder.status) {
 

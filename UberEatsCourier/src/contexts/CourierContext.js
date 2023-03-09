@@ -54,7 +54,7 @@ const CourierContextProvider = ({children}) => {
 
     }
 
-    const completeOrder = (id) => {
+    const completeOrder =async (id) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(id, null, 4))
 
         return updateCourier(dbCourier.id, {destinations: [], timeToArrive: []})

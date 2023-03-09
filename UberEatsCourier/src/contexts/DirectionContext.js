@@ -103,6 +103,8 @@ const DirectionContextProvider = ({children}) => {
     const clearDirections= ()=>{
         setDestination(null)
         setWaypoints([])
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~finished clearing Directions  ~~~~~~~~~~~~~~~~~~~~~ ")
+
     }
 
     useEffect(() => {
