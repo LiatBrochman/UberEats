@@ -3,8 +3,7 @@ import ProfileScreen from '../screens/ProfileScreen';
 import MapViewScreen from "../screens/MapViewScreen";
 import {useCourierContext} from "../contexts/CourierContext";
 
-
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
     const {dbCourier} = useCourierContext()
@@ -12,24 +11,23 @@ const Navigation = () => {
     return (
         <Stack.Navigator screenOptions={{headerShown: false}}>
             {dbCourier ? (
-                <Stack.Screen name="MainStack" component={MainStackNavigator}/>
+                <Stack.Screen name="MainStack" component={MainStackNavigator} />
             ) : (
-                <Stack.Screen name="Profile" component={ProfileScreen}/>
+                <Stack.Screen name="Profile" component={ProfileScreen} />
             )}
         </Stack.Navigator>
     )
 }
 
+const MainStack = createNativeStackNavigator();
+
 const MainStackNavigator = () => {
     return (
-        <MainStack.Navigator screenOptions={{headerShown: false}}>
-            {/*<MainStack.Screen name="OrdersScreen" component={OrdersScreen}/>*/}
-            {/*<MainStack.Screen name="OrdersDeliveryScreen" component={OrdersDeliveryScreen}/>*/}
-            <MainStack.Screen name="MapViewScreen" component={MapViewScreen}/>
-            <MainStack.Screen name="Profile" component={ProfileScreen}/>
+        <MainStack.Navigator>
+            <MainStack.Screen name="MapView" component={MapViewScreen} />
+            <MainStack.Screen name="Profile" component={ProfileScreen} />
         </MainStack.Navigator>
     )
 }
-const MainStack = createNativeStackNavigator()
 
-export default Navigation
+export default Navigation;

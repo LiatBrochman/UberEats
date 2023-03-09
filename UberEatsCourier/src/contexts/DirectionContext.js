@@ -39,6 +39,7 @@ const DirectionContextProvider = ({children}) => {
     const whenDriverIsMoving = async (coords) => {
         if (!dbCourier) return
         const {latitude, longitude} = coords
+        if (!latitude || !longitude) return
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving / on init ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
         setOrigin({latitude, longitude})
 
@@ -75,7 +76,7 @@ const DirectionContextProvider = ({children}) => {
         }
     }
 
-    const onReady = async (result) => {
+    const onReady = (result) => {
         setDistance(result.distance)
         const ETA_arr = getETA_array(result)
         const Prev_ETA_arr = [ETA_toCustomer, ETA_toRestaurant]
@@ -96,7 +97,7 @@ const DirectionContextProvider = ({children}) => {
             default:
                 return
         }
-        liveOrder && await updateCourierOnETAs(Prev_ETA_arr, ETA_arr)
+        liveOrder && updateCourierOnETAs(Prev_ETA_arr, ETA_arr)
 
     }
 

@@ -18,7 +18,7 @@ const CourierContextProvider = ({children}) => {
 
         subscription.courier = DataStore.observeQuery(Courier, c => c.sub.eq(sub))
             .subscribe(({items, isSynced}) => {
-                if(!isSynced) return
+                if (!isSynced) return
 
                 if (items?.length) {
                     setDbCourier(items[0])
@@ -45,7 +45,7 @@ const CourierContextProvider = ({children}) => {
     }
 
     const updateCourierOnETAs = async (prevETA, newETA) => {
-    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updateCourierOnETAs ~~~~~~~~~~~~~~~~~~~~~ :")
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updateCourierOnETAs ~~~~~~~~~~~~~~~~~~~~~ :")
 
         if (compareArrays(prevETA, newETA)) {
             await updateCourier(dbCourier.id,
@@ -54,20 +54,20 @@ const CourierContextProvider = ({children}) => {
 
     }
 
-    const completeOrder = async (order)=>{
-        await updateCourier(dbCourier.id,{destinations:[],timeToArrive:[]})
-        await updateOrder(order.id,{status:"COMPLETED"})
+    const completeOrder = async (order) => {
+        await updateCourier(dbCourier.id, {destinations: [], timeToArrive: []})
+        await updateOrder(order.id, {status: "COMPLETED"})
     }
 
-    const fixCourierOnInit = async ()=>{
-        if(!dbCourier) return
+    const fixCourierOnInit = async () => {
+        if (!dbCourier) return
 
-        if(dbCourier.timeToArrive.length >0 || dbCourier.destinations.length >0){
+        if (dbCourier.timeToArrive.length > 0 || dbCourier.destinations.length > 0) {
 
             if (await existingLiveOrder()) {
                 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ existingLiveOrder was found ~~~~~~~~~~~~~~~~~~~~~ :")
-            }else{
-                await updateCourier(dbCourier.id,{destinations:[],timeToArrive:[]})
+            } else {
+                await updateCourier(dbCourier.id, {destinations: [], timeToArrive: []})
                 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ fixCourierOnInit ~~~~~~~~~~~~~~~~~~~~~ :")
             }
 
@@ -75,12 +75,12 @@ const CourierContextProvider = ({children}) => {
 
     }
 
-    const existingLiveOrder = async ()=>{
-       return !!(await DataStore.query(Order, o => o.and(o => [
-           o.courierID.eq(dbCourier.id),
-           o.status.ne("COMPLETED"),
-           o.status.ne("DECLINED")
-       ])))?.[0]
+    const existingLiveOrder = async () => {
+        return !!(await DataStore.query(Order, o => o.and(o => [
+            o.courierID.eq(dbCourier.id),
+            o.status.ne("COMPLETED"),
+            o.status.ne("DECLINED")
+        ])))?.[0]
     }
 
     return (

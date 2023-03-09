@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {View} from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import {useDirectionContext} from '../../contexts/DirectionContext';
@@ -24,37 +24,81 @@ import {useOrderContext} from "../../contexts/OrderContext";
 
 
 const Directions = ({origin, destination, waypoints, apiKey}) => {
-    const {dbCourier} = useCourierContext()
-    const {onReady} = useDirectionContext()
+    const {dbCourier} = useCourierContext();
+    const {onReady} = useDirectionContext();
+
+    // Memoize the props so they are only recalculated when necessary
+    const memoizedOrigin = useMemo(() => origin, [origin]);
+    const memoizedDestination = useMemo(() => destination, [destination]);
+    const memoizedWaypoints = useMemo(() => waypoints, [waypoints]);
+
+    useEffect(() => {
+
+        console.log(
+            '\n\n222222222@@@@@@@@@@ origin:',
+            memoizedOrigin,
+            '\n222222222@@@@@@@@@@ destination:',
+            memoizedDestination,
+            '\n222222222@@@@@@@@@@ waypoints:',
+            memoizedWaypoints,
+        );
+
+    }, [memoizedOrigin,
+        memoizedDestination,
+        memoizedWaypoints]);
+
 
     return (
         <MapViewDirections
             mode={dbCourier.transportationMode}
-            origin={origin}
-            destination={destination}
-            waypoints={waypoints}
+            origin={memoizedOrigin}
+            destination={memoizedDestination}
+            waypoints={memoizedWaypoints}
             apikey={apiKey}
             strokeWidth={10}
             strokeColor="#96CEB4"
             onReady={onReady}
+            onError={(error) =>
+                console.error('An error occurred while getting directions:', error)
+            }
         />
-    )
-}
+    );
+};
 
 export const MyDirections = () => {
-    const {origin, waypoints, destination, apiKey} = useDirectionContext()
-    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin, null, 4))
-
+    const {origin, waypoints, destination, apiKey} = useDirectionContext({waypoints: []})
     const {liveOrder, pressedOrder} = useOrderContext()
+    const [prevDirection, setPrevDirection] = useState({origin: null, waypoints: [], destination: null})
+    const [needToRenderMap, setNeedToRenderMap] = useState(false)
+
+    useEffect(() => {
+
+        if (liveOrder || pressedOrder && origin && destination) {
+
+            if (prevDirection.origin === origin && prevDirection.destination === destination && waypoints?.[0] === prevDirection.waypoints?.[0]) {
+                setNeedToRenderMap(false)
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ no need to re-render (same map values) ~~~~~~~~~~~~~~~~~~~~~ :")
+
+            } else {
+                setPrevDirection({origin, destination, waypoints: [...waypoints]})
+                setNeedToRenderMap(true)
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ about to re-render (updated values) ~~~~~~~~~~~~~~~~~~~~~ :")
+
+            }
+
+
+        }
+
+    }, [origin, waypoints, destination])
+
     return (<View>
-            {(liveOrder || pressedOrder) && origin &&
+            {needToRenderMap &&
 
             <Directions
                 origin={origin}
                 destination={destination}
                 waypoints={waypoints}
                 apiKey={apiKey}/>
-
             }
         </View>
     )

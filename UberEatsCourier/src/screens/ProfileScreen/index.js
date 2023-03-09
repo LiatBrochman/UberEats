@@ -50,7 +50,7 @@ const Profile = () => {
                 };
                 await createCourier(draft);
             }
-            navigation.navigate('MapViewScreen')
+            navigation.navigate("MainStack", { screen: "MapView" })
         } catch (error) {
             console.error(error);
         }
@@ -71,32 +71,7 @@ const Profile = () => {
         return true
     }
 
-    // const onSave_original = async () => {
-    //
-    //     if (dbCourier) {
-    //         const draft = {
-    //             name,
-    //             transportationMode,
-    //             location: {lat: parseFloat(driverLocation?.latitude), lng: parseFloat(driverLocation?.longitude)}
-    //         }
-    //
-    //         verifyDraft(draft) &&
-    //         updateCourier(draft).then(() => navigation.navigate('OrdersScreen'))
-    //
-    //     } else {
-    //         const currentPosition = await getCurrentPosition()
-    //         const draft = {
-    //             name,
-    //             transportationMode,
-    //             location: {lat: currentPosition.latitude, lng: currentPosition.longitude},
-    //             isDeleted: false,
-    //             isActive: true,
-    //             sub
-    //         }
-    //         verifyDraft(draft) &&
-    //         createCourier(draft).then(() => navigation.navigate('OrdersScreen'))
-    //     }
-    // }
+
 
     const updateCourier = async draft => {
         verifyDraft(draft) &&
@@ -159,7 +134,7 @@ const Profile = () => {
                 <Pressable onPress={onSave} style={styles.buttonSave}>
                     <Text style={styles.buttonText}>Save</Text>
                 </Pressable>
-                <Pressable onPress={() => navigation.navigate("MapViewScreen")} style={styles.buttonReturn}>
+                <Pressable onPress={() => navigation.navigate("MainStack", { screen: "MapView" })} style={styles.buttonReturn}>
                     <Text style={styles.buttonText}>return without save</Text>
                 </Pressable>
                 <Text
