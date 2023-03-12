@@ -69,8 +69,8 @@
   border:none;
   border-radius: 30px;
 }
-/*.res-title.ant-form-item-required{*/
-/*  color: "red"*/
+/*.ant-form-item-required::before {*/
+/*  color: red  !important;*/
 /*}*/
 
 .dish-switch.ant-switch.dish-switch.ant-switch-checked{
@@ -85,27 +85,27 @@
 
 
 [title="Dish name"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 
 [title="Dish image"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 
 [title="Dish description"] {
-  color: lightgray !important;
+  color: gray !important;
    font-weight: 600 !important;
  }
 
 [title="Price ($)"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 
 [title="Dish is Active"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 

@@ -128,44 +128,44 @@ ant-input.ant-input-selected.res-input:hover {
 }
 
 .ant-form-item-required::before{
-    color: lightgray !important;
+    color: gray !important;
 }
 
 
 
 [title="Restaurant name"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 
 
 [title="Restaurant image"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 
 [title="Restaurant delivery Fee"] {
-   color: lightgray !important;
+   color: gray !important;
    font-weight: 600 !important;
  }
 
 [title="Restaurant minimum Delivery Minutes"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 
 [title="Restaurant maximum Delivery Minutes"] {
-  color: lightgray !important;
+  color: gray !important;
   font-weight: 600 !important;
 }
 
 [title="Restaurant address"] {
-   color: lightgray !important;
+   color: gray !important;
    font-weight: 600 !important;
  }
 
 [title="Restaurant is open"] {
-    color: lightgray !important;
+    color: gray !important;
     font-weight: 600 !important;
   }
 
