@@ -26,7 +26,7 @@ BottomSheetFlatList.propTypes = {
 const Map = () => {
     const {width, height} = useWindowDimensions()
     const {restaurants, setRestaurant} = useRestaurantContext()
-    const {liveOrders, countUpdates} = useOrderContext()
+    const {liveOrders, countUpdates} = useOrderContext({liveOrders:[]})
     const {couriers} = useCourierContext()
     const [customerLocation, setCustomerLocation] = useState(null)
     const navigation = useNavigation()
@@ -79,27 +79,37 @@ const Map = () => {
                     zoomControlEnabled={true}
                 >
                     <Marker coordinate={{latitude: 32.1975652, longitude: 34.8775085}}/>
-                    {restaurants.length > 0 && restaurants.map(restaurant =>
-                        <Marker
-                            key={restaurant.id}
-                            title={restaurant.name}
-                            description={restaurant.location.address}
-                            coordinate={{
-                                latitude: restaurant?.location?.lat,
-                                longitude: restaurant?.location?.lng
-                            }}
-                            onCalloutPress={() => onCalloutPress(restaurant)}
-                        >
-                            <View style={{
-                                backgroundColor: 'white',
-                                padding: 5,
-                                borderRadius: 20,
-                                borderWidth: 2,
-                                borderColor: '#FFAD60'
-                            }}>
-                                <Entypo name="shop" size={24} color="#FFAD60"/>
-                            </View>
-                        </Marker>
+                    {restaurants.length > 0 && restaurants.map(restaurant => {
+                        let color="#FFAD60"
+
+                        if(liveOrders.length > 0) {
+                            color="grey"
+                            if(liveOrders.find(o=>o.restaurantID===restaurant.id)){
+                                color="#FFAD60"
+                            }
+                        }
+
+                           return <Marker
+                                key={restaurant.id}
+                                title={restaurant.name}
+                                description={restaurant.location.address}
+                                coordinate={{
+                                    latitude: restaurant?.location?.lat,
+                                    longitude: restaurant?.location?.lng
+                                }}
+                                onCalloutPress={() => onCalloutPress(restaurant)}
+                            >
+                                <View style={{
+                                    backgroundColor: 'white',
+                                    padding: 5,
+                                    borderRadius: 20,
+                                    borderWidth: 2,
+                                    borderColor: color
+                                }}>
+                                    {<Entypo name="shop" size={24} color={color}/>}
+                                </View>
+                            </Marker>
+                        }
                     )}
 
                     {couriers.map((courier,index) =>
