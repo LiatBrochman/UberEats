@@ -23,33 +23,38 @@ import {useOrderContext} from "../../contexts/OrderContext";
  */
 
 
-const Directions = ({origin, destination, waypoints, apiKey}) => {
-    const {dbCourier} = useCourierContext();
-    const {onReady} = useDirectionContext();
+const Directions = ({destination, waypoints, apiKey}) => {
+    const {dbCourier,} = useCourierContext();
+    const {onReady, origin} = useDirectionContext();
 
     // Memoize the props so they are only recalculated when necessary
     const memoizedOrigin = useMemo(() => origin, [origin]);
     const memoizedDestination = useMemo(() => destination, [destination]);
     const memoizedWaypoints = useMemo(() => waypoints, [waypoints]);
+    const [forceReRender, setForceReRender] = useState(0);
 
     useEffect(() => {
-
         console.log(
-            '\n\n222222222@@@@@@@@@@ origin:',
+            '\n\n@@@@@@@@@@ origin:',
             memoizedOrigin,
-            '\n222222222@@@@@@@@@@ destination:',
+            '\n@@@@@@@@@@ destination:',
             memoizedDestination,
-            '\n222222222@@@@@@@@@@ waypoints:',
+            '\n@@@@@@@@@@ waypoints:',
             memoizedWaypoints,
-        );
+        )
 
     }, [memoizedOrigin,
         memoizedDestination,
-        memoizedWaypoints]);
+        memoizedWaypoints])
 
 
+    const handleDirectionsError = (error) => {
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to re render map because of error: ~~~~~~~~~~~~~~~~~~~~~ :", error)
+        setForceReRender(x => x + 1)
+    }
     return (
         <MapViewDirections
+            key={forceReRender}
             mode={dbCourier.transportationMode}
             origin={memoizedOrigin}
             destination={memoizedDestination}
@@ -58,15 +63,13 @@ const Directions = ({origin, destination, waypoints, apiKey}) => {
             strokeWidth={10}
             strokeColor="#96CEB4"
             onReady={onReady}
-            onError={(error) =>
-                console.error('An error occurred while getting directions:', error)
-            }
+            onError={handleDirectionsError}
         />
-    );
-};
+    )
+}
 
 export const MyDirections = () => {
-    const {origin, waypoints, destination, apiKey } = useDirectionContext({waypoints: []})
+    const {origin, waypoints, destination, isRendered, apiKey} = useDirectionContext({waypoints: [], isRendered: true})
     const {liveOrder, pressedOrder} = useOrderContext()
     const [prevDirection, setPrevDirection] = useState({origin: null, waypoints: [], destination: null})
     const [needToRenderMap, setNeedToRenderMap] = useState(false)
@@ -75,21 +78,28 @@ export const MyDirections = () => {
 
         if (liveOrder || pressedOrder && origin && destination) {
 
+
+            if (!isRendered) {
+                setNeedToRenderMap(true)
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ about to render (First Render) ~~~~~~~~~~~~~~~~~~~~~ ")
+                return
+            }
+
             if (prevDirection.origin === origin && prevDirection.destination === destination && waypoints?.[0] === prevDirection.waypoints?.[0]) {
                 setNeedToRenderMap(false)
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ no need to re-render (same map values) ~~~~~~~~~~~~~~~~~~~~~ :")
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ no need to re-render (same map values) ~~~~~~~~~~~~~~~~~~~~~ ")
 
             } else {
                 setPrevDirection({origin, destination, waypoints: [...waypoints]})
                 setNeedToRenderMap(true)
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ about to re-render (updated values) ~~~~~~~~~~~~~~~~~~~~~ :")
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ about to re-render (updated values) ~~~~~~~~~~~~~~~~~~~~~ ")
 
             }
 
 
         }
 
-    }, [origin, waypoints, destination])
+    }, [origin, waypoints, destination, isRendered])
 
     return (<View>
             {needToRenderMap &&
@@ -104,52 +114,72 @@ export const MyDirections = () => {
     )
 
 }
-// const MapWithDirections = () => {
-//     const {origin, waypoints, destination, tempWaypoints, tempDestination, apiKey} = useDirectionContext()
-//     const {liveOrder, pressedOrder} = useOrderContext()
-//
-//     const [currentDirection, setCurrentDirection] = useState({
-//         origin: null,
-//         waypoints: null,
-//         destination: null,
-//         tempOrigin: null,
-//         tempWaypoints: null,
-//         tempDestination: null
-//     })
-//     useEffect(() => {
-//         origin && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin, null, 4))
-//         tempWaypoints?.length && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ tempWaypoints ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(tempWaypoints, null, 4))
-//         tempDestination && console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ tempDestination ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(tempDestination, null, 4))
-//
-//         if(liveOrder){
-//             setCurrentDirection(prev => Object.assign(prev, {
-//                 origin,
-//                 waypoints,
-//                 destination
-//             }))
-//         }
-//         if(pressedOrder)
-//         setCurrentDirection(prev => Object.assign(prev, {
-//             origin,
-//             tempWaypoints,
-//             tempDestination
-//         }))
-//
-//     }, [tempWaypoints, tempDestination])
-//
-//     return (<View>
-//             {(liveOrder || pressedOrder) && origin &&
-//
-//             <Directions
-//                 origin={origin}
-//                 destination={currentDirection.destination || currentDirection.tempDestination || origin}
-//                 waypoints={currentDirection.waypoints || currentDirection.tempWaypoints || []}
-//                 apiKey={apiKey}/>
-//
-//             }
-//         </View>
-//     )
-// }
-//
-// export default MapWithDirections
 
+
+export const MyDirections_fixed = () => {
+    const {dbCourier} = useCourierContext()
+    const {origin, onReady, waypoints, destination, wrongOrigin, apiKey} = useDirectionContext({waypoints: []})
+    const {liveOrder, pressedOrder} = useOrderContext()
+    const [forceReRender, setForceReRender] = useState(0)
+    // const [needToRenderMap, setNeedToRenderMap] = useState(false)
+    // const memoizedOrigin = useMemo(() => origin, [origin])
+    // const memoizedDestination = useMemo(() => destination, [destination])
+    // const memoizedWaypoints = useMemo(() => waypoints, [waypoints])
+    // useEffect(() => {
+    //
+    //     if (liveOrder || pressedOrder && origin && destination) {
+    //
+    //         if (isRendered === "beforeRender" || isRendered === false) {
+    //             setNeedToRenderMap(true)
+    //             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ about to render (First Render) ~~~~~~~~~~~~~~~~~~~~~ ")
+    //
+    //         // } else if ( !== origin) {
+    //         //     setNeedToRenderMap(true)
+    //         //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ about to re-render (location changed) ~~~~~~~~~~~~~~~~~~~~~ ")
+    //         //     setForceReRender(x => x + 1)
+    //
+    //         } else {
+    //             setNeedToRenderMap(false)
+    //         }
+    //     }
+    // }, [isRendered, liveOrder, pressedOrder, origin, destination])
+
+    const handleDirectionsError = (error) => {
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to re render map because of error: ~~~~~~~~~~~~~~~~~~~~~ :", error)
+        setTimeout(() => {
+            setForceReRender(x => x + 1)
+        }, 1000)
+    }
+
+    useEffect(() => {
+
+        if(wrongOrigin){
+            setTimeout(() => {
+                console.log("\n\n !!!!!!!!!!!!!! wrongOrigin ~~~~~~~~~~~~~~~~~~~~~ ", wrongOrigin, forceReRender)
+                setForceReRender(x => x + 1)
+            }, 1000)
+        }
+
+    }, [wrongOrigin,forceReRender])
+
+    return (<View>
+            {
+                (liveOrder || pressedOrder) && origin && destination &&
+                <MapViewDirections
+                    key={forceReRender}
+                    mode={dbCourier.transportationMode}
+                    origin={origin}
+                    destination={destination}
+                    waypoints={waypoints}
+                    apikey={apiKey}
+                    strokeWidth={10}
+                    strokeColor="#96CEB4"
+                    onReady={async (result) => await onReady(result)}
+                    onError={handleDirectionsError}
+                />
+
+            }
+        </View>
+    )
+
+}

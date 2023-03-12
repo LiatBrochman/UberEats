@@ -4,15 +4,36 @@ import {Basket, Courier, Customer, Dish, Order, Owner, Restaurant} from "../mode
 async function genericUpdate(model, id, toBeUpdated) {
     try {
         const original = await DataStore.query(model, id);
-        await DataStore.save(model.copyOf(original,updated=>Object.assign(updated,toBeUpdated)));
-        console.log(`Successfully updated ${model.name} with id ${id}`);
+        return await DataStore.save(model.copyOf(original, updated => {
+
+            return Object.assign(updated, toBeUpdated)
+
+            // if (updated?.timeToArrive && updated.timeToArrive.length > 2) {
+            //
+            //     console.log("!!!!!!!!!!!!!!!!!!!updated.timeToArrive.length is more than 2 :", updated.timeToArrive)
+            //     updated.timeToArrive = []
+            //     toBeUpdated.timeToArrive?.[0] && updated.timeToArrive.push(toBeUpdated.timeToArrive[0])
+            //     toBeUpdated.timeToArrive?.[1] && updated.timeToArrive.push(toBeUpdated.timeToArrive[1])
+            //
+            // }
+            // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updated ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(updated.timeToArrive, null, 4))
+            // return updated
+        }));
+        // console.log(`Successfully updated ${model.name} with id ${id}`);
     } catch (error) {
         console.error(`Error updating ${model.name} with id ${id}: ${error.message}`);
     }
 }
 
 export async function updateCourier(id, data) {
-    await genericUpdate(Courier, id, data);
+    if(data?.timeToArrive){
+
+        while(data.timeToArrive.length > 2) {
+            data.timeToArrive.shift()
+        }
+
+    }
+   await genericUpdate(Courier, id, data);
 }
 
 export async function updateOrder(id, data) {

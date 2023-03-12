@@ -36,12 +36,12 @@ const getAddressByCoords = async ({latitude = null, longitude = null}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ address ~~~~~~~~~~~~~~~~~~~~~ :", address)
         return address
     } catch (e) {
-        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ null address ~~~~~~~~~~~~~~~~~~~~~ ",e)
+        console.error("\n\n ~~~~~~~~~~~~~~~~~~~~~ null address ~~~~~~~~~~~~~~~~~~~~~ ", e)
         return null
     }
 
 }
-const startWatchingLocation = async (setState,callback=null) => {
+const startWatchingLocation = async (setState, callback = null) => {
 
     let {status} = await Location.requestForegroundPermissionsAsync()
     switch (status === "granted") {
@@ -57,7 +57,7 @@ const startWatchingLocation = async (setState,callback=null) => {
                         latitude: coords?.latitude,
                         longitude: coords.longitude,
                     })
-                    if(callback){
+                    if (callback) {
                         callback(coords)
                     }
                 })
@@ -69,9 +69,11 @@ const startWatchingLocation = async (setState,callback=null) => {
 
     }
 }
+
 function degreesToRadians(degrees) {
     return degrees * Math.PI / 180;
 }
+
 function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
 
     const earthRadiusKm = 6371;
@@ -87,13 +89,25 @@ function distanceInKmBetweenEarthCoordinates(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return earthRadiusKm * c;
 }
+
 function arrived(driverLocation, customerLocation, minDistance_Km) {
     return distanceInKmBetweenEarthCoordinates(driverLocation.latitude, driverLocation.longitude, customerLocation.latitude, customerLocation.longitude) <= minDistance_Km
 }
+
 function getETA_array(result) {
-    return result.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
+    const ETA = result.legs.map(leg => parseInt(leg.duration.text.replace(/\s.*$/, "")))
+    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ getETA_array ~~~~~~~~~~~~~~~~~~~~~ :", ETA)
+    return ETA
 }
 
 
-
-export {getCoordsByAddress, getCurrentPosition, getAddressByCoords,startWatchingLocation,degreesToRadians,distanceInKmBetweenEarthCoordinates,arrived,getETA_array}
+export {
+    getCoordsByAddress,
+    getCurrentPosition,
+    getAddressByCoords,
+    startWatchingLocation,
+    degreesToRadians,
+    distanceInKmBetweenEarthCoordinates,
+    arrived,
+    getETA_array
+}

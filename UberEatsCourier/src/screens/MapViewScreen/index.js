@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import {StyleSheet, useWindowDimensions} from "react-native";
-import {MyDirections} from "../../components/MyDirections";
+import {MyDirections, MyDirections_fixed} from "../../components/MyDirections";
 import {Ionicons} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
 import {useOrderContext} from "../../contexts/OrderContext";
@@ -11,6 +11,7 @@ import {BottomSheetMapDirection} from "../../components/BottomSheetMapDirection"
 import {useDirectionContext} from "../../contexts/DirectionContext";
 import styles from "./styles";
 import {FixedMarkers} from "../../components/Markers/FixedMarkers";
+import * as Location from "expo-location";
 
 /**
  - This React Native code defines a MapViewScreen component that displays a map with directions and markers.
@@ -34,12 +35,12 @@ import {FixedMarkers} from "../../components/Markers/FixedMarkers";
 function MapViewScreen() {
     const {width, height} = useWindowDimensions()
     const navigation = useNavigation()
-    const {liveOrder, pressedOrder, clearPressedOrder, ordersToCollect} = useOrderContext({ordersToCollect: []})
-    const {mapRef, origin} = useDirectionContext()
+    const {liveOrder, pressedOrder, clearPressedOrder, ordersToCollect, } = useOrderContext({ordersToCollect: []})
+    const {mapRef, origin , setOrigin , ETA_toCustomer, ETA_toRestaurant} = useDirectionContext()
 
-    useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ origin ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(origin, null, 4))
-    }, [origin])
+    useEffect(()=>{
+        Location.getCurrentPositionAsync().then(({coords: {latitude, longitude}}) => setOrigin({latitude, longitude}))
+    },[])
 
     useEffect(() => {
         liveOrder && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder was found! ~~~~~~~~~~~~~~~~~~~~~ ", liveOrder.id)
@@ -52,6 +53,11 @@ function MapViewScreen() {
     useEffect(() => {
         ordersToCollect.length > 0 && console.log("\n ~~~~~~~~~~~~~~~~~~~~~ Collectable Orders were found! ~~~~~~~~~~~~~~~~~~~~~ ")
     }, [ordersToCollect.length])
+
+    useEffect(()=>{
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ [ ETA_toRestaurant=",ETA_toRestaurant,",ETA_toCustomer=",ETA_toCustomer,"] ~~~~~~~~~~~~~~~~~~~~~ :")
+
+    },[ETA_toRestaurant,ETA_toCustomer])
 
     return (
 
@@ -85,7 +91,7 @@ function MapViewScreen() {
                     },
                 }}
             >
-                {origin && <MyDirections/>}
+                {origin && <MyDirections_fixed/>}
                 <FixedMarkers/>
 
             </MapView>

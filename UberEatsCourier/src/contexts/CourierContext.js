@@ -3,7 +3,7 @@ import {DataStore} from "aws-amplify";
 import {Courier, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {updateCourier, updateOrder} from "../myExternalLibrary/genericUpdate";
-import {compareArrays} from "../myExternalLibrary/genericFunctions";
+import {compareArrays} from "../myExternalLibrary/globalFunctions";
 
 const CourierContext = createContext({})
 
@@ -44,17 +44,27 @@ const CourierContextProvider = ({children}) => {
 
     }
 
-    const updateCourierOnETAs = async (prevETA, newETA) => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updateCourierOnETAs ~~~~~~~~~~~~~~~~~~~~~ :")
+    // const updateCourierOnETAs = async (prevETA, newETA) => {
+    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updateCourierOnETAs ~~~~~~~~~~~~~~~~~~~~~ :",newETA)
+    //
+    //     if (compareArrays(prevETA, newETA)) {
+    //         await updateCourier(dbCourier.id,
+    //             {timeToArrive: newETA})
+    //     }
+    //
+    // }
+    const updateCourierOnETAs_fixed = async (newETA) => {
 
-        if (compareArrays(prevETA, newETA)) {
+        if (compareArrays(dbCourier.timeToArrive, newETA)) {
+
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updating DB Courier - On ETAs change ~~~~~~~~~~~~~~~~~~~~~ :", newETA)
+
             await updateCourier(dbCourier.id,
                 {timeToArrive: newETA})
         }
 
     }
-
-    const completeOrder =async (id) => {
+    const completeOrder = async (id) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(id, null, 4))
 
         return updateCourier(dbCourier.id, {destinations: [], timeToArrive: []})
@@ -81,6 +91,25 @@ const CourierContextProvider = ({children}) => {
 
     }
 
+    useEffect(() => {
+
+        if (dbCourier?.timeToArrive && dbCourier.timeToArrive.length > 2) {
+
+            console.log("\n\n !!!!!!!!!!!!!!!! dbCourier.timeToArrive ~~~~~~~~~~~~~~~~~~~~~ :", dbCourier.timeToArrive);
+
+            (async () => await fixCourierOnWeirdUpdates())()
+
+        }
+
+    }, [dbCourier])
+    const fixCourierOnWeirdUpdates = async () => {
+        let tempETA = [...dbCourier.timeToArrive]
+
+        while (tempETA.length > 2) tempETA.shift()
+
+        await updateCourier(dbCourier.id, {timeToArrive: tempETA})
+    }
+
     const existingLiveOrder = async () => {
         return !!(await DataStore.query(Order, o => o.and(o => [
             o.courierID.eq(dbCourier.id),
@@ -93,7 +122,8 @@ const CourierContextProvider = ({children}) => {
         <CourierContext.Provider value={{
             dbCourier,
             setDbCourier,
-            updateCourierOnETAs,
+            // updateCourierOnETAs,
+            updateCourierOnETAs_fixed,
             assignToCourier,
             completeOrder,
             fixCourierOnInit
