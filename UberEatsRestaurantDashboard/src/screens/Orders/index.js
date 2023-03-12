@@ -28,9 +28,9 @@ const Orders = () => {
                 }}>{status}</Tag>
 
             default:
-                return <Tag color={'#f0827f'} style={{
+                return <Tag color={'#FFEEAD'} style={{
                     fontSize: "10px",
-                    color: "#730d0a",
+                    color: "#bfa337",
                     borderRadius: 15,
                     fontWeight: "bold"
                 }}>{status}</Tag>

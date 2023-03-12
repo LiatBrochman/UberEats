@@ -152,15 +152,6 @@ export const BottomSheetMapDirection = () => {
             <BottomSheet isVisible={true} ref={bottomSheetRef} snapPoints={snapPoints}
                          handleIndicatorStyle={styles.handleIndicator}>
                 <View>
-                    <Ionicons
-                        onPress={() => {
-                            !liveOrder && clearPressedOrder()
-                        }}
-                        name="arrow-back-circle"
-                        size={45}
-                        color="black"
-                        style={{top: 40, left: 15, position: 'absolute'}}
-                    />
                     <View style={styles.handleIndicatorContainer}>
                         <Text
                             style={styles.routeDetailsText}>{(ETA_toCustomer + ETA_toRestaurant).toFixed(0)} min</Text>
@@ -185,6 +176,9 @@ export const BottomSheetMapDirection = () => {
                             )}
                         </View>
                     </View>
+                    {!liveOrder && <Pressable style={{...styles.buttonContainer, backgroundColor: '#96CEB4'}} onPress={() => {clearPressedOrder()}}>
+                        <Text style={styles.buttonText}>go back</Text>
+                    </Pressable>}
                     <Pressable
                         style={{
                             ...styles.buttonContainer,
