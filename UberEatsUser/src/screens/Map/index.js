@@ -25,15 +25,16 @@ BottomSheetFlatList.propTypes = {
 
 const Map = () => {
     const {width, height} = useWindowDimensions()
-    const {restaurants, setRestaurant} = useRestaurantContext()
-    const {liveOrders, countUpdates} = useOrderContext({liveOrders:[]})
-    const {couriers} = useCourierContext()
+    const {restaurants, setRestaurant} = useRestaurantContext({restaurants:[]})
+    const {liveOrders} = useOrderContext({liveOrders: []})
+    const {couriers} = useCourierContext({couriers:[]})
     const [customerLocation, setCustomerLocation] = useState(null)
     const navigation = useNavigation()
     const onCalloutPress = (restaurant) => {
         setRestaurant(restaurant)
         navigation.navigate("Restaurant")
     }
+
 
     useEffect(() => {
 
@@ -43,9 +44,7 @@ const Map = () => {
     }, [])
 
 
-    return (
-        <>
-            <GestureHandlerRootView style={styles.container}>
+    return (<GestureHandlerRootView style={styles.container}>
                 <MapView
                     style={{...StyleSheet.absoluteFillObject, height: height * 0.95, width}}
                     provider={PROVIDER_GOOGLE}
@@ -56,10 +55,8 @@ const Map = () => {
                     scrollEnabled={true}
                     initialRegion={{
                         latitude:
-                        // 32.1975652,
                             customerLocation?.latitude || 32.1975652,
                         longitude:
-                        // 34.8775085,
                             customerLocation?.longitude || 34.8775085,
 
                         latitudeDelta: 0.12,
@@ -67,7 +64,7 @@ const Map = () => {
                     }}
                     showsZoomControls={true}
                     zoomControlOptions={{
-                        position: 9, // center-right position
+                        position: 9,
                         style: {
                             height: 40,
                             width: 40,
@@ -80,16 +77,15 @@ const Map = () => {
                 >
                     <Marker coordinate={{latitude: 32.1975652, longitude: 34.8775085}}/>
                     {restaurants.length > 0 && restaurants.map(restaurant => {
-                        let color="#FFAD60"
+                            let color = "#FFAD60"
 
-                        if(liveOrders.length > 0) {
-                            color="grey"
-                            if(liveOrders.find(o=>o.restaurantID===restaurant.id)){
-                                color="#FFAD60"
+                            if (liveOrders.length > 0) {
+                                color = "grey"
+                                if (liveOrders.find(o => o.restaurantID === restaurant.id)) {
+                                    color = "#FFAD60"
+                                }
                             }
-                        }
-
-                           return <Marker
+                            return <Marker
                                 key={restaurant.id}
                                 title={restaurant.name}
                                 description={restaurant.location.address}
@@ -112,48 +108,53 @@ const Map = () => {
                         }
                     )}
 
-                    {couriers.map((courier,index) =>
-                        <Marker
-                            key={index}
-                            title={courier.name}
-                            description={courier.transportationMode}
-                            coordinate={{
-                                latitude: courier.location.lat,
-                                longitude: courier.location.lng
-                            }}>
-                            <View style={{padding: 5, borderRadius: 20}}>
-                                {courier.transportationMode === "DRIVING" &&
-                                <View style={{
-                                    backgroundColor: 'white',
-                                    padding: 3,
-                                    borderRadius: 20,
-                                    borderWidth: 2,
-                                    borderColor: '#96CEB4'
-                                }}>
-                                    <Icon name="car" size={30} color="#96CEB4"/>
-                                </View>}
+                    {couriers.length > 0 && couriers.map(courier => {
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier.id+' '+liveOrders.length ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier.id+' '+liveOrders.length,null,4))
 
-                                {courier.transportationMode === "BICYCLING" &&
-                                <View style={{
-                                    backgroundColor: 'white',
-                                    padding: 3,
-                                    borderRadius: 20,
-                                    borderWidth: 2,
-                                    borderColor: '#96CEB4'
-                                }}><Icon name="bicycle" size={30} color="#96CEB4"/></View>}
-                            </View>
-                        </Marker>
+                        if (!couriers.some(c => c.id === courier.id)) {
+                            // Skip rendering the marker if the courier is not present in the `couriers` array
+                            return null
+                        }
+                            return <Marker
+                                key={courier.id+' '+liveOrders.length}
+                                title={courier.name}
+                                description={courier.transportationMode}
+                                coordinate={{
+                                    latitude: courier.location.lat,
+                                    longitude: courier.location.lng
+                                }}>
+                                <View style={{padding: 5, borderRadius: 20}}>
+                                    {courier.transportationMode === "DRIVING" &&
+                                    <View style={{
+                                        backgroundColor: 'white',
+                                        padding: 3,
+                                        borderRadius: 20,
+                                        borderWidth: 2,
+                                        borderColor: '#96CEB4'
+                                    }}>
+                                        <Icon name="car" size={30} color="#96CEB4"/>
+                                    </View>}
+
+                                    {courier.transportationMode === "BICYCLING" &&
+                                    <View style={{
+                                        backgroundColor: 'white',
+                                        padding: 3,
+                                        borderRadius: 20,
+                                        borderWidth: 2,
+                                        borderColor: '#96CEB4'
+                                    }}><Icon name="bicycle" size={30} color="#96CEB4"/></View>}
+                                </View>
+                            </Marker>
+                        }
                     )}
                 </MapView>
-                {liveOrders.length > 0 &&<MapBottomSheet/>}
+                {liveOrders.length > 0 && <MapBottomSheet/>}
 
-            </GestureHandlerRootView>
-        </>
-
-    )
+            </GestureHandlerRootView>)
 }
-
 export default Map
+
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,

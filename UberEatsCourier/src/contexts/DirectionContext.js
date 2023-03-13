@@ -2,7 +2,6 @@ import {createContext, useContext, useEffect, useRef, useState} from "react";
 import {useOrderContext} from "./OrderContext";
 import * as Location from "expo-location";
 import {GOOGLE_API_KEY} from '@env';
-import {updateCourier} from "../myExternalLibrary/genericUpdate";
 import {getETA_array} from "../myExternalLibrary/LocationFunctions";
 import {useCourierContext} from "./CourierContext";
 
@@ -13,9 +12,7 @@ const DirectionContextProvider = ({children}) => {
     const apiKey = GOOGLE_API_KEY
     const {dbCourier} = useCourierContext()
     const {liveOrder, pressedOrder} = useOrderContext()
-    const {updateCourierOnETAs_fixed, updateCourierOnETAs} = useCourierContext()
-    const mapRef = useRef(null)
-
+    const {safeUpdateCourier} = useCourierContext()
     const [ETA_toCustomer, setETA_toCustomer] = useState(null)
     const [ETA_toRestaurant, setETA_toRestaurant] = useState(null)
     const [distance, setDistance] = useState(null)
@@ -23,6 +20,8 @@ const DirectionContextProvider = ({children}) => {
     const [destination, setDestination] = useState(null)
     const [waypoints, setWaypoints] = useState([])
     const [wrongOrigin, setWrongOrigin] = useState(false)
+    const mapRef = useRef(null)
+
     // const [tempDestination, setTempDestination] = useState(null)
     // const [tempWaypoints, setTempWaypoints] = useState([])
     // const location = useRef()
@@ -38,29 +37,33 @@ const DirectionContextProvider = ({children}) => {
     // }
 
     const whenDriverIsMoving = async (latitude, longitude) => {
+        if (!dbCourier) {
+            console.error("no DB Courier", dbCourier)
+            return
+        }
+
         if (!latitude || !longitude) {
             console.error("null latitude or longitude", latitude, longitude)
             return
         }
-        if (dbCourier && latitude && longitude) {
-            if (origin === null) {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ on Origin init ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
-                setOrigin({latitude, longitude})
-            } else {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ when Driver is moving ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
-                setOrigin({latitude, longitude})
-            }
 
-
-            const areCoordsEqual = (dbCourier.lat === latitude && dbCourier.lng === longitude)
-
-            if (areCoordsEqual) {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ No need to update ~~~~~~~~~~~~~~~~~~~~~")
-            } else {
-
-                await updateCourier(dbCourier.id, {location: {lat: latitude, lng: longitude}})
-            }
+        if (!origin) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving() init ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
+        } else {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ whenDriverIsMoving() new location ~~~~~~~~~~~~~~~~~~~~~ lat,lng :", latitude, longitude)
         }
+
+
+        const areCoordsEqual = (dbCourier.lat === latitude && dbCourier.lng === longitude)
+
+        if (areCoordsEqual) {
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ No need to update ~~~~~~~~~~~~~~~~~~~~~")
+        } else {
+
+            setOrigin({latitude, longitude})
+            // await updateCourier(dbCourier.id, {location: {lat: latitude, lng: longitude}})
+        }
+
 
     }
 
@@ -89,7 +92,7 @@ const DirectionContextProvider = ({children}) => {
         }
     }
 
-    const validateOrigin=(lat,lng)=>{
+    const validateOrigin = (lat, lng) => {
 
         if (lat.toFixed(3) !== origin.latitude.toFixed(3)
             &&
@@ -100,47 +103,40 @@ const DirectionContextProvider = ({children}) => {
             console.log(lng, origin.longitude)
             setWrongOrigin(true)
 
-        }else{
+        } else {
 
             setWrongOrigin(false)
 
         }
     }
 
+
     const onReady = async (result) => {
 
         const {lat, lng} = result.legs[0].start_location
-        validateOrigin(lat,lng)
+        validateOrigin(lat, lng)
         setDistance(result.distance)
         const ETA_arr = getETA_array(result)
-        const Prev_ETA_arr = [ETA_toCustomer, ETA_toRestaurant]
 
         switch (ETA_arr.length) {
             case 0:
                 setETA_toRestaurant(0)
                 setETA_toCustomer(0)
-                // liveOrder && updateCourierOnETAs(Prev_ETA_arr, [])
-                liveOrder && await updateCourierOnETAs_fixed([])
-
+                liveOrder && await safeUpdateCourier({ETA: [], origin})
                 break;
             case 1:
                 setETA_toRestaurant(0)
                 setETA_toCustomer(ETA_arr[0])
-                // liveOrder && updateCourierOnETAs(Prev_ETA_arr, ETA_arr[0])
-                liveOrder && await updateCourierOnETAs_fixed([ETA_arr[0]])
-
+                liveOrder && await safeUpdateCourier({ETA: [ETA_arr[0]], origin})
                 break;
             case 2:
                 setETA_toRestaurant(ETA_arr[0])
                 setETA_toCustomer(ETA_arr[1])
-                // liveOrder && updateCourierOnETAs(Prev_ETA_arr, [ETA_arr[0], ETA_arr[1]])
-                liveOrder && await updateCourierOnETAs_fixed([ETA_arr[0], ETA_arr[1]])
-
+                liveOrder && await safeUpdateCourier({ETA: [ETA_arr[0], ETA_arr[1]], origin})
                 break;
             default:
                 return
         }
-
     }
 
     const clearDirections = () => {
@@ -175,11 +171,16 @@ const DirectionContextProvider = ({children}) => {
     }, [liveOrder, pressedOrder])
 
     useEffect(() => {
-        startWatchingDriverLocation().then(unsub => subscription.location = unsub)
+        if (!dbCourier || origin) return
+
+        (async () => {
+            await startWatchingDriverLocation()
+        })()
+        // startWatchingDriverLocation().then(unsub => subscription.location = unsub)
         // return ()=>{
         //     subscription.location.unsubscribe()
         // }
-    }, [])
+    }, [dbCourier])
 
     return (
         <DirectionContext.Provider value={{

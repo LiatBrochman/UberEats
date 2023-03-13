@@ -20,14 +20,9 @@ const OrderContextProvider = ({children}) => {
     const [countUpdates, setCountUpdates] = useState(0)
 
 
-    useEffect(()=>{
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ completedOrders ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(completedOrders,null,4))
-
-    },[completedOrders])
-
 
     useEffect(() => {
-        if (!dbCustomer || subscription.hasOwnProperty("liveOrders") ) return;
+        if (!dbCustomer || subscription.hasOwnProperty("liveOrders")) return;
 
         /**
          * init live orders
@@ -38,14 +33,16 @@ const OrderContextProvider = ({children}) => {
         /**
          * init the rest of the orders
          */
-        DataStore.query(Order, o => o.and(o => [
-            o.customerID.eq(dbCustomer.id),
-            o.isDeleted.eq(false),
-            o.or(o=>[
-                o.status.eq("COMPLETED"),
-                o.status.eq("DECLINED")
-            ])
-        ])).then(setCompletedOrders)
+        // DataStore.query(Order, o => o.and(o => [
+        //     o.customerID.eq(dbCustomer.id),
+        //     o.isDeleted.eq(false),
+        //     o.or(o=>[
+        //         o.status.eq("COMPLETED"),
+        //         o.status.eq("DECLINED")
+        //     ])
+        // ])).then(setCompletedOrders)
+        subscribeToCompletedOrders()
+
 
     }, [dbCustomer])
 
@@ -73,22 +70,36 @@ const OrderContextProvider = ({children}) => {
             o.status.ne("DECLINED")
         ])).subscribe(({items, isSynced}) => {
             if (isSynced) {
-                if(items.length !== liveOrders.length){
-                    DataStore.query(Order,o=>o.and(o => [
-                        o.customerID.eq(dbCustomer.id),
-                        o.isDeleted.eq(false),
-                        o.or(o=>[
-                            o.status.eq("COMPLETED"),
-                            o.status.eq("DECLINED")
-                        ])
-                    ])).then(setCompletedOrders)
-                }
+                // if (items.length !== liveOrders.length) {
+                //     DataStore.query(Order, o => o.and(o => [
+                //         o.customerID.eq(dbCustomer.id),
+                //         o.isDeleted.eq(false),
+                //         o.or(o => [
+                //             o.status.eq("COMPLETED"),
+                //             o.status.eq("DECLINED")
+                //         ])
+                //     ])).then(setCompletedOrders)
+                // }
                 setLiveOrders(items)
                 setCountUpdates(prev => prev + 1)
             }
         })
     }
 
+    function subscribeToCompletedOrders() {
+        subscription.completedOrders= DataStore.observeQuery(Order, o => o.and(o => [
+            o.customerID.eq(dbCustomer.id),
+            o.isDeleted.eq(false),
+            o.or(o => [
+                o.status.eq("COMPLETED"),
+                o.status.eq("DECLINED")
+            ])
+        ])).subscribe(({items, isSynced}) => {
+            if (isSynced) {
+                setCompletedOrders(items)
+            }
+        })
+    }
 
     function reSubscribeToLiveOrders() {
         subscription?.liveOrders && subscription.liveOrders.unsubscribe()
@@ -164,9 +175,9 @@ const OrderContextProvider = ({children}) => {
         /**
          create new Order:
          */
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~  create new Order:  restaurant?.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.id,null,4))
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~  create new Order:  restaurant?.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.id, null, 4))
 
-         DataStore.save(new Order({
+        DataStore.save(new Order({
             status: "NEW",
             totalPrice: parseFloat(totalPrice),
             totalQuantity: basketDishes.reduce((count, dish) => count + dish.quantity, 0),
@@ -180,7 +191,7 @@ const OrderContextProvider = ({children}) => {
 
         })).then(async newOrder => {
 
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newOrder,null,4))
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newOrder ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newOrder, null, 4))
 
 
             /**
@@ -194,7 +205,7 @@ const OrderContextProvider = ({children}) => {
             /**
              move dishes from basket to the new order
              */
-            assignDishesToOrder(basketDishes,newOrder).then(()=>{
+            assignDishesToOrder(basketDishes, newOrder).then(() => {
 
                 /**
                  clear basket

@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {Pressable, Text, View} from 'react-native';
 import styles from "./styles";
-import {FontAwesome5, Fontisto, Ionicons} from "@expo/vector-icons";
+import {FontAwesome5, Fontisto} from "@expo/vector-icons";
 import BottomSheet from "@gorhom/bottom-sheet";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useDirectionContext} from "../../contexts/DirectionContext";
@@ -123,7 +123,7 @@ export const BottomSheetMapDirection = () => {
                  * when the order is about to be finished (the courier needs to click 'order completed')
                  */
 
-                if (liveOrder && arrived(origin, destination, 0.1)) {
+                if (liveOrder && arrived(origin, destination, 0.125)) {
                     isClickable = true
                 } else {
 

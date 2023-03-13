@@ -53,15 +53,27 @@ const CourierContextProvider = ({children}) => {
     //     }
     //
     // }
-    const updateCourierOnETAs_fixed = async (newETA) => {
+    const safeUpdateCourier = async ({ETA, origin}) => {
+        const lat = origin.latitude, lng= origin.longitude;
 
-        if (compareArrays(dbCourier.timeToArrive, newETA)) {
+        if (compareArrays(dbCourier.timeToArrive, ETA)) {
 
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updating DB Courier - On ETAs change ~~~~~~~~~~~~~~~~~~~~~ :", newETA)
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ updating DB Courier - On ETAs change ~~~~~~~~~~~~~~~~~~~~~ :", ETA)
 
-            await updateCourier(dbCourier.id,
-                {timeToArrive: newETA})
+            await updateCourier(dbCourier.id, {
+                timeToArrive:ETA,
+                location: {lat,lng}
+            })
+
+
+        }else{
+            await updateCourier(dbCourier.id, {
+                location: {lat,lng}
+            })
+
         }
+
+
 
     }
     const completeOrder = async (id) => {
@@ -103,11 +115,34 @@ const CourierContextProvider = ({children}) => {
 
     }, [dbCourier])
     const fixCourierOnWeirdUpdates = async () => {
-        let tempETA = [...dbCourier.timeToArrive]
+        const {status} = await DataStore.query(Order, o => o.and(o =>
+            [
+                o.courierID.eq(dbCourier.id),
+                o.status.ne("COMPLETED"),
+                o.status.ne("DECLINED")
+            ]
+        ))
 
-        while (tempETA.length > 2) tempETA.shift()
+        const tempETA = [...dbCourier.timeToArrive]
 
-        await updateCourier(dbCourier.id, {timeToArrive: tempETA})
+        switch (status) {
+
+            case "ACCEPTED":
+            case "COOKING":
+            case "READY_FOR_PICKUP":
+                while (tempETA.length > 2) tempETA.shift()
+                await updateCourier(dbCourier.id, {timeToArrive: tempETA})
+                break;
+
+            case "PICKED_UP":
+                while (tempETA.length > 1) tempETA.shift()
+                await updateCourier(dbCourier.id, {timeToArrive: tempETA})
+                break;
+
+            default:
+                console.error("what is happening here???...")
+        }
+
     }
 
     const existingLiveOrder = async () => {
@@ -123,10 +158,11 @@ const CourierContextProvider = ({children}) => {
             dbCourier,
             setDbCourier,
             // updateCourierOnETAs,
-            updateCourierOnETAs_fixed,
+            safeUpdateCourier,
             assignToCourier,
             completeOrder,
-            fixCourierOnInit
+            fixCourierOnInit,
+
         }}>
             {children}
         </CourierContext.Provider>
