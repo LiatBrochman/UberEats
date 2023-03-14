@@ -76,6 +76,7 @@ const CourierContextProvider = ({children}) => {
 
 
     }
+
     const completeOrder = async (id) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(id, null, 4))
 
@@ -85,7 +86,6 @@ const CourierContextProvider = ({children}) => {
                     .then(() =>
                         "finished"))
     }
-
 
     const fixCourierOnInit = async () => {
         if (!dbCourier) return
@@ -114,6 +114,7 @@ const CourierContextProvider = ({children}) => {
         }
 
     }, [dbCourier])
+
     const fixCourierOnWeirdUpdates = async () => {
         const {status} = await DataStore.query(Order, o => o.and(o =>
             [
