@@ -12,23 +12,58 @@ const DetailedOrder = () => {
 
     const {orderID} = useParams()
     const {restaurant} = useRestaurantContext()
-    const {order, orderDishes, courier, setCourier, customer, setOrder, liveOrders, couriers,completedOrders} = useOrderContext()
+    const {
+        order,
+        orderDishes,
+        courier,
+        setCourier,
+        customer,
+        setOrder,
+        couriers,
+        ETAs,
+        countETAs
+    } = useOrderContext({ETAs:[]})
     const [status, setStatus] = useState(order?.status)
+    const [ETA,setETA]=useState()
+
 
     useEffect(() => {
-        !order &&
-        setOrder([...liveOrders,...completedOrders].find(o => o.id === orderID))
-    }, [liveOrders,completedOrders])
-
-    useEffect(()=>{
-        !courier &&
-        setCourier(couriers.find(c => c.id === order?.courierID))
-    },[couriers])
+        if (!orderID) return;
+        DataStore.query(Order, orderID).then(setOrder)
+    }, [orderID])
 
 
     useEffect(() => {
         order && setStatus(order.status)
     }, [order])
+
+
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ couriers.length  ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers.length ,null,4))
+
+        if (couriers.length === 0) {
+            setCourier(null)
+            return;
+        }
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order,null,4))
+
+       if( order && order.courierID !== "null"  ) {
+           // setCourier(couriers.find(c => c.id === order.courierID))
+           let courier = couriers.find(c => c.id === order.courierID)
+           console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier,null,4))
+
+           setCourier(courier)
+
+       }
+    }, [order,couriers.length])
+
+    useEffect(()=>{
+        if(ETAs.length===0 || !courier) {
+            return
+        }
+
+        setETA(ETAs.find(ETA=>ETA.courierID===courier.id))
+    },[countETAs,couriers.length])
 
 
     const updateStatus = async ({id, newStatus}) => {
@@ -42,7 +77,7 @@ const DetailedOrder = () => {
                         })
                     )
                 )
-            DataStore.query(Courier, courier.id)
+            courier && DataStore.query(Courier, courier.id)
                 .then(courier => DataStore.save(
                         Courier.copyOf(courier, (updated) => {
                             updated.orderID = "null"
@@ -106,7 +141,7 @@ const DetailedOrder = () => {
                 <List bordered style={{border: "none"}} column={{lg: 1, md: 1, sm: 1}}>
                     <List.Item style={{border: "none"}}>
                         <div>
-                            Customer: {customer.name}
+                            Customer: {customer && customer.name}
                         </div>
                     </List.Item>
                     <List.Item style={{border: "none"}}>
@@ -116,17 +151,17 @@ const DetailedOrder = () => {
                     </List.Item>
                     <List.Item style={{border: "none"}}>
                         <div>
-                            Courier Name: {courier?.name}
+                            Courier Name: {courier && courier.name}
                         </div>
                     </List.Item>
                     <List.Item style={{border: "none"}}>
                         <div>
-                            Restaurant Time: {getRestaurantArrivalTime()}
+                            Restaurant Time: {ETA && ETA.restaurant}
                         </div>
                     </List.Item>
                     <List.Item style={{border: "none"}}>
                         <div>
-                            Customer Time: {getCustomerArrivalTime()}
+                            Customer Time: {ETA && ETA.customer}
                         </div>
                     </List.Item>
 

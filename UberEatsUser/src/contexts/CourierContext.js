@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {useOrderContext} from "./OrderContext";
 import {DataStore} from "aws-amplify";
-import {Courier} from "../models";
+import {Courier, Order} from "../models";
 
 
 const CourierContext = createContext({})
@@ -9,97 +9,84 @@ const CourierContext = createContext({})
 
 const CourierContextProvider = ({children}) => {
 
-    const {liveOrders, countUpdates, completedOrders} = useOrderContext({
-        liveOrders: [],
-        countUpdates: 0,
-        completedOrders: []
-    })
-
-
+    const {liveCouriersIDs} = useOrderContext({liveCouriersIDs: [], liveOrders: []})
     const [couriers, setCouriers] = useState([])
     const [ETAs, setETAs] = useState([])
+    const [countETAs, setCountETAs] = useState(0)
 
-    useEffect(() => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ couriers ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers, null, 4))
 
-    }, [couriers])
+    function subscribeToLiveCouriers() {
 
-    function fetchCouriers() {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to subscribe to live couriers ~~~~~~~~~~~~~~~~~~~~~ ")
 
-        subscription.couriers = liveOrders.map(liveOrder => {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ liveOrder.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(liveOrder.id, null, 4))
-
-                return DataStore.observeQuery(Courier, c => c.id.eq(liveOrder.courierID))
-                    .subscribe(({items, isSynced}) => {
-                        if (!isSynced) return;
-
-                        switch (items.length) {
-                            case 0:
-                                setCouriers([])
-                                setETAs([])
-                                return;
-
-                            case 1:
-                                const courier = items[0]
-                                setCouriers([courier])
-                                setETAs([{
-                                    courierID: courier.id,
-                                    ETA: courier.timeToArrive.reduce((total, current) => total + current, 0)
-                                }])
-                                return;
-
-                            default://anything above 1
-                                setCouriers(items)
-                                setETAs(items.map(c => ({courierID: c.id, ETA: c.timeToArrive})))
-                        }
-                    })
-            }
-        )
-
-    }
-
-    function needToFetchCouriers() {
-        /**
-         * sub/re-sub couriers whenever:
-         * 1. a courier accept our order (order gets an courier ID)
-         * 2. order has been completed/declined
-         */
-
-        const liveOrdersWithCourier = liveOrders.filter(o => o.courierID !== "null")
-
-        if (liveOrdersWithCourier.length === couriers.length) {
-            return false
+        if (subscription?.couriers) {
+            subscription.couriers.unsubscribe()
         }
-        /**
-         * here we cover both options:
-         * either our context couriers are LESS than the real amount of couriers: a new courier has arrived
-         * either our context couriers are MORE than the real amount of couriers: an order has been completed/declined
-         */
-        return true
+
+        subscription.couriers = DataStore.observeQuery(Courier, c => c.or(c => [
+            ...liveCouriersIDs.map(id => c.id.eq(id))
+        ])
+        ).subscribe(({items, isSynced}) => {
+            if (!isSynced) return;
+
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ subscribing Couriers ~~~~~~~~~~~~~~~~~~~~~ found : ", items?.length, "couriers")
+
+            switch (items?.length) {
+
+                case undefined:
+                case 0:
+                    setCouriers([])
+                    setETAs([])
+                    break;
+
+                case 1:
+                    const courier = items[0]
+                    setCouriers([courier])
+                    setETAs([{
+                        courierID: courier.id,
+                        time: courier.timeToArrive[0] + (courier.timeToArrive?.[1] || 0)
+                    }])
+                    break;
+
+                default:
+                    setCouriers(items)
+                    setETAs(items.map(courier => ({
+                        courierID: courier.id,
+                        time: courier.timeToArrive[0] + (courier.timeToArrive?.[1] || 0)
+                    })))
+            }
+            setCountETAs(prev => prev + 1)
+
+        })
+    }
+
+    function unSubCouriers() {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ unsubscribing all Couriers ~~~~~~~~~~~~~~~~~~~~~ ")
+        subscription.couriers.unsubscribe()
+        setCouriers([])
+        setETAs([])
+        setCountETAs(0)
     }
 
     useEffect(() => {
-            if (liveOrders.length === 0) {
-                setCouriers([])
-                setETAs([])
-                return;
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ amount of Live Couriers IDs~~~~~~~~~~~~~~~~~~~~~ :", liveCouriersIDs.length)
+
+        if (liveCouriersIDs.length === 0) {
+            if (subscription?.couriers) {
+                unSubCouriers()
             }
+            return
+        }
 
-            /**
-             * init couriers + update couriers
-             */
+        subscribeToLiveCouriers()
 
-            needToFetchCouriers() && fetchCouriers()
-
-
-        },
-        [countUpdates, completedOrders.length])
-
+    }, [liveCouriersIDs.length])
 
     return (
         <CourierContext.Provider value={{
             couriers,
             ETAs,
+            countETAs
         }}>
             {children}
         </CourierContext.Provider>

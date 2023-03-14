@@ -109,7 +109,6 @@ const Map = () => {
                     )}
 
                     {couriers.length > 0 && couriers.map(courier => {
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier.id+' '+liveOrders.length ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier.id+' '+liveOrders.length,null,4))
 
                         if (!couriers.some(c => c.id === courier.id)) {
                             // Skip rendering the marker if the courier is not present in the `couriers` array

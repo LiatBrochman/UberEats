@@ -93,7 +93,7 @@ const OrderContextProvider = ({children}) => {
                 ])
             ])).subscribe(({items, isSynced}) => {
                 if (!isSynced) return
-                setCompletedOrders(items)(items)
+                setCompletedOrders(items)
             })
         }
 

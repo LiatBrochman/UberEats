@@ -25,7 +25,8 @@ const OrderContextProvider = ({children}) => {
     const [countLiveUpdates, setCountLiveUpdates] = useState(0)
     const [completedOrders, setCompletedOrders] = useState([])
     const [couriers, setCouriers] = useState([])
-
+    const [countETAs, setCountETAs] = useState(0)
+    const [ETAs, setETAs] = useState([])
 
     const ref = useRef({order})
 
@@ -124,6 +125,12 @@ const OrderContextProvider = ({children}) => {
     }
 
     function subscribeToLiveCouriers() {
+        if(liveCouriersIDs.length===0){
+            setCouriers([])
+            setETAs([])
+            setCountETAs(0)
+            return
+        }
         window.subscription.couriers = observeCouriers()
     }
 
@@ -132,9 +139,36 @@ const OrderContextProvider = ({children}) => {
         return DataStore.observeQuery(Courier, c => c.or(c => [
             ...liveCouriersIDs.map(id => c.id.eq(id))
         ])).subscribe(({items, isSynced}) => {
-            if (isSynced) {
-                setCouriers(items)
+            if (!isSynced) return;
+
+            switch (items?.length) {
+
+                case undefined:
+                case 0:
+                    setCouriers([])
+                    setETAs([])
+                    break;
+
+                case 1:
+                    const courier = items[0]
+                    setCouriers([courier])
+                    setETAs([{
+                        courierID: courier.id,
+                        customer: courier.timeToArrive[0] + courier.timeToArrive[1],
+                        restaurant: courier.timeToArrive[1]
+                    }])
+                    break;
+
+                default:
+                    setCouriers(items)
+                    setETAs(items.map(courier => ({
+                        courierID: courier.id,
+                        customer: courier.timeToArrive[0] + courier.timeToArrive[1],
+                        restaurant: courier.timeToArrive[1]
+                    })))
             }
+            setCountETAs(prev => prev + 1)
+
         })
     }
 
@@ -173,6 +207,8 @@ const OrderContextProvider = ({children}) => {
             liveOrders,
             completedOrders,
             countLiveUpdates,
+            countETAs,
+            ETAs,
 
             getOrder
         }}>

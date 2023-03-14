@@ -18,7 +18,7 @@ const OrderContextProvider = ({children}) => {
     const [liveOrders, setLiveOrders] = useState([])
     const [orderDishes, setOrderDishes] = useState([])
     const [countUpdates, setCountUpdates] = useState(0)
-
+    const [liveCouriersIDs, setLiveCouriersIDs] = useState([])
 
 
     useEffect(() => {
@@ -33,14 +33,7 @@ const OrderContextProvider = ({children}) => {
         /**
          * init the rest of the orders
          */
-        // DataStore.query(Order, o => o.and(o => [
-        //     o.customerID.eq(dbCustomer.id),
-        //     o.isDeleted.eq(false),
-        //     o.or(o=>[
-        //         o.status.eq("COMPLETED"),
-        //         o.status.eq("DECLINED")
-        //     ])
-        // ])).then(setCompletedOrders)
+
         subscribeToCompletedOrders()
 
 
@@ -62,6 +55,35 @@ const OrderContextProvider = ({children}) => {
     }, [order])
 
 
+    function onLiveOrderEvent(items) {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ onLiveOrderEvent ~~~~~~~~~~~~~~~~~~~~~ items?.length:", items?.length)
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ live order event ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items, null, 4))
+
+        switch (items?.length) {
+            case undefined:
+            case 0:
+                setLiveOrders([])
+                setLiveCouriersIDs([])
+                setCountUpdates(prev => prev + 1)
+                break;
+
+            case 1:
+                setLiveOrders(items)
+                setLiveCouriersIDs(
+                    items[0].courierID === "null" ? [] : [items[0].courierID]
+                )
+                setCountUpdates(prev => prev + 1)
+                break;
+
+            default :
+                setLiveOrders(items)
+                setLiveCouriersIDs(items.filter(o => o.courierID !== "null").map(o => o.courierID))
+                setCountUpdates(prev => prev + 1)
+
+        }
+
+    }
+
     function subscribeToLiveOrders() {
         subscription.liveOrders = DataStore.observeQuery(Order, o => o.and(o => [
             o.customerID.eq(dbCustomer.id),
@@ -70,24 +92,13 @@ const OrderContextProvider = ({children}) => {
             o.status.ne("DECLINED")
         ])).subscribe(({items, isSynced}) => {
             if (isSynced) {
-                // if (items.length !== liveOrders.length) {
-                //     DataStore.query(Order, o => o.and(o => [
-                //         o.customerID.eq(dbCustomer.id),
-                //         o.isDeleted.eq(false),
-                //         o.or(o => [
-                //             o.status.eq("COMPLETED"),
-                //             o.status.eq("DECLINED")
-                //         ])
-                //     ])).then(setCompletedOrders)
-                // }
-                setLiveOrders(items)
-                setCountUpdates(prev => prev + 1)
+                onLiveOrderEvent(items)
             }
         })
     }
 
     function subscribeToCompletedOrders() {
-        subscription.completedOrders= DataStore.observeQuery(Order, o => o.and(o => [
+        subscription.completedOrders = DataStore.observeQuery(Order, o => o.and(o => [
             o.customerID.eq(dbCustomer.id),
             o.isDeleted.eq(false),
             o.or(o => [
@@ -115,7 +126,7 @@ const OrderContextProvider = ({children}) => {
          * remove completed order
          */
 
-        liveOrders.some(liveOrder => {
+        liveOrders.length && liveOrders.some(liveOrder => {
             if (liveOrder.status === "COMPLETED" || liveOrder.status === "DECLINED") {
                 setCompletedOrders(prev => [...prev, {...liveOrder}])
                 reSubscribeToLiveOrders()
@@ -262,6 +273,7 @@ const OrderContextProvider = ({children}) => {
             liveOrders,
             completedOrders,
             countUpdates,
+            liveCouriersIDs,
             createNewOrder,
             getOrderByID,
             getStageByStatus

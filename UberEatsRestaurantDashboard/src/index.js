@@ -10,8 +10,7 @@ import RestaurantContextProvider from "./contexts/RestaurantContext";
 import {Amplify} from "aws-amplify";
 import awsconfig from './aws-exports';
 
-window.subscription = {test:"ok"};
-
+window.subscription = {};
 awsconfig.oauth.redirectSignIn = window.location.origin
 awsconfig.oauth.redirectSignOut = window.location.origin
 
