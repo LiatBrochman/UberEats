@@ -42,10 +42,12 @@ const Profile = () => {
                 };
                 draft = {
                     ...draft,
-                    location,
                     email: authUser.attributes.email,
+                    destinations:[],
+                    timeToArrive:[],
                     isDeleted: false,
                     isActive: true,
+                    location,
                     sub
                 };
                 await createCourier(draft);

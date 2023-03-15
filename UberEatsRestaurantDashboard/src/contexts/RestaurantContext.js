@@ -8,19 +8,19 @@ const RestaurantContext = createContext({})
 
 const RestaurantContextProvider = ({children}) => {
 
-    const {dbOwner} = useAuthContext()
+    const {dbOwner} = useAuthContext({dbOwner: null})
     const [restaurantDishes, setRestaurantDishes] = useState([])
     const [restaurant, setRestaurant] = useState(null)
-    const [loading, setLoading] = useState(true)
+    const [finishedFetching, setFinishedFetching] = useState(false)
 
     useEffect(() => {
-        if (!dbOwner || restaurant) return;
+        if (!dbOwner) return;
 
-        DataStore.observeQuery(Restaurant, r => r.ownerID.eq(dbOwner.id))
+        window.subscription.restaurant = DataStore.observeQuery(Restaurant, r => r.ownerID.eq(dbOwner.id))
             .subscribe(({items, isSynced}) => {
                 if (isSynced) {
-                    setRestaurant(items[0])
-                    setLoading(false)
+                    items.length && setRestaurant(items[0])
+                    setFinishedFetching(true)
                 }
             })
 
@@ -28,26 +28,26 @@ const RestaurantContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (restaurantDishes.length > 0 ) return;
+        if (restaurantDishes.length > 0) return;
 
-            DataStore.observeQuery(Dish, d => d.and(d =>
-                    [
-                        d.restaurantID.eq(restaurant?.id),
-                        d.originalID.eq("null"),
-                        d.isDeleted.eq(false)
-                    ]
-            )).subscribe(({items, isSynced}) => {
-                if (isSynced) {
-                    setRestaurantDishes(items)
-                }
-            })
+        DataStore.observeQuery(Dish, d => d.and(d =>
+            [
+                d.restaurantID.eq(restaurant?.id),
+                d.originalID.eq("null"),
+                d.isDeleted.eq(false)
+            ]
+        )).subscribe(({items, isSynced}) => {
+            if (isSynced) {
+                setRestaurantDishes(items)
+            }
+        })
 
     }, [restaurant])
 
 
     return (<RestaurantContext.Provider
             value={{
-                loading,
+                finishedFetching,
                 restaurant,
                 setRestaurant,
                 restaurantDishes,

@@ -31,6 +31,38 @@ const OrderContextProvider = ({children}) => {
     const ref = useRef({order})
 
 
+    function getRestaurantArrivalTime(courier) {
+
+            switch (courier.timeToArrive.length) {
+
+                case 0://[]
+                    return 0
+
+                case 1://[5]
+                    return 0
+
+                case 2://[5,6]
+                    return courier.timeToArrive[0]
+            }
+
+    }
+
+    function getCustomerArrivalTime(courier) {
+
+            switch (courier.timeToArrive.length) {
+
+                case 0://[]
+                    return 0
+
+                case 1://[5]
+                    return courier.timeToArrive[0]
+
+                case 2:
+                    return courier.timeToArrive[1]+courier.timeToArrive[0]
+            }
+
+    }
+
     /**
      * init the :  liveOrders, completedOrders
      */
@@ -154,8 +186,8 @@ const OrderContextProvider = ({children}) => {
                     setCouriers([courier])
                     setETAs([{
                         courierID: courier.id,
-                        customer: courier.timeToArrive[0] + courier.timeToArrive[1],
-                        restaurant: courier.timeToArrive[1]
+                        customer: getCustomerArrivalTime(courier),
+                        restaurant: getRestaurantArrivalTime(courier)
                     }])
                     break;
 
@@ -163,8 +195,8 @@ const OrderContextProvider = ({children}) => {
                     setCouriers(items)
                     setETAs(items.map(courier => ({
                         courierID: courier.id,
-                        customer: courier.timeToArrive[0] + courier.timeToArrive[1],
-                        restaurant: courier.timeToArrive[1]
+                        customer: getCustomerArrivalTime(courier),
+                        restaurant: getRestaurantArrivalTime(courier)
                     })))
             }
             setCountETAs(prev => prev + 1)
@@ -210,6 +242,8 @@ const OrderContextProvider = ({children}) => {
             countETAs,
             ETAs,
 
+            getRestaurantArrivalTime,
+            getCustomerArrivalTime,
             getOrder
         }}>
             {children}

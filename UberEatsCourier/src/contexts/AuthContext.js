@@ -1,11 +1,11 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {Auth, Hub} from "aws-amplify";
+import {AppState} from 'react-native';
 
-const AuthContext = createContext({});
+const AuthContext = createContext({})
 
 const AuthContextProvider = ({children}) => {
     const [authUser, setAuthUser] = useState(null)
-    const [customState, setCustomState] = useState(null)
     const sub = authUser?.attributes?.sub
     const googleSignin = useCallback(() => {
         Auth.federatedSignIn({provider: 'Google'}).then(setAuthUser)
@@ -34,9 +34,6 @@ const AuthContextProvider = ({children}) => {
                     console.log('user signed out')
                     setAuthUser(null)
                     break;
-                case "customOAuthState":
-                    setCustomState(data);
-                    break;
                 case 'signIn_failure':
                     console.log('user sign in failed')
                     break;
@@ -50,9 +47,30 @@ const AuthContextProvider = ({children}) => {
             .then((currentUser) => setAuthUser(currentUser))
             .catch(() => console.log("Not signed in"))
 
-        return unsubscribe
-    }, [])
+        function performCleanup(nextAppState) {
+            if (nextAppState === 'inactive' || nextAppState === 'background') {
+                // Iterate through the subscription object values
+                for (const key in subscription) {
+                    // Check if the current object value has an "unsubscribe" method
+                    if (typeof subscription[key].unsubscribe === 'function') {
+                        // Call the "unsubscribe" method
+                        subscription[key].unsubscribe()
+                    }
+                }
+            }
+        }
 
+        // Subscribe to AppState changes
+        const unsubscribeAppState = AppState.addEventListener('change', performCleanup)
+
+        // Perform cleanup when the component is unmounted
+        return () => {
+            unsubscribe()
+            unsubscribeAppState()
+        }
+
+
+    }, [])
 
 
     return (

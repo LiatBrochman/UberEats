@@ -1,28 +1,28 @@
 import {useRestaurantContext} from "../contexts/RestaurantContext";
-import {useEffect, useState} from "react";
 import AppRoutes from "./AppRoutes";
 import NewRestaurant from "../screens/NewRestaurant";
 import {Image} from "@aws-amplify/ui-react";
+import {useAuthContext} from "../contexts/AuthContext";
 
 const ProtectedRoutes = () => {
 
-    const {loading,restaurant} = useRestaurantContext()
-    const [restaurantIsEmpty, setRestaurantIsEmpty] = useState(true)
+    const {dbOwner} = useAuthContext({dbOwner: null})
+    const {finishedFetching, restaurant} = useRestaurantContext({finishedFetching: false, restaurant: null})
+    const loadingScreen = <Image style={{display: "block", marginLeft: "auto", marginRight: "auto"}} src={"https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"}/>
 
 
-    useEffect(() => {
-        restaurantIsEmpty && restaurant?.id && setRestaurantIsEmpty(false)
-    }, [restaurant]);
+    if (!dbOwner) return loadingScreen
 
 
-    return restaurantIsEmpty ? (
-        loading
-            ? <Image style={{  display: "block", marginLeft: "auto", marginRight: "auto"}} src={"https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"}/>
-            : <NewRestaurant/>
-    ) : (
-        <AppRoutes/>
+    switch (finishedFetching) {
 
-    )
+        case true://enter existing restaurant or create a new one
+            return restaurant ? <AppRoutes/> : <NewRestaurant/>
+
+        case false:
+            return loadingScreen
+
+    }
 
 
 }
