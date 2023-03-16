@@ -18,7 +18,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.joey123ms.uberEatsCourier"
     },
     "android": {
       "adaptiveIcon": {
