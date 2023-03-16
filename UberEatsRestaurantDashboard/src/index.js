@@ -18,11 +18,11 @@ console.log("~~~~~~~~~~~~~~~~~~~~~ isLocalEnvironment ~~~~~~~~~~~~~~~~~~~~~ :",i
 
 awsconfig.oauth.redirectSignIn = isLocalEnvironment
     ? window.location.origin
-    : 'https://master--timely-phoenix-06c7ef.netlify.app';
+    : 'https://timely-phoenix-06c7ef.netlify.app';
 
 awsconfig.oauth.redirectSignOut = isLocalEnvironment
     ? window.location.origin
-    : 'https://master--timely-phoenix-06c7ef.netlify.app';
+    : 'https://timely-phoenix-06c7ef.netlify.app';
 
 Amplify.configure({...awsconfig, Analytics: {disabled: true}});
 
