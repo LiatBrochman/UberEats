@@ -11,8 +11,15 @@ import {Amplify} from "aws-amplify";
 import awsconfig from './aws-exports';
 
 window.subscription = {};
-awsconfig.oauth.redirectSignIn = window.location.origin
-awsconfig.oauth.redirectSignOut = window.location.origin
+const isLocalEnvironment = process.env.REACT_APP_ENV === 'local';
+
+awsconfig.oauth.redirectSignIn = isLocalEnvironment
+    ? window.location.origin
+    : 'https://master--timely-phoenix-06c7ef.netlify.app';
+
+awsconfig.oauth.redirectSignOut = isLocalEnvironment
+    ? window.location.origin
+    : 'https://master--timely-phoenix-06c7ef.netlify.app';
 
 Amplify.configure({...awsconfig, Analytics: {disabled: true}});
 
