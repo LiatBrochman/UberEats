@@ -1,19 +1,61 @@
-import React from 'react';
-import {Button, Card, Form, Input, InputNumber, Switch} from "antd";
-import {DataStore} from "aws-amplify";
+import React, {useEffect, useState} from 'react';
+import {Button, Card, Form, Input, InputNumber, Switch, Upload} from "antd";
+import {DataStore, Storage} from "aws-amplify";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigate} from "react-router-dom";
 import Geocode from "react-geocode";
 import {Restaurant} from "../../models";
 import './index.css';
+import {UploadOutlined} from "@ant-design/icons";
+import S3ImagePicker from "../S3ImagePicker";
 
 
 function GenericRestaurantEditor({props}) {
 
     const {restaurant, setRestaurant} = useRestaurantContext()
-    const {dbOwner,signOut} = useAuthContext()
+    const {dbOwner, signOut} = useAuthContext()
     const navigate = useNavigate()
+    const imageBaseUrl = "https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/"
+    const [image, setImage] = useState(props.type === "NEW" ? '' : restaurant?.image)
+    const [fileList, setFileList] = useState([])
+
+    useEffect(() => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ image ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(image, null, 4))
+
+    }, [image])
+
+
+    const customRequest = async ({file, onSuccess, onError}) => {
+        try {
+            const result = await Storage.put(file.name, file, {
+                contentType: file.type,
+            })
+            setImage(imageBaseUrl + result.key)
+            onSuccess(result)
+        } catch (error) {
+            console.error('Error uploading file:', error)
+            onError(error)
+        }
+    }
+
+    const handleChange = info => {
+        setFileList(info.fileList);
+    }
+
+    const handleImageSelect = (selectedImage) => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ selectedImage ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(selectedImage, null, 4))
+
+        setImage(imageBaseUrl + selectedImage.key)
+        setFileList([
+            {
+                uid: selectedImage.key,
+                name: selectedImage.key,
+                status: 'done',
+                url: imageBaseUrl + selectedImage.key,
+            },
+        ])
+    }
 
     const createNewRestaurant = async (draft_restaurant) => {
         try {
@@ -37,9 +79,10 @@ function GenericRestaurantEditor({props}) {
     }
 
     const onFinish = async (values) => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~on finish image ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(image, null, 4))
+        values.image = image;
 
         try {
-
             const {
                 name,
                 image,
@@ -54,7 +97,7 @@ function GenericRestaurantEditor({props}) {
             Geocode.setApiKey(process.env.REACT_APP_API_KEY)
             Geocode.fromAddress(address + '')
                 .then(async (response) => {
-                    if(response?.status === "OK") {
+                    if (response?.status === "OK") {
 
                         const {lat, lng} = response.results[0].geometry.location;
                         const draft_restaurant = {
@@ -86,7 +129,8 @@ function GenericRestaurantEditor({props}) {
                             default:
                                 console.log("wrong idea..")
                         }
-                    }})
+                    }
+                })
 
         } catch (e) {
             console.error("error on GenericRestaurantEditor")
@@ -98,12 +142,15 @@ function GenericRestaurantEditor({props}) {
     }
 
     let name = props.type === "NEW" ? '' : restaurant?.name
-    let image = props.type === "NEW" ? '' : restaurant?.image
+    // let image = props.type === "NEW" ? '' : restaurant?.image
     let deliveryFee = props.type === "NEW" ? '' : restaurant?.deliveryFee
     let minDeliveryMinutes = props.type === "NEW" ? '' : restaurant?.minDeliveryMinutes
     let maxDeliveryMinutes = props.type === "NEW" ? '' : restaurant?.maxDeliveryMinutes
     let address = props.type === "NEW" ? '' : restaurant?.location.address
     let isOpen = props.type === "NEW" ? true : restaurant?.isOpen
+
+    const renderingImage = <img src={image} alt={imageBaseUrl + '0.png'} style={{maxWidth: '50%', height: 'auto'}}/>
+
 
     return (
         <div>
@@ -116,7 +163,31 @@ function GenericRestaurantEditor({props}) {
                     </Form.Item>
 
                     <Form.Item name="image" label="Restaurant image" initialValue={image} required>
-                        <Input className="res-input" placeholder="Enter image url here"/>
+
+                        {/*<Input className="res-input" placeholder="Enter image url here"/>*/}
+                        <>
+                            {renderingImage}
+                            <Input
+                                className="res-input"
+                                placeholder="Enter image url here"
+                                value={image}
+                                onChange={(e) => setImage(e.target.value)}
+                            />
+                            <Upload
+                                accept="image/*"
+                                fileList={fileList}
+                                customRequest={customRequest}
+                                onChange={handleChange}
+                                onRemove={() => {
+                                    setImage('');
+                                    setFileList([]);
+                                }}>
+                                <button type="button">
+                                    <UploadOutlined/> Click to Upload
+                                </button>
+                            </Upload>
+                            <S3ImagePicker onSelect={handleImageSelect}/>
+                        </>
                     </Form.Item>
 
                     <Form.Item name="deliveryFee" label="Restaurant delivery Fee" initialValue={deliveryFee}
@@ -157,14 +228,15 @@ function GenericRestaurantEditor({props}) {
                                    }]
 
                                } required>
-                        <InputNumber className="res-input" />
+                        <InputNumber className="res-input"/>
                     </Form.Item>
 
                     <Form.Item name="address" label="Restaurant address" initialValue={address} required>
                         <Input className="res-input" placeholder="Enter restaurant address here"/>
                     </Form.Item>
 
-                    <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" initialValue={!!isOpen} required>
+                    <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" initialValue={!!isOpen}
+                               required>
                         <Switch defaultChecked={!!isOpen} className="res-switch"
                         />
                     </Form.Item>
@@ -176,24 +248,28 @@ function GenericRestaurantEditor({props}) {
                 </Form>
 
 
-            <Button
-                onClick={signOut}
-                style={{textAlign: "center", color: 'gray', backgroundColor: "white"
-                  ,fontWeight:500, border: 'none'}}>
-                Sign out
-            </Button>
+                <Button
+                    onClick={signOut}
+                    style={{
+                        textAlign: "center", color: 'gray', backgroundColor: "white"
+                        , fontWeight: 500, border: 'none'
+                    }}>
+                    Sign out
+                </Button>
 
-            <Button onClick={async () => {
-                await DataStore.stop()
-                await DataStore.stop()
-                await DataStore.clear()
-                await DataStore.start()
-            }}
-                    style={{textAlign: "center", color: 'gray',backgroundColor: "white"
-                        ,fontWeight:500, border: 'none'}}
-            >
-                clear
-            </Button>
+                <Button onClick={async () => {
+                    await DataStore.stop()
+                    await DataStore.stop()
+                    await DataStore.clear()
+                    await DataStore.start()
+                }}
+                        style={{
+                            textAlign: "center", color: 'gray', backgroundColor: "white"
+                            , fontWeight: 500, border: 'none'
+                        }}
+                >
+                    clear
+                </Button>
             </Card>
         </div>
     )

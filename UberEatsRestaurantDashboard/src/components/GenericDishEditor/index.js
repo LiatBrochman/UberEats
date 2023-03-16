@@ -1,18 +1,48 @@
-import React from 'react';
-import {Button, Card, Form, Input, Switch} from "antd";
+import React, {useState} from 'react';
+import {Button, Card, Form, Input, Switch, Upload} from "antd";
+import {UploadOutlined} from '@ant-design/icons';
+import S3ImagePicker from '../S3ImagePicker';
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import {DataStore} from "aws-amplify";
+import {DataStore, Storage} from "aws-amplify";
 import {Dish} from "../../models";
 import {useNavigate} from 'react-router-dom';
-import  './index.css';
+import './index.css';
+
 
 function GenericDishEditor({props}) {
 
     const {restaurant} = useRestaurantContext()
     const navigate = useNavigate()
+    const imageBaseUrl = "https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/"
+    const [image, setImage] = useState(props.type === "NEW" ? '' : props.dish.image)
+    const [fileList, setFileList] = useState([])
+
+    const customRequest = async ({file, onSuccess, onError}) => {
+        try {
+            const result = await Storage.put(file.name, file, {
+                contentType: file.type,
+            })
+            setImage(imageBaseUrl + result.key)
+            onSuccess(result)
+        } catch (error) {
+            console.error('Error uploading file:', error)
+            onError(error)
+        }
+    }
+
+    const handleChange = info => {
+        setFileList(info.fileList);
+    }
+
+    let name = props.type === "NEW" ? '' : props.dish.name
+    // let image = props.type === "NEW" ? '' : props.dish.image
+    let description = props.type === "NEW" ? '' : props.dish.description
+    let price = props.type === "NEW" ? '' : props.dish.price
+    let isActive = props.type === "NEW" ? true : props.dish.isActive
 
 
     const createNewRestaurantDish = async ({name, image, description, price, isActive}) => {
+
         return await DataStore.save(
             new Dish({
                 name: name,
@@ -27,8 +57,8 @@ function GenericDishEditor({props}) {
                 orderID: "null",
                 basketID: "null"
             }))
-
     }
+
     const editRestaurantDish = async ({name, image, description, price, isActive}) => {
 
         const existingDish = await DataStore.query(Dish, props.dish.id)
@@ -45,20 +75,37 @@ function GenericDishEditor({props}) {
 
     }
 
+    const handleImageSelect = (selectedImage) => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ selectedImage ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(selectedImage, null, 4))
+
+        setImage(imageBaseUrl + selectedImage.key)
+        setFileList([
+            {
+                uid: selectedImage.key,
+                name: selectedImage.key,
+                status: 'done',
+                url: imageBaseUrl + selectedImage.key,
+            },
+        ])
+    }
+
     function getTitle() {
         switch (props.type) {
             case "NEW":
                 return "Create New Dish"
             case "EDIT":
                 return "Edit Your Dish"
-                // return "Edit Your Dish (id :" + props?.dish?.id + ")"
+            // return "Edit Your Dish (id :" + props?.dish?.id + ")"
             default :
                 return "unknown type"
         }
+
     }
 
-
     const onFinish = async (values) => {
+
+        values.image = image;
+
         switch (props.type) {
 
             case "NEW":
@@ -67,25 +114,25 @@ function GenericDishEditor({props}) {
 
             case "EDIT":
                 await editRestaurantDish(values)
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ values ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(values, null, 4))
+
                 break;
             default:
                 console.error("wrong type value sent to generic props (can only accept EDIT or NEW)", props.type)
         }
         navigate(`/menu`)
+
+
     }
 
-
-    let name = props.type === "NEW" ? '' : props.dish.name
-    let image = props.type === "NEW" ? '' : props.dish.image
-    let description = props.type === "NEW" ? '' : props.dish.description
-    let price = props.type === "NEW" ? '' : props.dish.price
-    let isActive = props.type === "NEW" ? true : props.dish.isActive
-
+    const renderingImage = <img src={image} alt={imageBaseUrl + '0.png'} style={{maxWidth: '50%', height: 'auto'}}/>
 
     return (
         <Card title={getTitle()} style={{margin: 20}}>
+
             <Form layout="vertical" wrapperCol={{span: 8}}
-                  onFinish={onFinish}>
+                  onFinish={onFinish}
+            >
 
                 <Form.Item label="Dish name"
                            name="name"
@@ -104,16 +151,36 @@ function GenericDishEditor({props}) {
                 <Form.Item label="Dish image"
                            name="image"
                            initialValue={image}
-                           rules={
-                               [{
-                                   required: true,
-                               },
-                                   {
-                                       type: 'string',
-                                       min: 1,
-                                   },
-                               ]}>
-                    <Input className="dish-input"/>
+                           rules={[
+                               {required: true, message: 'Please select an image or enter a URL.'},
+                               {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
+                           ]}>
+                    <>
+
+                        {renderingImage}
+
+                        <Input
+                            className="dish-input"
+                            placeholder="Enter image url here"
+                            value={image}
+                            onChange={(e) => setImage(e.target.value)}
+                        />
+                        <Upload
+                            accept="image/*"
+                            fileList={fileList}
+                            customRequest={customRequest}
+                            onChange={handleChange}
+                            onRemove={() => {
+                                setImage('');
+                                setFileList([]);
+                            }}>
+                            <button type="button">
+                                <UploadOutlined/> Click to Upload
+                            </button>
+                        </Upload>
+                        <S3ImagePicker onSelect={handleImageSelect}/>
+                    </>
+
                 </Form.Item>
                 <Form.Item label="Dish description"
                            name="description"

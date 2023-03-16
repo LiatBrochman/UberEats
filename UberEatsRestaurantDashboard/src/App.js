@@ -5,8 +5,10 @@ import ProtectedRoutes from "./routes/ProtectedRoutes";
 import './App.css'
 import '@aws-amplify/ui-react/styles.css';
 import awsExports from './aws-exports';
-import {Amplify} from "aws-amplify";
-Amplify.configure(awsExports);
+import {Amplify,Storage} from "aws-amplify";
+
+Amplify.configure({...awsExports, Analytics: {disabled: true}});
+Storage.configure({ region: awsExports.aws_project_region });
 
 const {Content} = Layout;
 
