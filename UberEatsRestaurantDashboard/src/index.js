@@ -10,8 +10,11 @@ import RestaurantContextProvider from "./contexts/RestaurantContext";
 import {Amplify} from "aws-amplify";
 import awsconfig from './aws-exports';
 
+
 window.subscription = {};
+console.log(process.env.REACT_APP_ENV)
 const isLocalEnvironment = process.env.REACT_APP_ENV === 'local';
+console.log("~~~~~~~~~~~~~~~~~~~~~ isLocalEnvironment ~~~~~~~~~~~~~~~~~~~~~ :",isLocalEnvironment)
 
 awsconfig.oauth.redirectSignIn = isLocalEnvironment
     ? window.location.origin
