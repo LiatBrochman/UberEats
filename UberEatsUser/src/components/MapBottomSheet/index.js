@@ -25,7 +25,7 @@ const MapBottomSheet = () => {
                         <Text style={{letterSpacing: 0.5, color: 'gray'}}>
                             DELIVERY TIME
                         </Text>
-                        {ETAs.length > 0 && <View style={{flexDirection: "row", paddingTop: 10}}>
+                        {liveOrder.status!=="NEW" && ETAs.length > 0 && <View style={{flexDirection: "row", paddingTop: 10}}>
                             <AntDesign
                                 name="clockcircle"
                                 size={20}
@@ -34,7 +34,7 @@ const MapBottomSheet = () => {
                             />
                             <Text style={{
                                 fontSize: 20, fontWeight: '600', letterSpacing: 0.5
-                            }}>{ETAs[index].time} minutes</Text>
+                            }}>{ETAs.find(ETA=>ETA.courierID===liveOrder.courierID)?.time} minutes</Text>
                         </View>}
                         <View style={{flexDirection: "row", paddingTop: 10}}>
                             <AntDesign
