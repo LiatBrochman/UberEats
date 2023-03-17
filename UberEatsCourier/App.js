@@ -36,6 +36,7 @@ async function urlOpener(url, redirectUrl) {
 
 const host = 'exp://' + Constants.manifest.debuggerHost;
 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ host ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(host, null, 4));
+console.warn("host =", host);
 const updatedConfig = {
     ...awsconfig,
     Analytics: {
