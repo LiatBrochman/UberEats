@@ -28,7 +28,14 @@ async function urlOpener(url, redirectUrl) {
     }
 }
 
-const host = 'exp://' + Constants.manifest.debuggerHost;
+// Check if the app is in development mode
+const isDev = process.env.NODE_ENV === 'development';
+
+// Set different redirect URLs for development and production environments
+const host = isDev
+    ? 'exp://' + Constants.manifest.debuggerHost
+    : Constants.manifest.scheme + '://auth/';
+
 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ host ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(host, null, 4));
 const updatedConfig = {
     ...awsconfig,
