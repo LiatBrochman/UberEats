@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Storage } from 'aws-amplify';
-import { List, Avatar, Popover, Button } from 'antd';
+import { List, Popover, Button } from 'antd';
 
 const S3ImagePicker = ({ onSelect }) => {
     const [images, setImages] = useState([]);
