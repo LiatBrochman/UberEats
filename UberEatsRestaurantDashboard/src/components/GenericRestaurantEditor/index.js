@@ -151,6 +151,15 @@ function GenericRestaurantEditor({props}) {
 
     const renderingImage = <img src={image} alt={imageBaseUrl + '0.png'} style={{maxWidth: '50%', height: 'auto'}}/>
 
+    async function isImgUrl(url) {
+        const img = new Image()
+        img.src = url
+        return await new Promise((resolve) => {
+            img.onerror = () => resolve(false)
+            img.onload = () => resolve(true)
+        })
+    }
+
 
     return (
         <div>
@@ -162,9 +171,17 @@ function GenericRestaurantEditor({props}) {
                         <Input className="res-input" placeholder="Enter restaurant name here"/>
                     </Form.Item>
 
-                    <Form.Item name="image" label="Restaurant image" initialValue={image} required>
-
-                        {/*<Input className="res-input" placeholder="Enter image url here"/>*/}
+                    <Form.Item name="image" label="Restaurant image" initialValue={image} required
+                               rules={[
+                                   {
+                                       validator: async () =>
+                                           await isImgUrl(image)
+                                               ? Promise.resolve() :
+                                               Promise.reject(new Error('invalid image URL!!'))
+                                   },
+                                   {required: true, message: 'Please select an image or enter a URL.'},
+                                   {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
+                               ]}>
                         <>
                             {renderingImage}
                             <Input
