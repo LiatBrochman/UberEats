@@ -5,12 +5,14 @@ import {StatusBar} from "expo-status-bar";
 import {NavigationContainer} from '@react-navigation/native';
 import {Amplify} from 'aws-amplify';
 import awsconfig from './src/aws-exports';
+import Constants from 'expo-constants';
 import AuthContextProvider from './src/contexts/AuthContext';
 import OrderContextProvider from './src/contexts/OrderContext';
 import ProtectedRoutes from "./src/navigation/ProtectedRoutes";
-import Constants from 'expo-constants';
 import DirectionContextProvider from "./src/contexts/DirectionContext";
 import CourierContext from "./src/contexts/CourierContext";
+import { makeRedirectUri } from 'expo-auth-session';
+
 
 // const { manifest } = Constants;
 // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ manifest ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(manifest.debuggerHost,null,4))
@@ -34,15 +36,20 @@ async function urlOpener(url, redirectUrl) {
     }
 }
 
-// Check if the app is in development mode
-const isDev = process.env.NODE_ENV === 'development';
-
 // Set different redirect URLs for development and production environments
-const host = isDev
-    ? 'exp://' + Constants.manifest.debuggerHost
-    : Constants.manifest.scheme + '://auth/';
+const redirectUri = makeRedirectUri({
+    native: Constants.manifest.scheme + '://auth/',
+    useProxy: true,
+});
+console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ redirectUri ~~~~~~~~~~~~~~~~~~~~~ :",redirectUri)
+// // Check if the app is in development mode
+// const isDev = process.env.NODE_ENV === 'development';
+//
+// // Set different redirect URLs for development and production environments
+// const host = isDev
+//     ? 'exp://' + Constants.manifest.debuggerHost
+//     : Constants.manifest.scheme + '://auth/';
 
-console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ host ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(host, null, 4));
 const updatedConfig = {
     ...awsconfig,
     Analytics: {
@@ -50,8 +57,8 @@ const updatedConfig = {
     },
     oauth: {
         ...awsconfig.oauth,
-        redirectSignIn: host,
-        redirectSignOut: host,
+        redirectSignIn: redirectUri,
+        redirectSignOut: redirectUri,
         urlOpener,
     },
 };

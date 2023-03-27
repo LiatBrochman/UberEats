@@ -11,13 +11,25 @@ const AuthContextProvider = ({children}) => {
     const [dbCustomer, setDbCustomer] = useState(null)
     const sub = authUser?.attributes?.sub
     const googleSignin = useCallback(() => {
-        Auth.federatedSignIn({provider: 'Google'}).then(setAuthUser)
+        try {
+            Auth.federatedSignIn({provider: 'Google'}).then(setAuthUser)
+        } catch (e) {
+            console.error('Error during federated sign-in:', e)
+        }
     }, [])
     const cognitoSignIn = useCallback(() => {
-        Auth.federatedSignIn().then(setAuthUser)
+        try {
+            Auth.federatedSignIn().then(setAuthUser)
+        } catch (e) {
+            console.error('Error during federated sign-in:', e)
+        }
     }, [])
     const signOut = useCallback(() => {
-        Auth.signOut({global: true}).then(() => setAuthUser(null))
+        try {
+            Auth.signOut({global: true}).then(() => setAuthUser(null))
+        } catch (e) {
+            console.error('Error during federated sign-out:', e)
+        }
     }, [])
 
     useEffect(() => {
