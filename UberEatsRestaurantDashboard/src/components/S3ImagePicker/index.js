@@ -31,7 +31,6 @@ const S3ImagePicker = ({ onSelect }) => {
             renderItem={(item) => (
                 <List.Item onClick={() => handleSelect(item)}>
                     <List.Item.Meta
-                        avatar={<Avatar src={Storage.get(item.key)} />}
                         title={item.key}
                     />
                 </List.Item>
