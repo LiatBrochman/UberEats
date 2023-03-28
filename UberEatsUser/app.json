@@ -2,7 +2,8 @@
   "expo": {
     "name": "UberEats",
     "slug": "UberEats",
-    "version": "1.0.1",
+    "version": "1.0.0",
+    "runtimeVersion": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,22 +13,21 @@
       "backgroundColor": "#FFFFFF"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/4e1a871b-b77e-409d-97a9-15d58b898661"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "buildNumber": "1.0.1"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.joey123ms.UberEats",
-      "versionCode": 2
+      "package": "com.joey123ms.UberEats"
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -21,6 +21,8 @@ global.subscription = {};
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
 
+WebBrowser.maybeCompleteAuthSession();
+
 async function urlOpener(url, redirectUrl) {
     const {type, url: newUrl} = await WebBrowser.openAuthSessionAsync(url, redirectUrl);
     console.log('OAuth Response Type:', type);
@@ -44,7 +46,9 @@ console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ redirectUri ~~~~~~~~~~~~~~~~~~~~~ :", re
 // // Set different redirect URLs for development and production environments
 // const host = isDev
 //     ? 'exp://' + Constants.manifest.debuggerHost
-//     : Constants.manifest.scheme + '://auth/';
+//     : redirectUri
+//     // : Constants.manifest.scheme + '://auth/';
+
 
 const updatedConfig = {
     ...awsconfig,
