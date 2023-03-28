@@ -1,7 +1,6 @@
 <br/>
 <p align="center">
   <a href="https://github.com/LiatBrochman/UberEats">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">UberEats</h3>
@@ -11,8 +10,6 @@
 
 
 ## About The Project
-
-![Screen Shot](images/screenshot.png)
 
 The UberEats Mobile App is a food delivery application developed 
 for customers, couriers, and owners. 
