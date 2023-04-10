@@ -1,13 +1,13 @@
 import React from "react";
 import {Authenticator, SignIn} from "aws-amplify-react-native";
-import {Button, StyleSheet, View} from "react-native";
+import {Button, StyleSheet, Text, View} from "react-native";
 import {useAuthContext} from "../contexts/AuthContext";
 import RootNavigator from "./index";
 
 
 const ProtectedRoutes = () => {
 
-    const {authUser, googleSignin , cognitoSignIn} = useAuthContext()
+    const {authUser, googleSignin, cognitoSignIn} = useAuthContext()
 
     return (authUser
             ?
@@ -16,9 +16,9 @@ const ProtectedRoutes = () => {
             <View style={styles.container}>
                 <Authenticator hideDefault={true}>
                     <SignIn/>
-                    <View >
-                        <Button title="Login with Google" onPress={googleSignin}/>
-                        {/*<Button title="Login with Cognito" onPress={cognitoSignIn}/>*/}
+                    <View>
+                        <Button title="Login with Google" onPress={() => googleSignin()}/>
+                        <Button title="Login with Cognito" onPress={() => cognitoSignIn()}/>
                     </View>
                 </Authenticator>
             </View>
@@ -32,7 +32,5 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
-        // margin: 10,
-        // padding: 10,
     },
 });

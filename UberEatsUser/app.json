@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "UberEats",
-    "slug": "UberEats",
-    "version": "1.0.1",
+    "name": "ubereatsuser",
+    "slug": "ubereatsuser",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "com.joey123ms.ubereatsuser",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -19,24 +20,23 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "buildNumber": "1.0.1"
+      "bundleIdentifier": "com.joey123ms.ubereatsuser",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.joey123ms.UberEats",
-      "versionCode": 2
+      "package": "com.joey123ms.ubereatsuser"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "4e1a871b-b77e-409d-97a9-15d58b898661"
+        "projectId": "de1631f6-d232-4977-b85a-b8626185bb7b"
       }
-    },
-    "scheme": "ubereats"
+    }
   }
 }

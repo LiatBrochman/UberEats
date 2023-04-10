@@ -1,0 +1,14 @@
+{
+  "resourceName": "UberEatsImages",
+  "policyUUID": "648186cd",
+  "bucketName": "uber-eats-bucket",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

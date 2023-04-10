@@ -20,8 +20,8 @@ const awsmobile = {
             "profile",
             "aws.cognito.signin.user.admin"
         ],
-        "redirectSignIn": "http://localhost:3000",
-        "redirectSignOut": "http://localhost:3000",
+        "redirectSignIn": "http://localhost:3000,https://timely-phoenix-06c7ef.netlify.app,https://auth.expo.io/@joey123ms/UberEats,ubereatsuser://,ubereats://",
+        "redirectSignOut": "http://localhost:3000,https://timely-phoenix-06c7ef.netlify.app,ubereats://,ubereatsuser://",
         "responseType": "code"
     },
     "federationTarget": "COGNITO_USER_POOLS",
@@ -42,7 +42,9 @@ const awsmobile = {
     },
     "aws_cognito_verification_mechanisms": [
         "EMAIL"
-    ]
+    ],
+    "aws_user_files_s3_bucket": "uber-eats-bucket142552-dev",
+    "aws_user_files_s3_bucket_region": "us-east-1"
 };
 
 

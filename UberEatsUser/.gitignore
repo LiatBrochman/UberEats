@@ -1,6 +1,9 @@
 #my variables
 .env
 eas.json
+android/
+.idea/
+assets/
 
 #auto generated stuff:
 .expo/

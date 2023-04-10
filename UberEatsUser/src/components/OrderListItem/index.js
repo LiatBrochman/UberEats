@@ -1,10 +1,10 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useEffect, useState} from "react";
-
 import {DataStore} from "aws-amplify";
 import {Restaurant} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
+import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 
 const getDate = ({order}) => {
@@ -30,6 +30,7 @@ const getDaysAgo = ({order}) => {
 const OrderListItem = ({order}) => {
 
     const navigation = useNavigation()
+    const {setRestaurant:setRealRestaurant} = useRestaurantContext()
     const {setOrder} = useOrderContext()
     const [restaurant, setRestaurant] = useState(null)
 
@@ -41,7 +42,7 @@ const OrderListItem = ({order}) => {
         <Pressable
             onPress={() => {
                 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ clicked on order: ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
-
+                setRealRestaurant(restaurant)
                 setOrder(order)
                 navigation.navigate("Order", {id: order.id})
             }}

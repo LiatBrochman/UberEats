@@ -72,7 +72,7 @@ const HomeTabs = () => {
                 }}/>
             <Tab.Screen
                 name="Orders"
-                component={OrderStackNavigator}
+                component={OrdersStackNavigator}
                 options={{
                     tabBarIcon: ({color, focused}) => (
                         focused ? <FontAwesome5 name="list-alt" size={24} color={"#D9534F"}/>
@@ -118,7 +118,7 @@ const HomeStackNavigator = () => {
 
 const OrdersStack = createNativeStackNavigator();
 
-const OrderStackNavigator = () => {
+const OrdersStackNavigator = () => {
     return (
         <OrdersStack.Navigator>
             <OrdersStack.Screen name="Orders" component={OrdersScreen}/>

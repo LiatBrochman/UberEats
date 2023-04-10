@@ -169,6 +169,46 @@ export declare const Dish: (new (init: ModelInit<Dish>) => Dish) & {
   copyOf(source: Dish, mutator: (draft: MutableModel<Dish>) => MutableModel<Dish> | void): Dish;
 }
 
+type EagerCustomer = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Customer, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly location: Location;
+  readonly sub: string;
+  readonly isDeleted: boolean;
+  readonly Orders?: (Order | null)[] | null;
+  readonly Baskets?: (Basket | null)[] | null;
+  readonly email?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+type LazyCustomer = {
+  readonly [__modelMeta__]: {
+    identifier: ManagedIdentifier<Customer, 'id'>;
+    readOnlyFields: 'createdAt' | 'updatedAt';
+  };
+  readonly id: string;
+  readonly name: string;
+  readonly location: Location;
+  readonly sub: string;
+  readonly isDeleted: boolean;
+  readonly Orders: AsyncCollection<Order>;
+  readonly Baskets: AsyncCollection<Basket>;
+  readonly email?: string | null;
+  readonly createdAt?: string | null;
+  readonly updatedAt?: string | null;
+}
+
+export declare type Customer = LazyLoading extends LazyLoadingDisabled ? EagerCustomer : LazyCustomer
+
+export declare const Customer: (new (init: ModelInit<Customer>) => Customer) & {
+  copyOf(source: Customer, mutator: (draft: MutableModel<Customer>) => MutableModel<Customer> | void): Customer;
+}
+
 type EagerOrder = {
   readonly [__modelMeta__]: {
     identifier: ManagedIdentifier<Order, 'id'>;
@@ -247,46 +287,6 @@ export declare type Basket = LazyLoading extends LazyLoadingDisabled ? EagerBask
 
 export declare const Basket: (new (init: ModelInit<Basket>) => Basket) & {
   copyOf(source: Basket, mutator: (draft: MutableModel<Basket>) => MutableModel<Basket> | void): Basket;
-}
-
-type EagerCustomer = {
-  readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<Customer, 'id'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly id: string;
-  readonly name: string;
-  readonly location: Location;
-  readonly sub: string;
-  readonly isDeleted: boolean;
-  readonly Orders?: (Order | null)[] | null;
-  readonly Baskets?: (Basket | null)[] | null;
-  readonly email?: string | null;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-type LazyCustomer = {
-  readonly [__modelMeta__]: {
-    identifier: ManagedIdentifier<Customer, 'id'>;
-    readOnlyFields: 'createdAt' | 'updatedAt';
-  };
-  readonly id: string;
-  readonly name: string;
-  readonly location: Location;
-  readonly sub: string;
-  readonly isDeleted: boolean;
-  readonly Orders: AsyncCollection<Order>;
-  readonly Baskets: AsyncCollection<Basket>;
-  readonly email?: string | null;
-  readonly createdAt?: string | null;
-  readonly updatedAt?: string | null;
-}
-
-export declare type Customer = LazyLoading extends LazyLoadingDisabled ? EagerCustomer : LazyCustomer
-
-export declare const Customer: (new (init: ModelInit<Customer>) => Customer) & {
-  copyOf(source: Customer, mutator: (draft: MutableModel<Customer>) => MutableModel<Customer> | void): Customer;
 }
 
 type EagerCourier = {
