@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {BrowserRouter} from 'react-router-dom';
+import {HashRouter} from 'react-router-dom';
 import './index.css';
 import App from './App';
 import 'antd/dist/antd.min.css';
@@ -14,7 +14,7 @@ import awsconfig from './aws-exports';
 window.subscription = {};
 console.log(process.env.REACT_APP_ENV)
 const isLocalEnvironment = process.env.REACT_APP_ENV === 'local';
-console.log("~~~~~~~~~~~~~~~~~~~~~ isLocalEnvironment ~~~~~~~~~~~~~~~~~~~~~ :",isLocalEnvironment)
+console.log("~~~~~~~~~~~~~~~~~~~~~ isLocalEnvironment ~~~~~~~~~~~~~~~~~~~~~ :", isLocalEnvironment)
 
 awsconfig.oauth.redirectSignIn = isLocalEnvironment
     ? window.location.origin
@@ -29,7 +29,7 @@ Amplify.configure({...awsconfig, Analytics: {disabled: true}});
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-    <BrowserRouter>
+    <HashRouter>
         <AuthContextProvider>
             <RestaurantContextProvider>
                 <OrderContextProvider>
@@ -37,6 +37,6 @@ root.render(
                 </OrderContextProvider>
             </RestaurantContextProvider>
         </AuthContextProvider>
-    </BrowserRouter>
+    </HashRouter>
 )
 
