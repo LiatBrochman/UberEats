@@ -3,5 +3,5 @@
 
 [[redirects]]
   from = "/*"
-  to = "/:splat"
+  to = "/${window.location.pathname}"
   status = 200
