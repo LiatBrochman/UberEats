@@ -1,2 +1,7 @@
 [build]
-command ="CI= npm run build"
+  command = "CI= npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/:splat"
+  status = 200
