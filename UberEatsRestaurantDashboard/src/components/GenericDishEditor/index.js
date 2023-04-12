@@ -16,6 +16,7 @@ function GenericDishEditor({props}) {
     const imageBaseUrl = "https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/"
     const [image, setImage] = useState(props.type === "NEW" ? '' : props.dish.image)
     const [fileList, setFileList] = useState([])
+    const [form] = Form.useForm()
 
     const customRequest = async ({file, onSuccess, onError}) => {
         try {
@@ -139,7 +140,7 @@ function GenericDishEditor({props}) {
     return (
         <Card title={getTitle()} style={{margin: 20}}>
 
-            <Form layout="vertical" wrapperCol={{span: 8}}
+            <Form form={form} layout="vertical" wrapperCol={{span: 8}}
                   onFinish={onFinish}
             >
 
@@ -161,14 +162,31 @@ function GenericDishEditor({props}) {
                            name="image"
                            initialValue={image}
                            rules={[
-                               {
-                                   validator: async() =>
-                                       await isImgUrl(image)
-                                           ? Promise.resolve() :
-                                           Promise.reject(new Error('invalid image URL!!'))
-                               },
                                {required: true, message: 'Please select an image or enter a URL.'},
                                {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
+                               {
+                                   // validator: async (_, value) => {
+                                   //     if (await isImgUrl(value)) {
+                                   //         setImage(value); // Update the image state
+                                   //         return Promise.resolve();
+                                   //     } else {
+                                   //         return Promise.reject(new Error('Invalid image URL!!'));
+                                   //     }
+                                   // }
+                                   // validator: async(_,value) => await isImgUrl(image) ? value=image : Promise.reject(new Error('invalid image URL!!'))
+
+                                   validator: async(_) => await isImgUrl(image) ? Promise.resolve() : Promise.reject(new Error('invalid image URL!!'))
+
+                                   // {
+                                   //     let theTest = await isImgUrl(image)
+                                   //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ theTest ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(theTest,null,4))
+                                   //
+                                   //     if(theTest){
+                                   //       return Promise.resolve()
+                                   //     }
+                                   //     return Promise.reject(new Error('invalid image URL!!'))
+                                   // }
+                               },
                            ]}>
                     <>
 
@@ -178,7 +196,10 @@ function GenericDishEditor({props}) {
                             className="dish-input"
                             placeholder="Enter image url here"
                             value={image}
-                            onChange={(e) => setImage(e.target.value)}
+                            onChange={(e) => {
+                                setImage(e.target.value)
+                                form.setFieldsValue({image:e.target.value})
+                            }}
                         />
                         <Upload
                             accept="image/*"
