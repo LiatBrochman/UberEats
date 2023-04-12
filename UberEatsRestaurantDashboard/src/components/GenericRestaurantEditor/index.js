@@ -9,6 +9,7 @@ import {Restaurant} from "../../models";
 import './index.css';
 import {UploadOutlined} from "@ant-design/icons";
 import S3ImagePicker from "../S3ImagePicker";
+import {restaurants_assets} from "../../assets/data/restaurants";
 
 
 function GenericRestaurantEditor({props}) {
@@ -90,7 +91,8 @@ function GenericRestaurantEditor({props}) {
                 minDeliveryMinutes,
                 maxDeliveryMinutes,
                 address,
-                isOpen,
+                isOpen = true,
+                rating = 3.5
             } = values
 
 
@@ -113,8 +115,10 @@ function GenericRestaurantEditor({props}) {
                                 address: response.results[0]['formatted_address'] || address,
                                 lat: parseFloat(lat),
                                 lng: parseFloat(lng),
-                            }
+                            },
+                            rating: parseFloat(rating)
                         }
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ draft_restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(draft_restaurant, null, 4))
 
                         switch (props.type) {
 
@@ -287,6 +291,18 @@ function GenericRestaurantEditor({props}) {
                 >
                     clear
                 </Button>
+
+                <Button  disabled={true} onClick={async () => {
+                    restaurants_assets.map(async i => {
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ i ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(i, null, 4))
+                        props.type = "NEW"
+                        await onFinish({...i, address: i.location.address})
+                    })
+
+                }}>
+                    TEST
+                </Button>
+
             </Card>
         </div>
     )

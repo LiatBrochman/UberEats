@@ -7,6 +7,7 @@ import {DataStore, Storage} from "aws-amplify";
 import {Dish} from "../../models";
 import {useNavigate} from 'react-router-dom';
 import './index.css';
+import {dishes_assets, dishes_assets_fixed, restaurants_assets} from "../../assets/data/restaurants";
 
 
 function GenericDishEditor({props}) {
@@ -253,6 +254,31 @@ function GenericDishEditor({props}) {
 
                 <Button className="dish-button" type="primary" htmlType="submit">
                     Submit
+                </Button>
+
+                <Button  disabled={true} onClick={async () => {
+
+                    dishes_assets_fixed.map(async i => {
+                        props.type = "NEW"
+                        await DataStore.save(
+                            new Dish({
+                                name: i.name,
+                                image: i.image,
+                                description: i.description,
+                                price: parseFloat(i.price),
+                                quantity: 999,
+                                isActive: i.isActive,
+                                isDeleted: false,
+                                originalID: "null",
+                                restaurantID: i.restaurantID,
+                                orderID: "null",
+                                basketID: "null"
+                            })).then(res => console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ res ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(res,null,4)))
+                            .catch(error=> console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ error ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(error,null,4)))
+                    })
+
+                }}>
+                    TEST
                 </Button>
 
             </Form>
