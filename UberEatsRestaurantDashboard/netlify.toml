@@ -1,7 +1,2 @@
 [build]
   command = "CI= npm run build"
-
-[[redirects]]
-  from = "/*"
-  to = "/${window.location.pathname}"
-  status = 200
