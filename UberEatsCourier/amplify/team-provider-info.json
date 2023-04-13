@@ -15,8 +15,8 @@
       "auth": {
         "WoltClone": {}
       },
-      "api": {
-        "WoltClone": {}
+      "storage": {
+        "UberEatsImages": {}
       }
     }
   }

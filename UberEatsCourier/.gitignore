@@ -1,11 +1,12 @@
 #my variables
 .env
 eas.json
+android/
+.idea/
+assets/
 
 #auto generated stuff:
-node_modules/
 .expo/
-dist/
 npm-debug.*
 *.jks
 *.p8
@@ -14,6 +15,7 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+
 # macOS
 .DS_Store
 
@@ -26,6 +28,8 @@ amplify/mock-api-resources
 amplify/backend/amplify-meta.json
 amplify/backend/.temp
 build/
+dist/
+node_modules/
 #aws-exports.js
 awsconfiguration.json
 amplifyconfiguration.json

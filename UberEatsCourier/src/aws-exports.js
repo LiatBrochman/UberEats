@@ -7,7 +7,7 @@ const awsmobile = {
     "aws_appsync_region": "us-east-1",
     "aws_appsync_authenticationType": "API_KEY",
     "aws_appsync_apiKey": "da2-5qtakrggjvdh7o42pgjssncnv4",
-    "aws_cognito_identity_pool_id": "us-east-1:140e982d-1d9f-41e8-8f01-9f7848ae64f1",
+    "aws_cognito_identity_pool_id": "us-east-1:0a0ec78a-2fd3-414f-b8e7-638b5d2ef4ad",
     "aws_cognito_region": "us-east-1",
     "aws_user_pools_id": "us-east-1_75otdWoE5",
     "aws_user_pools_web_client_id": "1s0kr8ddme31aqstjfvpcal57m",
@@ -20,8 +20,8 @@ const awsmobile = {
             "profile",
             "aws.cognito.signin.user.admin"
         ],
-        "redirectSignIn": "http://localhost:3000",
-        "redirectSignOut": "http://localhost:3000",
+        "redirectSignIn": "com.joey123ms.ubereatscourier://signInRedirect",
+        "redirectSignOut": "com.joey123ms.ubereatsuser://signOutRedirect",
         "responseType": "code"
     },
     "federationTarget": "COGNITO_USER_POOLS",

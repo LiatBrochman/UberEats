@@ -4,7 +4,7 @@ import {Dish, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {useBasketContext} from "./BasketContext";
 import {useRestaurantContext} from "./RestaurantContext";
-
+import { Alert } from 'react-native';
 
 const OrderContext = createContext({})
 
@@ -179,9 +179,20 @@ const OrderContextProvider = ({children}) => {
 
     }
 
+    function checkIfLiveOrderIsExisting() {
+        return liveOrders.length !== 0;
+    }
+
     const createNewOrder = async () => {
 
-        if (!checkIfPriceIsValid({totalPrice})) return;
+        if (!checkIfLiveOrderIsExisting()) {
+            Alert.alert("you cannot create more than one order at once")
+            return;
+        }
+        if (!checkIfPriceIsValid({totalPrice})) {
+            Alert.alert("please add items to the basket!")
+            return;
+        }
 
         /**
          create new Order:

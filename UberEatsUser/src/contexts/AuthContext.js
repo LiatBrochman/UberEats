@@ -77,7 +77,10 @@ const AuthContextProvider = ({children}) => {
 
                 case "signOut":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signOut ~~~~~~~~~~~~~~~~~~~~~ ")
-                    setAuthUser(null)
+                    if (authUser) {
+                        setAuthUser(null)
+                        DataStore.clear().then(async () => await DataStore.start()).catch((e) => console.error("couldn't clear the datastore", e))
+                    }
                     break;
             }
         })
