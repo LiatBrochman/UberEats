@@ -176,7 +176,10 @@ function GenericDishEditor({props}) {
                                    // }
                                    // validator: async(_,value) => await isImgUrl(image) ? value=image : Promise.reject(new Error('invalid image URL!!'))
 
-                                   validator: async(_) => await isImgUrl(image) ? Promise.resolve() : Promise.reject(new Error('invalid image URL!!'))
+                                   validator: async(_) =>
+                                       await isImgUrl(image)
+                                           ? Promise.resolve()
+                                           : Promise.reject(new Error('invalid image URL!!'))
 
                                    // {
                                    //     let theTest = await isImgUrl(image)

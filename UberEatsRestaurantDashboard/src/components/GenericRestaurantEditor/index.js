@@ -20,12 +20,13 @@ function GenericRestaurantEditor({props}) {
     const imageBaseUrl = "https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/"
     const [image, setImage] = useState(props.type === "NEW" ? '' : restaurant?.image)
     const [fileList, setFileList] = useState([])
+    const [form] = Form.useForm()
+
 
     useEffect(() => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ image ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(image, null, 4))
 
     }, [image])
-
 
     const customRequest = async ({file, onSuccess, onError}) => {
         try {
@@ -168,31 +169,36 @@ function GenericRestaurantEditor({props}) {
     return (
         <div>
             <Card title="Restaurant Details" style={{margin: 20}}>
-                <Form layout="vertical" wrapperCol={{span: 8}}
+                <Form form={form} layout="vertical" wrapperCol={{span: 8}}
                       onFinish={onFinish}>
 
                     <Form.Item name="name" label="Restaurant name" initialValue={name} required>
                         <Input className="res-input" placeholder="Enter restaurant name here"/>
                     </Form.Item>
 
-                    <Form.Item name="image" label="Restaurant image" initialValue={image} required
-                               rules={[
-                                   {
-                                       validator: async () =>
-                                           await isImgUrl(image)
-                                               ? Promise.resolve() :
-                                               Promise.reject(new Error('invalid image URL!!'))
-                                   },
-                                   {required: true, message: 'Please select an image or enter a URL.'},
-                                   {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
-                               ]}>
+                    <Form.Item label="Restaurant image"
+                        name="image"
+                        initialValue={image}
+                        rules={[
+                            {required: true, message: 'Please select an image or enter a URL.'},
+                            {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
+                            {
+                                validator: async (_) =>
+                                    await isImgUrl(image)
+                                        ? Promise.resolve() :
+                                        Promise.reject(new Error('invalid image URL!!'))
+                            },
+                        ]}>
                         <>
                             {renderingImage}
                             <Input
                                 className="res-input"
                                 placeholder="Enter image url here"
                                 value={image}
-                                onChange={(e) => setImage(e.target.value)}
+                                onChange={(e) => {
+                                    setImage(e.target.value)
+                                    form.setFieldsValue({image: e.target.value})
+                                }}
                             />
                             <Upload
                                 accept="image/*"
@@ -292,7 +298,7 @@ function GenericRestaurantEditor({props}) {
                     clear
                 </Button>
 
-                <Button  disabled={true} onClick={async () => {
+                <Button disabled={true} onClick={async () => {
                     restaurants_assets.map(async i => {
                         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ i ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(i, null, 4))
                         props.type = "NEW"
