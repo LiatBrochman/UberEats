@@ -30,7 +30,7 @@ const BasketDishItem = ({dish}) => {
                     source={{uri: dish?.image}}
                     style={styles.image}/>
                 <Text style={styles.dishName}>{dish?.name}</Text>
-                <Text style={styles.dishPrice}>$ {dish?.price}</Text>
+                <Text style={styles.dishPrice}>${dish?.price}</Text>
 
                 {
                     dish?.basketID && dish?.basketID !== "null" &&

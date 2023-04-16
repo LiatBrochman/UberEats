@@ -31,7 +31,7 @@ const AuthContextProvider = ({children}) => {
     }, [])
     const signOut = useCallback(() => {
         try {
-            Auth.signOut({global: true}).then(setAuthUser(null))
+            Auth.signOut({global: true}).then(()=>setAuthUser(null))
         } catch (e) {
             console.error('Error during federated sign-out:', e)
         }

@@ -37,11 +37,11 @@ const Basket = () => {
 
 
             />
-            <Text>Delivery Fee : $ {restaurant?.deliveryFee}</Text>
+            <Text>Delivery Fee : ${restaurant?.deliveryFee}</Text>
 
             <View style={styles.separator}/>
             <Pressable onPress={onCreateOrder} style={styles.button}>
-                <Text style={styles.buttonText}>Create order &#8226; $ {totalPrice}</Text>
+                <Text style={styles.buttonText}>Create order &#8226; ${totalPrice}</Text>
             </Pressable>
         </View>
     )

@@ -35,7 +35,7 @@ const OrderDetails = () => {
             }
 
             <Text style={{padding: 10}}>
-                total order price : {order?.totalPrice} $
+                total order price : ${order?.totalPrice}
             </Text>
 
 
