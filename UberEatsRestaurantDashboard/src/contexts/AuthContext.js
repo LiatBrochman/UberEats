@@ -160,7 +160,7 @@ const AuthContextProvider = ({children}) => {
 
     async function signOut() {
         try {
-            await Auth.signOut()
+            Auth.signOut({global: true}).then(()=>setAuthUser(null))
         } catch (error) {
             console.log('Error signing out:', error)
         }

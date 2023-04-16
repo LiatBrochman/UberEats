@@ -12,7 +12,6 @@ import awsconfig from './aws-exports';
 
 
 window.subscription = {};
-console.log(process.env.REACT_APP_ENV)
 const isLocalEnvironment = process.env.REACT_APP_ENV === 'local';
 console.log("~~~~~~~~~~~~~~~~~~~~~ isLocalEnvironment ~~~~~~~~~~~~~~~~~~~~~ :", isLocalEnvironment)
 
