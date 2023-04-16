@@ -44,7 +44,7 @@ const AuthContextProvider = ({children}) => {
     }, [])
     const signOut = useCallback(() => {
         try {
-            Auth.signOut({global: true})
+            Auth.signOut({global: true}).then(setAuthUser(null))
         } catch (e) {
             console.error('Error during federated sign-out:', e)
         }
@@ -78,8 +78,8 @@ const AuthContextProvider = ({children}) => {
                 case "signOut":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signOut ~~~~~~~~~~~~~~~~~~~~~ ")
                     if (authUser) {
-                        setAuthUser(null)
-                        DataStore.clear().then(async () => await DataStore.start()).catch((e) => console.error("couldn't clear the datastore", e))
+                        Auth.currentAuthenticatedUser().then(setAuthUser(null))
+                        // .finally(DataStore.clear().then(() => DataStore.start()).catch((e) => console.error("couldn't clear the datastore", e)))
                     }
                     break;
             }
@@ -130,16 +130,24 @@ const AuthContextProvider = ({children}) => {
     // }, [response])
 
     useEffect(() => {
+
         if (!sub) return;
         /**
          * set Customer
          */
         subscription.customer = DataStore.observeQuery(Customer, c => c.sub.eq(sub))
             .subscribe(({items, isSynced}) => {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ items ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
+
                 isSynced && setDbCustomer(items[0])
             })
     }, [sub])
 
+    useEffect(()=>{
+
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer,null,4))
+
+    },[dbCustomer])
 
     return (
         <AuthContext.Provider value=

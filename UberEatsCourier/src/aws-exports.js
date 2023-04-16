@@ -21,7 +21,7 @@ const awsmobile = {
             "aws.cognito.signin.user.admin"
         ],
         "redirectSignIn": "com.joey123ms.ubereatscourier://signInRedirect",
-        "redirectSignOut": "com.joey123ms.ubereatsuser://signOutRedirect",
+        "redirectSignOut": "com.joey123ms.ubereatscourier://signOutRedirect",
         "responseType": "code"
     },
     "federationTarget": "COGNITO_USER_POOLS",
