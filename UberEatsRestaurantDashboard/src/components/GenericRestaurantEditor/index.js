@@ -284,7 +284,7 @@ function GenericRestaurantEditor({props}) {
                     Sign out
                 </Button>
 
-                <Button onClick={async () => {
+                <Button disable={process.env.REACT_APP_ENV === 'local'} onClick={async () => {
                     await DataStore.stop()
                     await DataStore.stop()
                     await DataStore.clear()
