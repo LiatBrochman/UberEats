@@ -42,7 +42,7 @@ const BasketContextProvider = ({children}) => {
      */
 
     useEffect(() => {
-        if (!basket || subscription.hasOwnProperty("basketDishes")) return;
+        if (!basket) return;
 
         subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
                 d.basketID.eq(basket.id),
@@ -58,6 +58,8 @@ const BasketContextProvider = ({children}) => {
 
         // return subscription?.basketDishes?.unsubscribe()
     }, [basket,restaurant])
+
+
 
     function reSubscribeToAllDishes(basket) {
         subscription?.basketDishes?.unsubscribe()

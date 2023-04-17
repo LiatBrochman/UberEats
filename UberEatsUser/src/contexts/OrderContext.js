@@ -180,12 +180,12 @@ const OrderContextProvider = ({children}) => {
     }
 
     function checkIfLiveOrderIsExisting() {
-        return liveOrders.length !== 0;
+        return liveOrders.length > 0;
     }
 
     const createNewOrder = async () => {
 
-        if (!checkIfLiveOrderIsExisting()) {
+        if (checkIfLiveOrderIsExisting()) {
             Alert.alert("you cannot create more than one order at once")
             return;
         }
