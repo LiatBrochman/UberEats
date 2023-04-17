@@ -1,11 +1,19 @@
 import * as Location from "expo-location";
+import {Alert} from "react-native";
+
 
 const getCoordsByAddress = async (address) => {
-    const result = await Location.geocodeAsync(address);
-    if (result?.[0] && result?.[0].latitude) {
-        return result[0]// contains longitude and latitude
-    } else {
-        console.error("couldn't get coordinates from:", address)
+    try {
+        const result = await Location.geocodeAsync(address)
+        if (result?.[0] && result?.[0].latitude) {
+            console.log('Valid address:', address)
+            return result[0]
+        } else {
+            Alert.alert('Invalid address:', address)
+            return null
+        }
+    } catch (error) {
+        Alert.alert('Error getting coordinates:', error)
         return null
     }
 }
