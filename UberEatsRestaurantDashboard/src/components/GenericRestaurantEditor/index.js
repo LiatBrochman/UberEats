@@ -49,6 +49,7 @@ function GenericRestaurantEditor({props}) {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ selectedImage ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(selectedImage, null, 4))
 
         setImage(imageBaseUrl + selectedImage.key)
+        form.setFieldsValue({image: imageBaseUrl + selectedImage.key})
         setFileList([
             {
                 uid: selectedImage.key,
@@ -154,7 +155,7 @@ function GenericRestaurantEditor({props}) {
     let address = props.type === "NEW" ? '' : restaurant?.location.address
     let isOpen = props.type === "NEW" ? true : restaurant?.isOpen
 
-    const renderingImage = <img src={image} alt={imageBaseUrl + '0.png'} style={{maxWidth: '50%', height: 'auto'}}/>
+    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto'}}/>
 
     async function isImgUrl(url) {
         const img = new Image()

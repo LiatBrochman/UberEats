@@ -7,7 +7,7 @@ import {DataStore, Storage} from "aws-amplify";
 import {Dish} from "../../models";
 import {useNavigate} from 'react-router-dom';
 import './index.css';
-import {dishes_assets, dishes_assets_fixed, restaurants_assets} from "../../assets/data/restaurants";
+import {dishes_assets_fixed} from "../../assets/data/restaurants";
 
 
 function GenericDishEditor({props}) {
@@ -81,6 +81,7 @@ function GenericDishEditor({props}) {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ selectedImage ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(selectedImage, null, 4))
 
         setImage(imageBaseUrl + selectedImage.key)
+        form.setFieldsValue({image: imageBaseUrl + selectedImage.key})
         setFileList([
             {
                 uid: selectedImage.key,
@@ -127,7 +128,7 @@ function GenericDishEditor({props}) {
 
     }
 
-    const renderingImage = <img src={image} alt={imageBaseUrl + '0.png'} style={{maxWidth: '50%', height: 'auto'}}/>
+    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto'}}/>
 
     async function isImgUrl(url) {
         const img = new Image()
@@ -176,7 +177,7 @@ function GenericDishEditor({props}) {
                                    // }
                                    // validator: async(_,value) => await isImgUrl(image) ? value=image : Promise.reject(new Error('invalid image URL!!'))
 
-                                   validator: async(_) =>
+                                   validator: async (_) =>
                                        await isImgUrl(image)
                                            ? Promise.resolve()
                                            : Promise.reject(new Error('invalid image URL!!'))
@@ -202,7 +203,7 @@ function GenericDishEditor({props}) {
                             value={image}
                             onChange={(e) => {
                                 setImage(e.target.value)
-                                form.setFieldsValue({image:e.target.value})
+                                form.setFieldsValue({image: e.target.value})
                             }}
                         />
                         <Upload
@@ -214,7 +215,13 @@ function GenericDishEditor({props}) {
                                 setImage('');
                                 setFileList([]);
                             }}>
-                            <button type="button" style={{backgroundColor:"#FFAD60", border: "2px solid #FFAD60", marginBottom:5, marginTop: 5, borderRadius:10}}>
+                            <button type="button" style={{
+                                backgroundColor: "#FFAD60",
+                                border: "2px solid #FFAD60",
+                                marginBottom: 5,
+                                marginTop: 5,
+                                borderRadius: 10
+                            }}>
                                 <UploadOutlined/> Click to Upload
                             </button>
                         </Upload>
@@ -259,7 +266,7 @@ function GenericDishEditor({props}) {
                     Submit
                 </Button>
 
-                <Button  disabled={true} onClick={async () => {
+                <Button disabled={true} onClick={async () => {
 
                     dishes_assets_fixed.map(async i => {
                         props.type = "NEW"
@@ -276,8 +283,8 @@ function GenericDishEditor({props}) {
                                 restaurantID: i.restaurantID,
                                 orderID: "null",
                                 basketID: "null"
-                            })).then(res => console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ res ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(res,null,4)))
-                            .catch(error=> console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ error ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(error,null,4)))
+                            })).then(res => console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ res ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(res, null, 4)))
+                            .catch(error => console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ error ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(error, null, 4)))
                     })
 
                 }}>
