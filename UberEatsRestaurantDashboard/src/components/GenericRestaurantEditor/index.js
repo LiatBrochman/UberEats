@@ -209,7 +209,7 @@ function GenericRestaurantEditor({props}) {
                                     setImage('');
                                     setFileList([]);
                                 }}>
-                                <button type="button">
+                                <button type="button" style={{backgroundColor:"#FFAD60", border: "2px solid #FFAD60", marginBottom:5,  marginTop: 5, borderRadius:10}}>
                                     <UploadOutlined/> Click to Upload
                                 </button>
                             </Upload>

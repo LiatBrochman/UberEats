@@ -14,7 +14,7 @@ const S3ImagePicker = ({ onSelect }) => {
             const {results} = await Storage.list('');
             setImages(results);
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
-            
+
         } catch (error) {
             console.error('Error fetching images:', error);
         }
@@ -40,7 +40,7 @@ const S3ImagePicker = ({ onSelect }) => {
 
     return (
         <Popover content={content} title="Select an Image" trigger="click">
-            <Button type="primary">
+            <Button style={{backgroundColor:"#96CEB4", borderRadius:10}}>
                 Choose from S3
             </Button>
         </Popover>
