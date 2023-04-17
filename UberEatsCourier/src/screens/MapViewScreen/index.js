@@ -12,6 +12,7 @@ import {useDirectionContext} from "../../contexts/DirectionContext";
 import styles from "./styles";
 import {FixedMarkers} from "../../components/Markers/FixedMarkers";
 import * as Location from "expo-location";
+import {startWatchingLocation} from "../../myExternalLibrary/LocationFunctions";
 
 /**
  - This React Native code defines a MapViewScreen component that displays a map with directions and markers.
@@ -58,6 +59,13 @@ function MapViewScreen() {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ [ ETA_toRestaurant=",ETA_toRestaurant,",ETA_toCustomer=",ETA_toCustomer,"] ~~~~~~~~~~~~~~~~~~~~~ :")
 
     },[ETA_toRestaurant,ETA_toCustomer])
+
+    useEffect(() => {
+
+        startWatchingLocation(setOrigin).then(sub => subscription.watchPosition = sub)
+
+        // return subscription?.watchPosition?.remove()
+    }, [])
 
     return (
 
