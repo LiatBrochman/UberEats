@@ -27,6 +27,11 @@ export default StyleSheet.create({
         letterSpacing: 1,
         paddingVertical: 20
     },
+    orderStatus: {
+        fontSize: 25,
+        letterSpacing: 1,
+        paddingVertical: 20
+    },
     addressContainer:{
         flexDirection: 'row',
         marginBottom: 20,
