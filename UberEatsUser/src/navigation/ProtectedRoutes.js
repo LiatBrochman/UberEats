@@ -23,8 +23,8 @@ const ProtectedRoutes = () => {
             : <View style={styles.container}>
                 <Authenticator hideDefault={true}>
                     <SignIn/>
-                    <View>
-                        <Button title="Login with Google" onPress={() => googleSignin()}/>
+                    <View style={{ flex: 4, justifyContent: "center"}}>
+                        <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
                     </View>
                 </Authenticator>
             </View>
