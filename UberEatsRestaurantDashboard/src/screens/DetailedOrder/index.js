@@ -4,12 +4,12 @@ import {DataStore} from "aws-amplify";
 import {Courier, Order} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 import "./index.css"
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 
 const DetailedOrder = () => {
-
+    const navigate = useNavigate()
     const {orderID} = useParams()
     const {restaurant} = useRestaurantContext()
     const {
@@ -24,9 +24,7 @@ const DetailedOrder = () => {
         couriers,
         ETAs,
         countETAs,
-        countLiveUpdates,
-        getRestaurantArrivalTime,
-        getCustomerArrivalTime
+        countLiveUpdates
     } = useOrderContext({ETAs: []})
     const [ETA, setETA] = useState({courierID: null, customer: null, restaurant: null})
 
@@ -36,66 +34,14 @@ const DetailedOrder = () => {
         const order = liveOrders.find(o => o.id === orderID) || completedOrders.find(o => o.id === orderID)
         setOrder(order)
 
-        const courier = couriers.find(c => c.id === order.courierID)
+        const courier = couriers.find(c => c.id === order?.courierID)
         setCourier(courier)
 
         const ETA = ETAs.find(ETA => ETA.courierID === courier?.id)
-        setETA(ETA||{restaurant:"",customer:""})
+        setETA(ETA || {restaurant: "", customer: ""})
 
-        // DataStore.query(Order, orderID).then(order => {
-        //     setOrder(order)
-        //     DataStore.query(Courier, c => c.id.eq(order.courierID)).then(([courier])=>{
-        //         if(courier){
-        //             setCourier(courier)
-        //             setETA({restaurant: getRestaurantArrivalTime(courier), customer: getCustomerArrivalTime(courier)})
-        //         }
-        //     })
-        // })
     }, [orderID, countETAs, countLiveUpdates])
 
-    // useEffect(() => {
-    //     if (!order) return;
-    //
-    //     if (couriers.length > 0) {
-    //         setCourier(couriers.find(c => c.id === order.courierID))
-    //     }
-    //     // setStatus(order.status)
-    // }, [order])
-
-    // useEffect(() => {
-    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ couriers.length  ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(couriers.length, null, 4))
-    //
-    //     if (couriers.length === 0) {
-    //         setCourier(null)
-    //         return;
-    //     }
-    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ order ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(order, null, 4))
-    //
-    //     if (order && order.courierID !== "null") {
-    //         // setCourier(couriers.find(c => c.id === order.courierID))
-    //         let courier = couriers.find(c => c.id === order.courierID)
-    //         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ courier ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(courier, null, 4))
-    //
-    //         setCourier(courier)
-    //
-    //     }
-    // }, [order, couriers.length])
-
-    // useEffect(() => {
-    //     if (!courier) return;
-    //
-    //     setETA({restaurant: getRestaurantArrivalTime(courier), customer: getCustomerArrivalTime(courier)})
-    //
-    // }, [courier])
-
-    // useEffect(() => {
-    //
-    //     if (ETAs.length === 0 || !courier) return;
-    //
-    //     const ETA=ETAs.find(ETA => ETA.courierID === courier.id)
-    //     setETA(ETA)
-    //
-    // }, [countETAs])
 
 
     const updateStatus = async ({id, newStatus}) => {
@@ -125,16 +71,24 @@ const DetailedOrder = () => {
                     )
                 )
         }
-
-        // setStatus(newStatus)
     }
+
+
+    useEffect(() => {
+
+        if (order?.status) {
+         console.log("\n\n status =", order.status)
+            if(order.status==="COMPLETED"){
+                navigate('/')
+            }
+        }
+    }, [order?.status])
 
 
     return (
         <>
-            {order && customer && orderDishes && restaurant &&
+            {order && customer && orderDishes && restaurant && order.status!=="COMPLETED" && order.status!=="DECLINED" &&
             <Card title={`Order`} style={{margin: 20}}>
-
                 <List bordered style={{border: "none"}} column={{lg: 1, md: 1, sm: 1}}>
                     <List.Item style={{border: "none"}}>
                         <div>
@@ -234,7 +188,7 @@ const DetailedOrder = () => {
                         backgroundColor: "white",
                         color: "black"
                     }} disabled={order.status !== "READY_FOR_PICKUP"}
-                            onClick={async () => order.courierID === courier.id && await updateStatus({
+                            onClick={async () => order.courierID === courier?.id && await updateStatus({
                                 id: order.id,
                                 newStatus: "PICKED_UP"
                             })}>

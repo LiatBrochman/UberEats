@@ -4,29 +4,18 @@ import {AppState} from 'react-native';
 import {Customer} from "../models";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from 'expo-web-browser';
-import Constants from "expo-constants";
-import {ANDROID_CLIENT_ID, EXPO_CLIENT_ID,IOS_CLIENT_ID} from "@env";
-// import jwtDecode from "jwt-decode";
-// import * as AuthSession from "expo-auth-session";
+
 
 const AuthContext = createContext({});
 
 const AuthContextProvider = ({children}) => {
-    const isExpo = Constants.executionEnvironment === 'storeClient';
-    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ isExpo ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(isExpo, null, 4))
+    // const isExpo = Constants.executionEnvironment === 'storeClient';
+    // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ isExpo ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(isExpo, null, 4))
 
     WebBrowser.maybeCompleteAuthSession();
     const [authUser, setAuthUser] = useState(null)
     const [dbCustomer, setDbCustomer] = useState(null)
     const sub = authUser?.attributes?.sub;
-    // const [isAuthenticating, setIsAuthenticating] = useState(false)
-    // let request, response;
-    // const [request, response, googleSignin] = Google.useAuthRequest(
-    //     {
-    //         androidClientId: ANDROID_CLIENT_ID,
-    //         iosClientId:IOS_CLIENT_ID
-    //         // expoClientId: EXPO_CLIENT_ID,
-    //     })
     const googleSignin = useCallback(() => {
         try {
             Auth.federatedSignIn({provider: "Google"})
@@ -44,7 +33,7 @@ const AuthContextProvider = ({children}) => {
     }, [])
     const signOut = useCallback(() => {
         try {
-            Auth.signOut({global: true}).then(()=>setAuthUser(null))
+            Auth.signOut({global: true})
         } catch (e) {
             console.error('Error during federated sign-out:', e)
         }
@@ -62,11 +51,20 @@ const AuthContextProvider = ({children}) => {
             }
         }
     }, [subscription])
+    const [middleware, setMiddleware] = useState(false)
 
     useEffect(() => {
 
-        subscription.hubListener = Hub.listen("auth", ({payload: {event}}) => {
+        subscription.hubListener = Hub.listen("auth", ({payload: {event, data}}) => {
             switch (event) {
+
+                case "parsingCallbackUrl":
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
+                    if (!/signOutRedirect$/.test(data.url)) {
+                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
+                        setMiddleware(true)
+                    }
+                    break;
 
                 case "signIn":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
@@ -75,91 +73,67 @@ const AuthContextProvider = ({children}) => {
                         .catch(() => console.log("Not signed in"))
                     break;
 
+                case "oAuthSignOut":
                 case "signOut":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signOut ~~~~~~~~~~~~~~~~~~~~~ ")
-                    if (authUser) {
-                        Auth.currentAuthenticatedUser().then(setAuthUser(null))
-                        // .finally(DataStore.clear().then(() => DataStore.start()).catch((e) => console.error("couldn't clear the datastore", e)))
-                    }
+                    setAuthUser(null)
+                    setDbCustomer(null)
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(false) ~~~~~~~~~~~~~~~~~~~~~ ")
+                    setMiddleware(false)
                     break;
+
+                default:
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(event, null, 4))
+
             }
         })
 
 
         Auth.currentAuthenticatedUser()
             .then((currentUser) => setAuthUser(currentUser))
-            .catch(() => console.log("Not signed in"))
+            .catch(() => {
+                setMiddleware(false)
+                console.log("Not signed in")
+            })
 
-        const unsubscribe_from_all = AppState.addEventListener('change', performCleanup)
+        AppState.addEventListener('change', performCleanup)
 
-        // return () => {
-        //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ unsubscribe_from_all ~~~~~~~~~~~~~~~~~~~~~ ")
-        // unsubscribe_from_all()
-        // }
-        // return subscription.hubListener
+
     }, [])
 
-    // useEffect(() => {
-    //     if (isAuthenticating) return;
-    //
-    //     if (response?.type === "success") {
-    //         setIsAuthenticating(true)
-    //
-    //         try {
-    //             const {id_token} = response.params
-    //             const decodedToken = jwtDecode(id_token)
-    //             let user = {
-    //                 name: "google_" + decodedToken.sub,
-    //                 email: decodedToken.email
-    //             }
-    //
-    //             Auth.federatedSignIn(
-    //                 {provider: 'Google'},
-    //                 {token: id_token, expires_at: 3600 * 1000 + new Date().getTime()},
-    //                 user
-    //             )
-    //                 .catch(error => console.error("Error signing in:", error))
-    //
-    //         } catch (error) {
-    //             console.log('Error signing in:', error)
-    //
-    //         } finally {
-    //             setIsAuthenticating(false)
-    //         }
-    //     }
-    // }, [response])
-
+    /**
+     * set Customer
+     */
     useEffect(() => {
 
         if (!sub) return;
-        /**
-         * set Customer
-         */
+
         subscription.customer = DataStore.observeQuery(Customer, c => c.sub.eq(sub))
             .subscribe(({items, isSynced}) => {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ items ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ items ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items, null, 4))
 
                 isSynced && setDbCustomer(items[0])
             })
     }, [sub])
 
-    useEffect(()=>{
+    useEffect(() => {
 
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer,null,4))
-
-    },[dbCustomer])
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer, null, 4))
+        dbCustomer && setMiddleware(false)
+    }, [dbCustomer])
 
     return (
         <AuthContext.Provider value=
                                   {{
+                                      sub,
+                                      middleware,
+                                      setMiddleware,
                                       authUser,
                                       dbCustomer,
-                                      sub,
                                       setDbCustomer,
                                       googleSignin,
                                       cognitoSignIn,
                                       signOut,
-                                      // request,
                                   }}>
 
             {children}

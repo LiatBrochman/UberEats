@@ -8,11 +8,13 @@ import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 
 
+
 const RestaurantDetailsPage = () => {
 
     const navigation = useNavigation()
     const {restaurant, restaurantDishes} = useRestaurantContext()
-    const { basket, totalBasketQuantity} = useBasketContext()
+    const {basket, totalBasketQuantity} = useBasketContext()
+
 
     if (!restaurant) {
         return <ActivityIndicator size={"large"} color="gray"/>

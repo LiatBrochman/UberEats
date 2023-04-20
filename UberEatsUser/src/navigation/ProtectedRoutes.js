@@ -1,24 +1,30 @@
 import React from "react";
 import {Authenticator, SignIn} from "aws-amplify-react-native";
-import {Button, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Button, StyleSheet, View} from "react-native";
 import {useAuthContext} from "../contexts/AuthContext";
 import RootNavigator from "./index";
 
 
 const ProtectedRoutes = () => {
 
-    const {authUser, googleSignin, cognitoSignIn} = useAuthContext()
+    const {googleSignin, dbCustomer, middleware} = useAuthContext()
 
-    return (authUser
-            ?
-            <RootNavigator/>
-            :
-            <View style={styles.container}>
+
+    if (middleware) {
+        return <View style={[styles.container, styles.horizontal]}>
+            <ActivityIndicator size="large" color="#96CEB4"/>
+        </View>
+    }
+
+    return (dbCustomer
+
+            ? <RootNavigator/>
+
+            : <View style={styles.container}>
                 <Authenticator hideDefault={true}>
                     <SignIn/>
                     <View>
                         <Button title="Login with Google" onPress={() => googleSignin()}/>
-                        <Button title="Login with Cognito" onPress={() => cognitoSignIn()}/>
                     </View>
                 </Authenticator>
             </View>
@@ -33,4 +39,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
+    horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+    },
 });
+

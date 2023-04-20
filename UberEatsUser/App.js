@@ -34,7 +34,6 @@ const updatedConfig = {
     },
 };
 
-
 Amplify.configure(updatedConfig);
 
 global.subscription = {};
