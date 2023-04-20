@@ -12,6 +12,7 @@ const CourierContextProvider = ({children}) => {
 
     const {sub} = useAuthContext()
     const [dbCourier, setDbCourier] = useState(null)
+    const {setMiddleware,authUser} = useAuthContext()
 
     useEffect(() => {
         if (!sub) return
@@ -22,6 +23,7 @@ const CourierContextProvider = ({children}) => {
 
                 if (items?.length) {
                     setDbCourier(items[0])
+                    setMiddleware(false)
                 } else {
                     console.log("no courier was found")
                 }
@@ -31,6 +33,12 @@ const CourierContextProvider = ({children}) => {
         //     subscription.courier.unsubscribe()
         // }
     }, [sub])
+
+    useEffect(()=>{
+        if(authUser===null){
+            setDbCourier(null)
+        }
+    },[authUser])
 
     const assignToCourier = async ({order, ETA}) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ assignToCourier ~~~~~~~~~~~~~~~~~~~~~ :")
