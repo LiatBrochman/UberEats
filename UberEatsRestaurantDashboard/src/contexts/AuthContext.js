@@ -94,10 +94,10 @@ const AuthContextProvider = ({children}) => {
         //
         // })
 
-        return () => {
-            window?.subscription?.owner?.unsubscribe()
-            window.alert("unsubscribing from :", dbOwner?.name)
-        }
+        // return () => {
+        //     window?.subscription?.owner?.unsubscribe()
+        //     window.alert("unsubscribing from :", dbOwner?.name)
+        // }
     }, [sub])
 
 

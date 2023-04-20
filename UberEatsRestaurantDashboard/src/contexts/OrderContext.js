@@ -106,6 +106,7 @@ const OrderContextProvider = ({children}) => {
             )).subscribe(({items, isSynced}) => {
                 if (isSynced) {
                     setCompletedOrders(items)
+                    setCountLiveUpdates(prev => prev + 1)
                 }
             })
         }
@@ -115,20 +116,8 @@ const OrderContextProvider = ({children}) => {
 
 
     /**
-     * Init Customer & Courier (for the specific Order)
+     * Init & re-subscribe couriers
      */
-    // useEffect(() => {
-    //
-    //
-    //     const liveCouriersIDs = liveOrders.filter(({courierID}) => courierID !== "null")
-    //
-    //     if (oneOrMore_ContextCourier_isNotHere(liveCouriersIDs)) {
-    //
-    //         subscription?.couriers?.unsubscribe()
-    //         subscription.couriers = observeCouriers(liveCouriersIDs)
-    //     }
-    //
-    // }, [liveOrders.length])
     useEffect(() => {
         if (oneOrMore_ContextCourier_isNotHere(liveCouriersIDs)) {
             resSubscribeToLiveCouriers()

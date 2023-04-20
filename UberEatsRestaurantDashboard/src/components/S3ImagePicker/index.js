@@ -13,7 +13,7 @@ const S3ImagePicker = ({ onSelect }) => {
         try {
             const {results} = await Storage.list('');
             setImages(results);
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
+            // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
 
         } catch (error) {
             console.error('Error fetching images:', error);
