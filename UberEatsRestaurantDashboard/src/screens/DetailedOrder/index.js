@@ -25,8 +25,16 @@ const DetailedOrder = () => {
         ETAs,
         countETAs,
         countLiveUpdates
-    } = useOrderContext({ETAs: []})
+    } = useOrderContext({ETAs: [] })
+
     const [ETA, setETA] = useState({courierID: null, customer: null, restaurant: null})
+    const [statusIsBeingUpdated, setStatusIsBeingUpdated] = useState(false)
+
+    useEffect(() => {
+        if (order?.status && order.status === "COMPLETED") {
+            navigate('/')
+        }
+    }, [order?.status])
 
     useEffect(() => {
         if (!orderID) return;
@@ -43,9 +51,11 @@ const DetailedOrder = () => {
     }, [orderID, countETAs, countLiveUpdates])
 
 
-
     const updateStatus = async ({id, newStatus}) => {
 
+        //the button is going to be disabled (starting updating status)
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ the button is going to be disabled (starting updating status) ~~~~~~~~~~~~~~~~~~~~~ ")
+        setStatusIsBeingUpdated(true)
         if (newStatus === "NEW") {
             DataStore.query(Order, id)
                 .then(order => DataStore.save(
@@ -53,7 +63,11 @@ const DetailedOrder = () => {
                             updated.status = "NEW"
                             updated.courierID = "null"
                         })
-                    )
+                    ) //the button is going to be enabled (finished updating status)
+                        .then(() => {
+                            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ the button is going to be enabled (finished updating status) ~~~~~~~~~~~~~~~~~~~~~ ")
+                            setStatusIsBeingUpdated(false)
+                        })
                 )
             courier && DataStore.query(Courier, courier.id)
                 .then(courier => DataStore.save(
@@ -68,26 +82,64 @@ const DetailedOrder = () => {
                         Order.copyOf(order, (updated) => {
                             updated.status = newStatus
                         })
-                    )
+                    ) //the button is going to be enabled (finished updating status)
+                        .then(() => {
+
+                            setTimeout(() => {
+                                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ the button is going to be enabled (finished updating status) ~~~~~~~~~~~~~~~~~~~~~ ")
+                                setStatusIsBeingUpdated(false)
+                            },1000)
+
+                        })
                 )
         }
     }
 
 
-    useEffect(() => {
+    function checkIfDisabled(status, newStatus) {
+        return !checkIfEnabled(status, newStatus)
+    }
 
-        if (order?.status) {
-         console.log("\n\n status =", order.status)
-            if(order.status==="COMPLETED"){
-                navigate('/')
-            }
+    function checkIfEnabled(status, newStatus) {
+        if (statusIsBeingUpdated) return false
+
+        let enabled = false;
+
+        switch (status) {
+            case "NEW":
+                enabled = newStatus === "ACCEPTED" || newStatus === "DECLINED"
+                break;
+            case "DECLINED":
+                enabled = false
+                break;
+            case "ACCEPTED":
+                enabled = newStatus === "COOKING"
+                break;
+            case "COOKING":
+                enabled = newStatus === "READY_FOR_PICKUP"
+                break;
+            case "READY_FOR_PICKUP":
+                enabled = newStatus === "PICKED_UP"
+                break;
+            case "PICKED_UP":
+                enabled = newStatus === "COMPLETED"
+                break;
+            case "COMPLETED":
+                enabled = false;
+                break;
+            case null:
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ null status ~~~~~~~~~~~~~~~~~~~~~ ")
+                break;
+            default:
+                throw new Error(`Invalid status: ${status}`)
         }
-    }, [order?.status])
 
+        return enabled
+    }
 
     return (
         <>
-            {order && customer && orderDishes && restaurant && order.status!=="COMPLETED" && order.status!=="DECLINED" &&
+            {order && customer && orderDishes && restaurant && order.status !== "COMPLETED" && order.status !== "DECLINED" &&
             <Card title={`Order`} style={{margin: 20}}>
                 <List bordered style={{border: "none"}} column={{lg: 1, md: 1, sm: 1}}>
                     <List.Item style={{border: "none"}}>
@@ -149,13 +201,15 @@ const DetailedOrder = () => {
                 <div className="buttonsContainer">
                     <Button block style={{backgroundColor: "#D9534F", color: "white"}} size="medium"
                             className="button"
-                            disabled={order.status !== "NEW"}
+                            disabled={checkIfDisabled(order.status, "DECLINED")}
+                        // disabled={order.status !== "NEW"}
                             onClick={async () => await updateStatus({id: order.id, newStatus: "DECLINED"})}>
                         Decline Order
                     </Button>
                     <Button block style={{backgroundColor: "#96CEB4", color: "white"}} size="medium"
                             className="button"
-                            disabled={order.status !== "NEW"}
+                        // disabled={order.status !== "NEW"}
+                            disabled={checkIfDisabled(order.status, "ACCEPTED")}
                             onClick={async () => await updateStatus({id: order.id, newStatus: "ACCEPTED"})}>
                         Accept Order
                     </Button>
@@ -166,7 +220,10 @@ const DetailedOrder = () => {
                         borderRight: "none", borderLeft: "none", borderTop: "none",
                         backgroundColor: "white",
                         color: "black"
-                    }} disabled={order.status !== "ACCEPTED"}
+                    }}
+                        // disabled={order.status !== "ACCEPTED"}
+                            disabled={checkIfDisabled(order.status, "COOKING")}
+
                             onClick={async () => await updateStatus({id: order.id, newStatus: "COOKING"})}>
                         START COOKING :)
                     </Button>
@@ -175,7 +232,9 @@ const DetailedOrder = () => {
                         borderRight: "none", borderLeft: "none", borderTop: "none",
                         backgroundColor: "white",
                         color: "black"
-                    }} disabled={order.status !== "COOKING"}
+                    }}
+                            disabled={checkIfDisabled(order.status, "READY_FOR_PICKUP")}
+                        // disabled={order.status !== "COOKING"}
                             onClick={async () => await updateStatus({
                                 id: order.id,
                                 newStatus: "READY_FOR_PICKUP"
@@ -187,7 +246,9 @@ const DetailedOrder = () => {
                         borderRight: "none", borderLeft: "none", borderTop: "none",
                         backgroundColor: "white",
                         color: "black"
-                    }} disabled={order.status !== "READY_FOR_PICKUP"}
+                    }}
+                            disabled={checkIfDisabled(order.status, "PICKED_UP")}
+                        // disabled={order.status !== "READY_FOR_PICKUP"}
                             onClick={async () => order.courierID === courier?.id && await updateStatus({
                                 id: order.id,
                                 newStatus: "PICKED_UP"
@@ -199,7 +260,8 @@ const DetailedOrder = () => {
                         borderRight: "none", borderLeft: "none", borderTop: "none",
                         backgroundColor: "white",
                         color: "black"
-                    }} disabled={order.status === "NEW"}
+                    }}
+                            disabled={order.status === "NEW"}
                             onClick={async () => await updateStatus({id: order.id, newStatus: "NEW"})}>
                         **RETURN TO NEW**
                     </Button>
