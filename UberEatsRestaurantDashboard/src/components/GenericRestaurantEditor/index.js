@@ -292,7 +292,7 @@ function GenericRestaurantEditor({props}) {
                     Sign out
                 </Button>
 
-                <Button disabled={process.env.REACT_APP_ENV !== 'local'} onClick={async () => {
+                <Button hidden={process.env.REACT_APP_ENV !== 'local'} onClick={async () => {
                     await DataStore.stop()
                     await DataStore.stop()
                     await DataStore.clear()
@@ -306,7 +306,7 @@ function GenericRestaurantEditor({props}) {
                     clear
                 </Button>
 
-                <Button disabled={true} onClick={async () => {
+                <Button hidden={true} onClick={async () => {
                     restaurants_assets.map(async i => {
                         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ i ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(i, null, 4))
                         props.type = "NEW"

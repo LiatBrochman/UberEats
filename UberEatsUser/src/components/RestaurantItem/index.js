@@ -4,9 +4,6 @@ import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
 
-const DEFAULT_IMAGE =
-    "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/uber-eats/restaurant1.jpeg";
-
 
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()

@@ -75,7 +75,6 @@ const Map = () => {
                     showsMyLocationButton={true}
                     zoomControlEnabled={true}
                 >
-                    <Marker coordinate={{latitude: 32.1975652, longitude: 34.8775085}}/>
                     {restaurants.length > 0 && restaurants.map(restaurant => {
                             let color = "#FFAD60"
 

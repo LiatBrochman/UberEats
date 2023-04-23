@@ -255,7 +255,7 @@ const DetailedOrder = () => {
                             })}>
                         Order has been picked up!
                     </Button>
-                    <Button block size="medium" style={{
+                    <Button hidden={process.env.REACT_APP_ENV !== 'local'} block size="medium" style={{
                         borderBottom: order.status === "NEW" ? "2px solid #FFAD60" : "#f5f5f5",
                         borderRight: "none", borderLeft: "none", borderTop: "none",
                         backgroundColor: "white",

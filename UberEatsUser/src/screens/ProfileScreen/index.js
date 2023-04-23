@@ -169,8 +169,9 @@ const Profile = () => {
                 Sign out
             </Text>
 
+            {process.env.NODE_ENV!=="production" &&
             <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
-            } title="Amplify.DataStore.clear()"/>
+            } title="Amplify.DataStore.clear()"/>}
 
         </View>
     );

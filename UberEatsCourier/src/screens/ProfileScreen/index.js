@@ -142,9 +142,9 @@ const Profile = () => {
                     style={{textAlign: "center", color: 'black', margin: 10}}>
                     Sign out
                 </Text>
-                <Button
-                    onPress={async () => await Amplify.DataStore.clear().then(async () => await Amplify.DataStore.start())}
-                    title="Amplify.DataStore.clear()"/>
+                {process.env.NODE_ENV!=="production" &&
+                <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
+                } title="Amplify.DataStore.clear()"/>}
 
 
             </SafeAreaView>
