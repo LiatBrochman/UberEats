@@ -8,20 +8,22 @@ import {Dish} from "../../models";
 import {useNavigate} from 'react-router-dom';
 import './index.css';
 import {dishes_assets_fixed} from "../../assets/data/restaurants";
+import {useAuthContext} from "../../contexts/AuthContext";
 
 
 function GenericDishEditor({props}) {
 
+    const {dbOwner} = useAuthContext()
     const {restaurant} = useRestaurantContext()
     const navigate = useNavigate()
-    const imageBaseUrl = "https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/"
+    const imageBaseUrl = `https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/`
     const [image, setImage] = useState(props.type === "NEW" ? '' : props.dish.image)
     const [fileList, setFileList] = useState([])
     const [form] = Form.useForm()
 
     const customRequest = async ({file, onSuccess, onError}) => {
         try {
-            const result = await Storage.put(file.name, file, {
+            const result = await Storage.put(dbOwner.email+'/'+file.name, file, {
                 contentType: file.type,
             })
             setImage(imageBaseUrl + result.key)
@@ -33,7 +35,9 @@ function GenericDishEditor({props}) {
     }
 
     const handleChange = info => {
-        setFileList(info.fileList);
+        setFileList(info.fileList)
+        setImage(imageBaseUrl + dbOwner.email + '/' + info.file.name)
+        form.setFieldsValue({image: imageBaseUrl + dbOwner.email + '/' + info.file.name})
     }
 
     let name = props.type === "NEW" ? '' : props.dish.name
@@ -207,6 +211,7 @@ function GenericDishEditor({props}) {
                             }}
                         />
                         <Upload
+
                             accept="image/*"
                             fileList={fileList}
                             customRequest={customRequest}

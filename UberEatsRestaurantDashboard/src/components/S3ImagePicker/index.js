@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Storage } from 'aws-amplify';
 import { List, Popover, Button } from 'antd';
+import {useAuthContext} from "../../contexts/AuthContext";
 
 const S3ImagePicker = ({ onSelect }) => {
     const [images, setImages] = useState([]);
+    const {dbOwner} = useAuthContext()
 
     useEffect(() => {
         fetchImages();
@@ -11,10 +13,9 @@ const S3ImagePicker = ({ onSelect }) => {
 
     const fetchImages = async () => {
         try {
-            const {results} = await Storage.list('');
+            const {results} = await Storage.list(`${dbOwner.email}`);
+            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
             setImages(results);
-            // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
-
         } catch (error) {
             console.error('Error fetching images:', error);
         }
@@ -31,7 +32,7 @@ const S3ImagePicker = ({ onSelect }) => {
             renderItem={(item) => (
                 <List.Item onClick={() => handleSelect(item)}>
                     <List.Item.Meta
-                        title={item.key}
+                        title={item.key.match(/\/([^/]+)$/)?.[1] ?? ""}
                     />
                 </List.Item>
             )}

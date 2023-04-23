@@ -17,7 +17,7 @@ function GenericRestaurantEditor({props}) {
     const {restaurant, setRestaurant} = useRestaurantContext()
     const {dbOwner, signOut} = useAuthContext()
     const navigate = useNavigate()
-    const imageBaseUrl = "https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/"
+    const imageBaseUrl = `https://uber-eats-bucket142552-dev.s3.amazonaws.com/public/`
     const [image, setImage] = useState(props.type === "NEW" ? '' : restaurant?.image)
     const [fileList, setFileList] = useState([])
     const [form] = Form.useForm()
@@ -30,7 +30,7 @@ function GenericRestaurantEditor({props}) {
 
     const customRequest = async ({file, onSuccess, onError}) => {
         try {
-            const result = await Storage.put(file.name, file, {
+            const result = await Storage.put(dbOwner.email + '/' + file.name, file, {
                 contentType: file.type,
             })
             setImage(imageBaseUrl + result.key)
@@ -42,12 +42,13 @@ function GenericRestaurantEditor({props}) {
     }
 
     const handleChange = info => {
-        setFileList(info.fileList);
+        setFileList(info.fileList)
+        setImage(imageBaseUrl + dbOwner.email + '/' + info.file.name)
+        form.setFieldsValue({image: imageBaseUrl + dbOwner.email + '/' + info.file.name})
     }
 
     const handleImageSelect = (selectedImage) => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ selectedImage ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(selectedImage, null, 4))
-
         setImage(imageBaseUrl + selectedImage.key)
         form.setFieldsValue({image: imageBaseUrl + selectedImage.key})
         setFileList([
@@ -178,18 +179,18 @@ function GenericRestaurantEditor({props}) {
                     </Form.Item>
 
                     <Form.Item label="Restaurant image"
-                        name="image"
-                        initialValue={image}
-                        rules={[
-                            {required: true, message: 'Please select an image or enter a URL.'},
-                            {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
-                            {
-                                validator: async (_) =>
-                                    await isImgUrl(image)
-                                        ? Promise.resolve() :
-                                        Promise.reject(new Error('invalid image URL!!'))
-                            },
-                        ]}>
+                               name="image"
+                               initialValue={image}
+                               rules={[
+                                   {required: true, message: 'Please select an image or enter a URL.'},
+                                   {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
+                                   {
+                                       validator: async (_) =>
+                                           await isImgUrl(image)
+                                               ? Promise.resolve() :
+                                               Promise.reject(new Error('invalid image URL!!'))
+                                   },
+                               ]}>
                         <>
                             {renderingImage}
                             <Input
@@ -210,7 +211,13 @@ function GenericRestaurantEditor({props}) {
                                     setImage('');
                                     setFileList([]);
                                 }}>
-                                <button type="button" style={{backgroundColor:"#FFAD60", border: "2px solid #FFAD60", marginBottom:5,  marginTop: 5, borderRadius:10}}>
+                                <button type="button" style={{
+                                    backgroundColor: "#FFAD60",
+                                    border: "2px solid #FFAD60",
+                                    marginBottom: 5,
+                                    marginTop: 5,
+                                    borderRadius: 10
+                                }}>
                                     <UploadOutlined/> Click to Upload
                                 </button>
                             </Upload>
