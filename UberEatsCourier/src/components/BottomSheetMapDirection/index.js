@@ -168,7 +168,10 @@ export const BottomSheetMapDirection = () => {
                             <FontAwesome5 name="map-marker-alt" size={26} color="#D9534F"/>
                             <Text style={styles.addressText}>{currentOrder.customerLocation.address}</Text>
                         </View>
-                        <Text style={styles.orderStatus}>{pressedState.order.status}</Text>
+                        <View style={styles.addressContainer}>
+                            <FontAwesome5 name="bell" size={26} color="#D9534F"/>
+                            <Text style={styles.orderStatusText}>{currentOrder.status}</Text>
+                        </View>
                         <View style={styles.orderDetailsContainer}>
                             {pressedState.dishes.map(dish =>
                                 <Text style={styles.orderItemText}
@@ -179,7 +182,7 @@ export const BottomSheetMapDirection = () => {
                     <Pressable
                         style={{
                             ...styles.buttonContainer,
-                            backgroundColor: isButtonDisabled() ? 'lightgrey' : '#FFAD60'
+                            backgroundColor: isButtonDisabled() ? 'lightgrey' : '#FFAD60', marginTop:20
                         }}
                         onPress={onButtonPressed} disabled={isButtonDisabled()}>
                         <Text style={styles.buttonText}>{renderButtonTitle()}</Text>

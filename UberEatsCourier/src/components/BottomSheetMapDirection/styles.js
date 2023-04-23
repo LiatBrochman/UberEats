@@ -27,11 +27,6 @@ export default StyleSheet.create({
         letterSpacing: 1,
         paddingVertical: 20
     },
-    orderStatus: {
-        fontSize: 25,
-        letterSpacing: 1,
-        paddingVertical: 20
-    },
     addressContainer:{
         flexDirection: 'row',
         marginBottom: 20,
@@ -41,6 +36,12 @@ export default StyleSheet.create({
         fontSize: 16,
         color: 'black',
         fontWeight: '500',
+        letterSpacing: 0.5,
+        marginLeft: 15,
+    },
+    orderStatusText: {
+        fontSize: 16,
+        color: 'black',
         letterSpacing: 0.5,
         marginLeft: 15,
     },
