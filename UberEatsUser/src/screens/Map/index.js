@@ -84,26 +84,29 @@ const Map = () => {
                                     color = "#FFAD60"
                                 }
                             }
-                            return <Marker
-                                key={restaurant.id}
-                                title={restaurant.name}
-                                description={restaurant.location.address}
-                                coordinate={{
-                                    latitude: restaurant?.location?.lat,
-                                    longitude: restaurant?.location?.lng
-                                }}
-                                onCalloutPress={() => onCalloutPress(restaurant)}
-                            >
-                                <View style={{
-                                    backgroundColor: 'white',
-                                    padding: 5,
-                                    borderRadius: 20,
-                                    borderWidth: 2,
-                                    borderColor: color
-                                }}>
-                                    {<Entypo name="shop" size={24} color={color}/>}
-                                </View>
-                            </Marker>
+
+                            if(color!=="grey") {
+                                return <Marker
+                                    key={restaurant.id}
+                                    title={restaurant.name}
+                                    description={restaurant.location.address}
+                                    coordinate={{
+                                        latitude: restaurant?.location?.lat,
+                                        longitude: restaurant?.location?.lng
+                                    }}
+                                    onCalloutPress={() => onCalloutPress(restaurant)}
+                                >
+                                    <View style={{
+                                        backgroundColor: 'white',
+                                        padding: 5,
+                                        borderRadius: 20,
+                                        borderWidth: 2,
+                                        borderColor: color
+                                    }}>
+                                        {<Entypo name="shop" size={24} color={color}/>}
+                                    </View>
+                                </Marker>
+                            }
                         }
                     )}
 
@@ -146,7 +149,7 @@ const Map = () => {
                         }
                     )}
                 </MapView>
-                {liveOrders.length > 0 && <MapBottomSheet/>}
+                {liveOrders.length > 0 && <MapBottomSheet order={liveOrders[0]} />}
 
             </GestureHandlerRootView>)
 }
