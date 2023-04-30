@@ -11,11 +11,12 @@ const RestaurantItem = ({restaurant}) => {
     const {findExistingBasket , setBasket} = useBasketContext()
 
     const onPress = async () => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ onPress---> restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant,null,4))
+        if(!restaurant) return;
 
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ onPress---> restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant,null,4))
         setRestaurant(restaurant)
-        setBasket(findExistingBasket(restaurant?.id))
-        navigation.navigate("Restaurant", {id: restaurant?.id});
+        setBasket(findExistingBasket(restaurant.id))
+        navigation.navigate("Restaurant", {id: restaurant.id});
     }
     return (
         <Pressable onPress={onPress} style={styles.restaurantContainer}>

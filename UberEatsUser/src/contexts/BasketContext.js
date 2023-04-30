@@ -198,11 +198,11 @@ const BasketContextProvider = ({children}) => {
         })
     }
 
-    const findExistingBasket = async (resID = restaurant?.id) => {
-        if (!restaurant?.id && !resID) console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ !  !  ! findExistingBasket : restaurant?.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.id, null, 4))
+    const findExistingBasket = async (restaurantID = restaurant?.id) => {
+        if (!restaurant?.id && !restaurantID) console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ !  !  ! findExistingBasket : restaurant?.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.id, null, 4))
 
         const [existingBasket] = await DataStore.query(Basket, b => b.and(b => [
-            b.restaurantID.eq(restaurant?.id || resID),
+            b.restaurantID.eq(restaurantID),
             b.customerID.eq(dbCustomer.id),
             b.isDeleted.eq(false)
         ]))
@@ -216,16 +216,16 @@ const BasketContextProvider = ({children}) => {
 
 
             case false:
-                return await createNewBasket()
+                return await createNewBasket(restaurantID)
         }
     }
 
-    const createNewBasket = async () => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ createNewBasket:  restaurant?.id ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant?.id, null, 4))
+    const createNewBasket = async (restaurantID) => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ createNewBasket:  restaurantID ~~~~~~~~~~~~~~~~~~~~~ :", restaurantID )
 
         const createdBasket = await DataStore.save(new Basket({
             customerID: dbCustomer?.id,
-            restaurantID: restaurant?.id,
+            restaurantID: restaurantID,
             isDeleted: false
         }))
 
