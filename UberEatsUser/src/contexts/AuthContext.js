@@ -1,6 +1,6 @@
 import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {Auth, DataStore, Hub} from "aws-amplify";
-import {AppState} from 'react-native';
+import {Alert, AppState} from 'react-native';
 import {Customer} from "../models";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from 'expo-web-browser';
@@ -60,13 +60,19 @@ const AuthContextProvider = ({children}) => {
 
                 case "parsingCallbackUrl":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
-                    if (!/signOutRedirect$/.test(data.url)) {
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
+                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ data.url ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(data.url,null,4))
+                    if (/signInRedirect/.test(data.url)) {
+                        // if (!/signOutRedirect$/.test(data.url)) {
+                    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
+                    //     //Alert.alert("parsingCallbackUrl, setMiddleware(true)")
+                    //     Alert.alert("data.url=",data.url+"")
                         setMiddleware(true)
                     }
                     break;
 
                 case "signIn":
+                    //Alert.alert("signIn, setMiddleware(true)")
+                    // setMiddleware(true)
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)
@@ -79,6 +85,7 @@ const AuthContextProvider = ({children}) => {
                     setAuthUser(null)
                     setDbCustomer(null)
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(false) ~~~~~~~~~~~~~~~~~~~~~ ")
+                    //Alert.alert("signOut, setMiddleware(false)")
                     setMiddleware(false)
                     break;
 
@@ -92,6 +99,7 @@ const AuthContextProvider = ({children}) => {
         Auth.currentAuthenticatedUser()
             .then((currentUser) => setAuthUser(currentUser))
             .catch(() => {
+                //Alert.alert("Not signed in, setMiddleware(false)")
                 setMiddleware(false)
                 console.log("Not signed in")
             })
