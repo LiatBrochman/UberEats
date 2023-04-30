@@ -59,7 +59,7 @@ const AuthContextProvider = ({children}) => {
 
                 case "parsingCallbackUrl":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
-                    if (!/signOutRedirect$/.test(data.url)) {
+                    if (/signInRedirect/.test(data.url)) {
                         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
                         setMiddleware(true)
                     }
