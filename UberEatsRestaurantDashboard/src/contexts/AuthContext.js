@@ -148,6 +148,7 @@ const AuthContextProvider = ({children}) => {
                 email: authUser.attributes.email,
             }))
 
+
             console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newOwner ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newOwner, null, 4))
 
             return newOwner

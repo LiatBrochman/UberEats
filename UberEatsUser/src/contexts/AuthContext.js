@@ -58,19 +58,20 @@ const AuthContextProvider = ({children}) => {
         subscription.hubListener = Hub.listen("auth", ({payload: {event, data}}) => {
             switch (event) {
 
-                case "parsingCallbackUrl":
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ data.url ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(data.url,null,4))
-                    if (/signInRedirect/.test(data.url)) {
-                        // if (!/signOutRedirect$/.test(data.url)) {
-                    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
-                    //     //Alert.alert("parsingCallbackUrl, setMiddleware(true)")
-                    //     Alert.alert("data.url=",data.url+"")
-                        setMiddleware(true)
-                    }
-                    break;
+                // case "parsingCallbackUrl":
+                //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
+                //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ data.url ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(data.url,null,4))
+                //     if (/signInRedirect/.test(data.url)) {
+                //         // if (!/signOutRedirect$/.test(data.url)) {
+                //     //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
+                //     //     //Alert.alert("parsingCallbackUrl, setMiddleware(true)")
+                //     //     Alert.alert("data.url=",data.url+"")
+                //         setMiddleware(true)
+                //     }
+                //     break;
 
                 case "signIn":
+                    setMiddleware(true)
                     //Alert.alert("signIn, setMiddleware(true)")
                     // setMiddleware(true)
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")

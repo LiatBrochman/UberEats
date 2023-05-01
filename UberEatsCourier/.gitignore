@@ -3,7 +3,8 @@
 eas.json
 android/
 .idea/
-assets/
+postPreBuild.js
+prePreBuild.js
 
 #auto generated stuff:
 .expo/

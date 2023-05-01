@@ -57,15 +57,16 @@ const AuthContextProvider = ({children}) => {
         subscription.hubListener = Hub.listen("auth", ({payload: {event, data}}) => {
             switch (event) {
 
-                case "parsingCallbackUrl":
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
-                    if (/signInRedirect/.test(data.url)) {
-                        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
-                        setMiddleware(true)
-                    }
-                    break;
+                // case "parsingCallbackUrl":
+                //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
+                //     if (/signInRedirect/.test(data.url)) {
+                //         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
+                //         setMiddleware(true)
+                //     }
+                //     break;
 
                 case "signIn":
+                    setMiddleware(true)
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)

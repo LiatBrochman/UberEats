@@ -4,7 +4,7 @@
     "slug": "ubereatscourier",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/UberEatsCourierLogo.png",
     "userInterfaceStyle": "light",
     "scheme": "com.joey123ms.ubereatscourier",
     "splash": {
@@ -21,21 +21,22 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.joey123ms.ubereatscourier",
-      "buildNumber": "1.0.0"
+      "buildNumber": "4"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.joey123ms.ubereatscourier"
+      "package": "com.joey123ms.ubereatscourier",
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "f59f7d5f-2f06-4c11-ae2c-772d7c952401"
+        "projectId": "ace91ba6-b461-420c-a193-51681b7edbe3"
       }
     }
   }

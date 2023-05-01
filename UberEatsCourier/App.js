@@ -17,6 +17,7 @@ import * as AuthSession from "expo-auth-session";
 I18nManager.forceRTL(false);
 I18nManager.allowRTL(false);
 
+
 const updatedConfig = {
     ...awsconfig, oauth: {
         ...awsconfig.oauth,

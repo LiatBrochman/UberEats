@@ -4,16 +4,16 @@
     "slug": "ubereatsuser",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/UberEatsCustomerLogo.png",
     "userInterfaceStyle": "light",
     "scheme": "com.joey123ms.ubereatsuser",
     "splash": {
-      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#FFFFFF"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/f63baa0d-6508-46f1-a61e-56293c1b93fb"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,21 +21,22 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.joey123ms.ubereatsuser",
-      "buildNumber": "1.0.0"
+      "buildNumber": "4",
+      "runtimeVersion": {
+        "policy": "sdkVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.joey123ms.ubereatsuser"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
+      "package": "com.joey123ms.ubereatsuser",
+      "runtimeVersion": "1.0.0",
+      "versionCode": 4
     },
     "extra": {
       "eas": {
-        "projectId": "de1631f6-d232-4977-b85a-b8626185bb7b"
+        "projectId": "f63baa0d-6508-46f1-a61e-56293c1b93fb"
       }
     }
   }
