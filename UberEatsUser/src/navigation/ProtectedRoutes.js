@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Authenticator, SignIn} from "aws-amplify-react-native";
 import {ActivityIndicator, Button, StyleSheet, View} from "react-native";
 import {useAuthContext} from "../contexts/AuthContext";
@@ -7,28 +7,31 @@ import RootNavigator from "./index";
 
 const ProtectedRoutes = () => {
 
-    const {googleSignin, dbCustomer, middleware} = useAuthContext()
-
-
-    if (middleware) {
-        return <View style={[styles.container, styles.horizontal]}>
-            <ActivityIndicator size="large" color="#96CEB4"/>
+    const {googleSignin, isLoading, authUser} = useAuthContext()
+    const [renderingScreen, setRenderingScreen] = useState(<></>)
+    const loadingScreen = <View style={[styles.container, styles.horizontal]}>
+        <ActivityIndicator size="large" color="#96CEB4"/></View>
+    const loginScreen = <View style={styles.container}>
+            <Authenticator hideDefault={true}>
+                <SignIn/>
+                <View style={{justifyContent: "center"}}>
+                    <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
+                </View>
+            </Authenticator>
         </View>
-    }
 
-    return (dbCustomer
+    useEffect(() => {
 
-            ? <RootNavigator/>
+        isLoading ?
+            setRenderingScreen(loadingScreen) :
+            authUser ?
+                setRenderingScreen(<RootNavigator/>) : setRenderingScreen(loginScreen)
 
-            : <View style={styles.container}>
-                <Authenticator hideDefault={true}>
-                    <SignIn/>
-                    <View style={{ flex: 3, justifyContent: "center"}}>
-                        <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
-                    </View>
-                </Authenticator>
-            </View>
-    )
+
+    }, [isLoading, authUser])
+
+    return renderingScreen
+
 }
 export default ProtectedRoutes
 const styles = StyleSheet.create({

@@ -21,18 +21,15 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.joey123ms.ubereatsuser",
-      "buildNumber": "4",
-      "runtimeVersion": {
-        "policy": "sdkVersion"
-      }
+      "buildNumber": "6"
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/UberEatsCustomerLogo.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.joey123ms.ubereatsuser",
-      "runtimeVersion": "1.0.0",
-      "versionCode": 4
+      "versionCode": 6
     },
     "extra": {
       "eas": {
