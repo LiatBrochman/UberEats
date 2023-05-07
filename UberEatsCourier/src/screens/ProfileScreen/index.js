@@ -12,7 +12,7 @@ import {useCourierContext} from "../../contexts/CourierContext";
 
 
 const Profile = () => {
-    const {authUser, sub, signOut} = useAuthContext()
+    const {authUser, signOut} = useAuthContext()
     const {dbCourier, setDbCourier} = useCourierContext()
     const {driverLocation} = useOrderContext()
     const [name, setName] = useState(dbCourier?.name || authUser?.attributes?.name || "")
@@ -48,7 +48,7 @@ const Profile = () => {
                     isDeleted: false,
                     isActive: true,
                     location,
-                    sub
+                    sub:authUser.attributes.sub
                 };
                 await createCourier(draft);
             }

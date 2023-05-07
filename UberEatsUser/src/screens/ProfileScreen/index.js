@@ -11,7 +11,7 @@ import {getAddressByCoords, getCoordsByAddress, getCurrentPosition} from "../../
 const Profile = () => {
 
     const navigation = useNavigation()
-    const {dbCustomer, authUser, sub, setDbCustomer, signOut} = useAuthContext()
+    const {dbCustomer, authUser, setDbCustomer, signOut} = useAuthContext()
     const [address, setAddress] = useState()
     const [name, setName] = useState()
 
@@ -116,7 +116,7 @@ const Profile = () => {
         try {
             DataStore.save(
                 new Customer({
-                    sub: sub,
+                    sub: authUser.attributes.sub,
                     name: name,
                     location: {
                         address: address,

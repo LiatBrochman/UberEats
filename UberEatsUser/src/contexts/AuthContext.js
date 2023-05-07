@@ -2,21 +2,11 @@ import {createContext, useCallback, useContext, useEffect, useState} from "react
 import {Auth, DataStore, Hub} from "aws-amplify";
 import {AppState} from 'react-native';
 import {Customer} from "../models";
-import * as Google from "expo-auth-session/providers/google";
-
+import * as Updates from 'expo-updates';
+import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
 
 const AuthContext = createContext({});
 
-function cleanUp() {
-    for (const key in subscription) {
-        // Check if the current object value has an "unsubscribe" method
-        if (typeof subscription[key].unsubscribe === 'function') {
-            // Call the "unsubscribe" method
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ unsubscribing from ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription[key], null, 4))
-            subscription[key].unsubscribe()
-        }
-    }
-}
 
 const AuthContextProvider = ({children}) => {
     // const isExpo = Constants.executionEnvironment === 'storeClient';
@@ -24,22 +14,24 @@ const AuthContextProvider = ({children}) => {
 
     const [authUser, setAuthUser] = useState(null)
     const [dbCustomer, setDbCustomer] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+
     const googleSignin = useCallback(() => {
-        try {
-            Auth.federatedSignIn({provider: "Google"}).then(() => {
-                setIsLoading(true)
-            })
-        } catch (e) {
-            console.error('Error during federated sign-in:', e)
-        }
-    }, [])
-    const signOut = useCallback(() => {
-        try {
+
+        Auth.federatedSignIn({provider: "Google"}).then(() => {
             setIsLoading(true)
-            Auth.signOut({global: true}).finally(() => setIsLoading(false))
-        } catch (e) {
-            console.error('Error during federated sign-out:', e)
-        }
+        })
+            .catch((e) => {
+                console.error('Error during federated sign-in:', e)
+            })
+
+    }, [])
+    const signOut = useCallback(async () => {
+        await executeFunctionsSequentially([Auth.signOut({}), setAuthUser(null), DataStore.clear(), DataStore.start(), Updates.reloadAsync()])
+            .catch((e) => {
+                console.error('Error during federated sign-out:', e)
+            })
+
     }, [])
     const performCleanup = useCallback(nextAppState => {
         if (nextAppState === 'inactive') {//todo :?? || nextAppState === 'background'
@@ -47,14 +39,17 @@ const AuthContextProvider = ({children}) => {
             cleanUp()
         }
     }, [subscription])
-    const [isLoading, setIsLoading] = useState(false)
 
     function subscribeToCustomer() {
         subscription.customer = DataStore.observeQuery(Customer, c => c.sub.eq(authUser.attributes.sub))
             .subscribe(({items, isSynced}) => {
                 if (!isSynced) return
+
                 if (items?.length) {
                     setDbCustomer(items[0])
+                    setIsLoading(false)
+                } else {
+                    console.log("no customer was found")
                     setIsLoading(false)
                 }
             })
@@ -63,24 +58,12 @@ const AuthContextProvider = ({children}) => {
     useEffect(() => {
 
         // subscription.hubListener =
-        Hub.listen("auth", ({payload: {event, data}}) => {
+        Hub.listen("auth", ({payload: {event}}) => {
             switch (event) {
-
-                // case "parsingCallbackUrl":
-                //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ : parsingCallbackUrl")
-                //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ data.url ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(data.url,null,4))
-                //     if (/signInRedirect/.test(data.url)) {
-                //         // if (!/signOutRedirect$/.test(data.url)) {
-                //     //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setMiddleware(true) ~~~~~~~~~~~~~~~~~~~~~ ")
-                //     //     //Alert.alert("parsingCallbackUrl, setMiddleware(true)")
-                //     //     Alert.alert("data.url=",data.url+"")
-                //         setMiddleware(true)
-                //     }
-                //     break;
 
                 case "signIn":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
-                    setIsLoading(true)
+                    //setIsLoading(true)
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)
                         .catch(() => console.log("Not signed in"))
@@ -88,8 +71,6 @@ const AuthContextProvider = ({children}) => {
 
                 case "signOut":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signOut ~~~~~~~~~~~~~~~~~~~~~ ")
-                    setAuthUser(null)
-                    setIsLoading(false)
                     cleanUp()
                     break;
 
@@ -120,12 +101,14 @@ const AuthContextProvider = ({children}) => {
 
     }, [authUser])
 
-    useEffect(() => {
-        if (!dbCustomer) return;
-
-        setIsLoading(false)
-
-    }, [dbCustomer])
+    // useEffect(() => {
+    //     if (!dbCustomer) return;
+    //
+    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer,null,4))
+    //
+    //     setIsLoading(false)
+    //
+    // }, [dbCustomer])
 
 
     return (

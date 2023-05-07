@@ -10,7 +10,7 @@ const CourierContext = createContext({})
 
 const CourierContextProvider = ({children}) => {
 
-    const {authUser,setIsLoading} = useAuthContext()
+    const {authUser, setIsLoading} = useAuthContext()
     const [dbCourier, setDbCourier] = useState(null)
 
     function subscribeToCourier() {
@@ -20,22 +20,22 @@ const CourierContextProvider = ({children}) => {
 
                 if (items?.length) {
                     setDbCourier(items[0])
+                    setIsLoading(false)
                 } else {
                     console.log("no courier was found")
+                    setIsLoading(false)
                 }
             })
     }
 
-    useEffect(()=>{
+    useEffect(() => {
 
-       authUser?.attributes?.sub ? subscribeToCourier() : setDbCourier(null)
+        authUser?.attributes?.sub ? subscribeToCourier() : setDbCourier(null)
 
-    },[authUser])
+    }, [authUser])
 
     useEffect(() => {
-        if(!dbCourier) return;
-
-        setIsLoading(false)
+        if (!dbCourier) return;
 
         /**
          * fixing issues related to manual DB updates
@@ -72,7 +72,7 @@ const CourierContextProvider = ({children}) => {
     // }
     const safeUpdateCourier = async ({ETA, origin}) => {
 
-        const lat = origin.latitude, lng= origin.longitude;
+        const lat = origin.latitude, lng = origin.longitude;
 
         if (compareArrays(dbCourier.timeToArrive, ETA)) {
 
@@ -80,15 +80,14 @@ const CourierContextProvider = ({children}) => {
 
 
             await updateCourier(dbCourier.id, {
-                timeToArrive:ETA,
-                location: {lat,lng}
+                timeToArrive: ETA,
+                location: {lat, lng}
             })
-        }else{
+        } else {
 
             await updateCourier(dbCourier.id, {
-                location: {lat,lng}
+                location: {lat, lng}
             })
-
 
 
         }
