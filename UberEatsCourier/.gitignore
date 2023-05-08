@@ -6,6 +6,7 @@ android/
 postPreBuild.js
 prePreBuild.js
 credentials.json
+upload_certificate.pem
 *.pem
 #auto generated stuff:
 .expo/

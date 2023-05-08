@@ -28,18 +28,15 @@ export function cleanUp() {
 export async function executeFunctionsSequentially(functions) {
     const results = [];
 
-    for await (const result of (async function* () {
-        for (const func of functions) {
-            try {
-                const returnValue = func();
-                const res = returnValue instanceof Promise ? await returnValue : returnValue;
-                yield {status: 'fulfilled', value: res};
-            } catch (error) {
-                yield {status: 'rejected', reason: error};
-            }
+    for (const func of functions) {
+        try {
+            const returnValue = func();
+            const res = returnValue instanceof Promise ? await returnValue : returnValue;
+            results.push({status: 'fulfilled', value: res});
+        } catch (error) {
+            results.push({status: 'rejected', reason: error});
+            break; // Stop the process if a function is rejected
         }
-    })()) {
-        results.push(result);
     }
 
     return results;

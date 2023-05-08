@@ -27,12 +27,18 @@ const AuthContextProvider = ({children}) => {
 
     }, [])
     const signOut = useCallback(async () => {
-        await executeFunctionsSequentially([Auth.signOut({}), setAuthUser(null), DataStore.clear(), DataStore.start(), Updates.reloadAsync()])
+        await executeFunctionsSequentially([
+            () => Auth.signOut({}),
+            () => setAuthUser(null),
+            () => DataStore.clear(),
+            () => DataStore.start(),
+            () => Updates.reloadAsync()
+        ])
             .catch((e) => {
                 console.error('Error during federated sign-out:', e)
             })
-
     }, [])
+
     const performCleanup = useCallback(nextAppState => {
         if (nextAppState === 'inactive') {//todo :?? || nextAppState === 'background'
             // Iterate through the subscription object values
