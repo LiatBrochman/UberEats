@@ -14,11 +14,13 @@ const ProtectedRoutes = () => {
     const loginScreen = <View style={styles.container}>
             <Authenticator hideDefault={true}>
                 <SignIn/>
-                <View style={{justifyContent: "center"}}>
+                <View>
                     <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
                 </View>
+                <View style={{paddingBottom:300}}></View>
             </Authenticator>
         </View>
+
 
     useEffect(() => {
 

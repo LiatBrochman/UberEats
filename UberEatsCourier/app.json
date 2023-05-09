@@ -4,7 +4,7 @@
     "slug": "ubereatscourier",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/UberEatsCourierLogo.png",
+    "icon": "./assets/UberEatsCourierLogo2.png",
     "userInterfaceStyle": "light",
     "scheme": "com.joey123ms.ubereatscourier",
     "splash": {
@@ -24,7 +24,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/UberEatsCourierLogo.png",
+        "foregroundImage": "./assets/UberEatsCourierLogo2.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.joey123ms.ubereatscourier",
