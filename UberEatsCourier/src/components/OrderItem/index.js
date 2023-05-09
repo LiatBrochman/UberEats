@@ -4,6 +4,7 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import {DataStore} from "aws-amplify";
 import {Customer, Restaurant} from "../../models";
 import {useEffect, useState} from "react";
+import CachedImage from 'react-native-expo-cached-image';
 
 
 const OrderItem = ({order}) => {
@@ -41,7 +42,7 @@ const OrderItem = ({order}) => {
                        // navigation.navigate('OrdersDeliveryScreen')
                    }}
         >
-            <Image
+            <CachedImage
                 source={{uri: restaurant?.image}}
                 style={{
                     width: "25%",

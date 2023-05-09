@@ -1,5 +1,6 @@
 import {Image, Text, View} from "react-native";
 import styles from "./styles";
+import CachedImage from 'react-native-expo-cached-image';
 
 const DEFAULT_IMAGE =
     "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/uber-eats/restaurant1.jpeg";
@@ -7,7 +8,7 @@ const DEFAULT_IMAGE =
 const RestaurantHeader = ({restaurant}) => {
     return (
         <View style={styles.page}>
-            <Image
+            <CachedImage
                 source={{uri: restaurant?.image}}
                 style={styles.image}
             />

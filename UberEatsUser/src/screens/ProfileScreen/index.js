@@ -6,6 +6,7 @@ import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import {getAddressByCoords, getCoordsByAddress, getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
+import CachedImage from 'react-native-expo-cached-image';
 
 
 const Profile = () => {
@@ -138,7 +139,7 @@ const Profile = () => {
         <View style={{backgroundColor: "white", flex: 1}}>
             <SafeAreaView>
                 <Text style={styles.title}>Profile</Text>
-                <Image
+                <CachedImage
                     source={{
                         uri: "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2052&q=80"
                     }}

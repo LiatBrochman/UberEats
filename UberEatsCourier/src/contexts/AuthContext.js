@@ -82,7 +82,6 @@ const AuthContextProvider = ({children}) => {
                 setIsLoading(false)
             })
 
-
         AppState.addEventListener('change', performCleanup)
 
 

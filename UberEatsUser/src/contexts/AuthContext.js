@@ -4,6 +4,7 @@ import {AppState} from 'react-native';
 import {Customer} from "../models";
 import * as Updates from 'expo-updates';
 import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
+// import * as Constants from "constants";
 
 const AuthContext = createContext({});
 
@@ -86,6 +87,7 @@ const AuthContextProvider = ({children}) => {
             }
         })
 
+        // !isExpo &&
         Auth.currentSession()
             .then(() => {
                 setIsLoading(true)

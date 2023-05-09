@@ -9,6 +9,7 @@ import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
 import {useCourierContext} from "../../contexts/CourierContext";
+import CachedImage from 'react-native-expo-cached-image';
 
 
 const Profile = () => {
@@ -88,7 +89,7 @@ const Profile = () => {
     return (
         <View style={{backgroundColor: "white", flex: 1}}>
             <Text style={styles.title}>Profile</Text>
-            <Image
+            <CachedImage
                 source={{
                     uri: "https://images.unsplash.com/photo-1595509552179-488a7a58e818?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=545&q=80"
                 }}

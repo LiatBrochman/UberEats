@@ -1,6 +1,7 @@
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {Image, Text, View} from "react-native";
 import styles from "./styles";
+import CachedImage from 'react-native-expo-cached-image';
 
 const getDaysAgo = ({order}) => {
     if (order && order?.createdAt) {
@@ -15,7 +16,7 @@ const Header = ({order}) => {
     return (
         <View>
             <View style={styles.page}>
-                <Image
+                <CachedImage
                     source={{uri: restaurant?.image}}
                     style={styles.image}
                 />

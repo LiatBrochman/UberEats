@@ -3,7 +3,7 @@ import {useNavigation} from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
-
+import CachedImage from 'react-native-expo-cached-image';
 
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()
@@ -20,9 +20,10 @@ const RestaurantItem = ({restaurant}) => {
     }
     return (
         <Pressable onPress={onPress} style={styles.restaurantContainer}>
-            <Image
-                source={{uri:  restaurant?.image}}
-                style={styles.image}/>
+            <CachedImage
+                source={{uri: restaurant?.image}}
+                style={styles.image}
+            />
             <View style={styles.deliveryTime}>
                 <Text
                     style={{color: "black"}}>{restaurant?.minDeliveryMinutes}-{restaurant?.maxDeliveryMinutes} min</Text>

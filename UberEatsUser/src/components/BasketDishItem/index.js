@@ -1,6 +1,7 @@
 import {Image, StyleSheet, Text, View} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
+import CachedImage from 'react-native-expo-cached-image';
 
 
 const BasketDishItem = ({dish}) => {
@@ -26,7 +27,7 @@ const BasketDishItem = ({dish}) => {
         <View style={{backgroundColor: "white"}}>
 
             <View style={styles.row}>
-                <Image
+                <CachedImage
                     source={{uri: dish?.image}}
                     style={styles.image}/>
                 <Text style={styles.dishName}>{dish?.name}</Text>

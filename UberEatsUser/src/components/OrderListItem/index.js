@@ -1,10 +1,11 @@
-import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useEffect, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Restaurant} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
+import CachedImage from 'react-native-expo-cached-image';
 
 
 const getDate = ({order}) => {
@@ -23,14 +24,14 @@ const getDaysAgo = ({order}) => {
     if (order && order?.createdAt) {
         let date = (new Date(order.createdAt)).getTime()
         let now = (new Date()).getTime()
-        return (( now - date )/86400000).toFixed(0)
+        return ((now - date) / 86400000).toFixed(0)
     }
 }
 
 const OrderListItem = ({order}) => {
 
     const navigation = useNavigation()
-    const {setRestaurant:setRealRestaurant} = useRestaurantContext()
+    const {setRestaurant: setRealRestaurant} = useRestaurantContext()
     const {setOrder} = useOrderContext()
     const [restaurant, setRestaurant] = useState(null)
 
@@ -47,7 +48,7 @@ const OrderListItem = ({order}) => {
                 navigation.navigate("Order", {id: order.id})
             }}
             style={styles.container}>
-            <Image
+            <CachedImage
                 source={{uri: restaurant?.image}}
                 style={styles.image}
             />
