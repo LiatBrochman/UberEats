@@ -28,7 +28,7 @@ const Profile = () => {
             let location = {lat: 0, lng: 0};
 
             if (dbCourier) {
-                location = {
+             location = {
                     lat: parseFloat(driverLocation?.latitude),
                     lng: parseFloat(driverLocation?.longitude),
                 };

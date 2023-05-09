@@ -22,6 +22,7 @@ const ProtectedRoutes = () => {
 
     useEffect(() => {
 
+
         isLoading ?
             setRenderingScreen(loadingScreen) :
             authUser ?
