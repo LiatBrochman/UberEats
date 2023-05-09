@@ -1,7 +1,7 @@
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from '../../myExternalLibrary/CachedImage';
 
 
 const DishListItem = ({dish}) => {

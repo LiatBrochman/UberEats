@@ -1,7 +1,7 @@
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {Image, Text, View} from "react-native";
 import styles from "./styles";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from '../../myExternalLibrary/CachedImage';
 
 const getDaysAgo = ({order}) => {
     if (order && order?.createdAt) {

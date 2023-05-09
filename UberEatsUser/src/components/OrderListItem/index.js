@@ -5,7 +5,7 @@ import {DataStore} from "aws-amplify";
 import {Restaurant} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from '../../myExternalLibrary/CachedImage';
 
 
 const getDate = ({order}) => {

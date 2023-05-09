@@ -1,7 +1,8 @@
 import {DataStore} from "aws-amplify";
 import {Dish, Restaurant} from "../models";
-import {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 import {useAuthContext} from "./AuthContext";
+import CachedImage from "../myExternalLibrary/CachedImage";
 
 
 const RestaurantContext = createContext({})
@@ -12,6 +13,25 @@ const RestaurantContextProvider = ({children}) => {
     const [restaurants, setRestaurants] = useState([])
     const [restaurant, setRestaurant] = useState(null)
     const [restaurantDishes, setRestaurantDishes] = useState([])
+
+    function initRestaurantsImages() {
+        return <CachedImage cacheImages={[...restaurants.map(rest => rest.image)]}/>
+    }
+
+    function initDishesImages() {
+        DataStore.query(Dish, d => d.and(d => [d.isDeleted.eq(false), d.originalID.eq("null")]))
+            .then(dishes => <CachedImage cacheImages={dishes.map(d => d.image)}/>)
+    }
+
+    function cacheImages() {
+        initRestaurantsImages()
+        initDishesImages()
+    }
+
+    // function genericCacheImages(AWS_Records) {
+    //     return <CachedImage cacheImages={[...AWS_Records.map(record => record.image)]}/>
+    // }
+
 
     useEffect(() => {
         if (!dbCustomer || subscription.hasOwnProperty("restaurants")) return;
@@ -25,10 +45,9 @@ const RestaurantContextProvider = ({children}) => {
 
     }, [dbCustomer])
 
-
     useEffect(() => {
-        if(!restaurant) return;
-        
+        if (!restaurant) return;
+
         subscription.restaurantDishes = DataStore.observeQuery(Dish, dish => dish.and(
             dish =>
                 [
@@ -41,6 +60,10 @@ const RestaurantContextProvider = ({children}) => {
         // return subscription?.restaurantDishes?.unsubscribe()
 
     }, [restaurant])
+
+    useEffect(() => {
+        restaurants.length && cacheImages()
+    }, [restaurants])
 
 
     return (<RestaurantContext.Provider

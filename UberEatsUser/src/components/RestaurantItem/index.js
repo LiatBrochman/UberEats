@@ -3,7 +3,7 @@ import {useNavigation} from "@react-navigation/native";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from '../../myExternalLibrary/CachedImage';
 
 const RestaurantItem = ({restaurant}) => {
     const navigation = useNavigation()

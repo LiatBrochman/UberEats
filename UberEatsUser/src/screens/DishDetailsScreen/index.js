@@ -4,7 +4,7 @@ import {AntDesign} from "@expo/vector-icons";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from '../../myExternalLibrary/CachedImage';
 
 const DishDetailsScreen = () => {
 
