@@ -14,7 +14,6 @@ import {useCourierContext} from "../../contexts/CourierContext";
 const Profile = () => {
     const {authUser, signOut} = useAuthContext()
     const {dbCourier, setDbCourier} = useCourierContext()
-    const {driverLocation} = useOrderContext()
     const [name, setName] = useState(dbCourier?.name || authUser?.attributes?.name || "")
     const [transportationMode, setTransportationMode] = useState(dbCourier?.transportationMode || "DRIVING")
     const navigation = useNavigation()
@@ -29,8 +28,8 @@ const Profile = () => {
 
             if (dbCourier) {
              location = {
-                    lat: parseFloat(driverLocation?.latitude),
-                    lng: parseFloat(driverLocation?.longitude),
+                    lat: parseFloat(dbCourier.location.latitude),
+                    lng: parseFloat(dbCourier.location.longitude),
                 };
                 draft = {...draft, location};
                 await updateCourier(draft);
