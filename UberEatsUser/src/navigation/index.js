@@ -121,7 +121,7 @@ const OrdersStack = createNativeStackNavigator();
 const OrdersStackNavigator = () => {
     return (
         <OrdersStack.Navigator>
-            <OrdersStack.Screen name="Orders" component={OrdersScreen}/>
+            <OrdersStack.Screen name="OrdersList" component={OrdersScreen}/>
             <OrdersStack.Screen name="Order" component={OrderDetails}/>
             {/*<View style={{backgroundColor: "white"}}>*/}
         </OrdersStack.Navigator>
