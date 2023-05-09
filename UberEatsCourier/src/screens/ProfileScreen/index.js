@@ -28,8 +28,8 @@ const Profile = () => {
 
             if (dbCourier) {
              location = {
-                    lat: parseFloat(dbCourier.location.latitude),
-                    lng: parseFloat(dbCourier.location.longitude),
+                    lat: parseFloat(dbCourier.location.lat),
+                    lng: parseFloat(dbCourier.location.lng),
                 };
                 draft = {...draft, location};
                 await updateCourier(draft);
