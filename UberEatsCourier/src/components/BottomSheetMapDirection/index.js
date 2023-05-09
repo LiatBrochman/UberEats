@@ -152,12 +152,22 @@ export const BottomSheetMapDirection = () => {
             <BottomSheet isVisible={true} ref={bottomSheetRef} snapPoints={snapPoints}
                          handleIndicatorStyle={styles.handleIndicator}>
                 <View>
-                    <View style={styles.handleIndicatorContainer}>
-                        <Text
-                            style={styles.routeDetailsText}>{(ETA_toCustomer + ETA_toRestaurant).toFixed(0)} min</Text>
-                        <FontAwesome5 name="shopping-bag" size={28} color="#96CEB4" style={{marginHorizontal: 10}}/>
-                        <Text style={styles.routeDetailsText}>{distance?.toFixed(2)} km</Text>
-                    </View>
+
+                    {distance ?
+
+                        <View style={styles.handleIndicatorContainer}>
+                            <Text
+                                style={styles.routeDetailsText}>{(ETA_toCustomer + ETA_toRestaurant).toFixed(0)} min</Text>
+                            <FontAwesome5 name="shopping-bag" size={28} color="#96CEB4" style={{marginHorizontal: 10}}/>
+                            <Text style={styles.routeDetailsText}>{distance?.toFixed(2)} km</Text>
+                        </View>
+
+                        : <View style={styles.handleIndicatorContainer}>
+                            <Text style={styles.routeDetailsText}>loading...</Text>
+                        </View>
+                    }
+
+
                     <View style={styles.deliveryDetailsContainer}>
                         <Text style={styles.restaurantName}>{pressedState.restaurant.name}</Text>
                         <View style={styles.addressContainer}>
@@ -182,12 +192,15 @@ export const BottomSheetMapDirection = () => {
                     <Pressable
                         style={{
                             ...styles.buttonContainer,
-                            backgroundColor: isButtonDisabled() ? 'lightgrey' : '#FFAD60', marginTop:20
+                            backgroundColor: isButtonDisabled() ? 'lightgrey' : '#FFAD60', marginTop: 20
                         }}
                         onPress={onButtonPressed} disabled={isButtonDisabled()}>
                         <Text style={styles.buttonText}>{renderButtonTitle()}</Text>
                     </Pressable>
-                    {!liveOrder && <Pressable style={{...styles.buttonContainer, backgroundColor: '#96CEB4'}} onPress={() => {clearPressedOrder()}}>
+                    {!liveOrder &&
+                    <Pressable style={{...styles.buttonContainer, backgroundColor: '#96CEB4'}} onPress={() => {
+                        clearPressedOrder()
+                    }}>
                         <Text style={styles.buttonText}>go back</Text>
                     </Pressable>}
                 </View>
