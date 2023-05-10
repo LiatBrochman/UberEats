@@ -105,19 +105,19 @@ const styles = StyleSheet.create({
     },
     dishName: {
         fontWeight: '600',
-        marginLeft: 20,
+        marginLeft: -80,
     },
     dishPrice: {
         marginLeft: "auto",
         marginRight: 10,
     },
     image: {
-        width: '22%',
+        width: '45.5%',
         aspectRatio: 5 / 4,
         borderRadius: 10,
         alignSelf: "flex-start",
         marginLeft: 10,
-        // marginTop: 12,
+         //marginTop: 12,
 
 
     }

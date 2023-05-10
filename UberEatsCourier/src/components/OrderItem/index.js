@@ -51,7 +51,7 @@ const OrderItem = ({order}) => {
                     borderTopLeftRadius: 10,
                 }}
             />
-            <View style={{flex: 1, marginLeft: 10, paddingVertical: 5}}>
+            <View style={{flex: 1, marginLeft: 10, marginRight: 10, paddingVertical: 5}}>
                 <Text style={{fontSize: 18, fontWeight: "500"}}>
                     {restaurant?.name}
                 </Text>
