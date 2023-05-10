@@ -2,7 +2,7 @@ import {DataStore} from "aws-amplify";
 import {Dish, Restaurant} from "../models";
 import React, {createContext, useContext, useEffect, useState} from "react";
 import {useAuthContext} from "./AuthContext";
-import CachedImage from "../myExternalLibrary/CachedImage";
+import {cacheImagesArray} from "../myExternalLibrary/CachedImage";
 
 
 const RestaurantContext = createContext({})
@@ -15,12 +15,12 @@ const RestaurantContextProvider = ({children}) => {
     const [restaurantDishes, setRestaurantDishes] = useState([])
 
     function initRestaurantsImages() {
-        return <CachedImage cacheImages={[...restaurants.map(rest => rest.image)]}/>
+        cacheImagesArray(restaurants.map(r => r.image))
     }
 
     function initDishesImages() {
         DataStore.query(Dish, d => d.and(d => [d.isDeleted.eq(false), d.originalID.eq("null")]))
-            .then(dishes => <CachedImage cacheImages={dishes.map(d => d.image)}/>)
+            .then(dishes => cacheImagesArray(dishes.map(d => d.image)))
     }
 
     function cacheImages() {

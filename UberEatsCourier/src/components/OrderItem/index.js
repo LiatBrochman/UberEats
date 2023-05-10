@@ -4,7 +4,7 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import {DataStore} from "aws-amplify";
 import {Customer, Restaurant} from "../../models";
 import {useEffect, useState} from "react";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from '../../myExternalLibrary/CachedImage';
 
 
 const OrderItem = ({order}) => {
@@ -47,6 +47,8 @@ const OrderItem = ({order}) => {
                 style={{
                     width: "25%",
                     height: "100%",
+                    // height: "25%",
+
                     borderBottomLeftRadius: 10,
                     borderTopLeftRadius: 10,
                 }}

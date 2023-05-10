@@ -2,6 +2,8 @@ import {createContext, useContext, useEffect, useRef, useState} from "react";
 import {DataStore} from "aws-amplify";
 import {Customer, Dish, Order, Restaurant} from "../models";
 import {useCourierContext} from "./CourierContext";
+import {cacheImage} from "../myExternalLibrary/CachedImage";
+
 
 const OrderContext = createContext({})
 
@@ -54,6 +56,34 @@ const OrderContextProvider = ({children}) => {
 
     }
 
+    // function cacheImages_byOrder(order){
+    //
+    //     get_Restaurant_Customer_Dishes(order)
+    //         .then(({dishes, restaurant})=> {
+    //
+    //             cacheImagesArray([...dishes.map(d => d.image), restaurant.image])
+    //
+    //         })
+    // }
+
+    async function cacheImages_byOrders(orders) {
+        // orders.forEach(order => cacheImages_byOrder(order))
+        orders.forEach(({restaurantID}) => DataStore.query(Restaurant, restaurantID)
+            .then(({image}) => cacheImage(image)))
+
+        // for await(let order of orders) {
+        //     const restaurant = await DataStore.query(Restaurant, order.restaurantID)
+        //     await cacheImage(restaurant.image)
+        // }
+
+        // const restaurants = orders.map(async order => await DataStore.query(Restaurant, order.restaurantID))
+
+        // .then(restaurant=> cacheImagesArray([restaurant.image])))
+    }
+
+    // function cacheImages_ordersToCollect(ordersToCollect) {
+    //     cacheImages_byOrders(ordersToCollect)
+    // }
 
     useEffect(() => {
 
@@ -69,6 +99,7 @@ const OrderContextProvider = ({children}) => {
             ])).subscribe(({items, isSynced}) => {
                 if (!isSynced) return
                 console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ new orders are being observed! ~~~~~~~~~~~~~~~~~~~~~ :")
+                cacheImages_byOrders(items)
                 setOrdersToCollect(items)
             })
         }

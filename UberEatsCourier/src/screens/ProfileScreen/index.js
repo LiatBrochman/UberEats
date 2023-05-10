@@ -9,7 +9,7 @@ import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
 import {useCourierContext} from "../../contexts/CourierContext";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from '../../myExternalLibrary/CachedImage';
 
 
 const Profile = () => {
