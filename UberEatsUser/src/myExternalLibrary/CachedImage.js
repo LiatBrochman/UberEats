@@ -3,6 +3,29 @@ import {Image, ImageBackground, View} from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Crypto from 'expo-crypto';
 
+
+const generateFilesystemKey = async (remoteURI) => {
+    const hashed = await Crypto.digestStringAsync(
+        Crypto.CryptoDigestAlgorithm.SHA256,
+        remoteURI
+    );
+    return `${FileSystem.cacheDirectory}${hashed}`;
+};
+
+export const cacheImage = async (imageUrl) => {
+    const filesystemURI = await generateFilesystemKey(imageUrl);
+    const metadata = await FileSystem.getInfoAsync(filesystemURI);
+
+    if (!metadata.exists) {
+        return FileSystem.downloadAsync(imageUrl, filesystemURI);
+    }
+};
+
+export const cacheImagesArray = async (imageArray) => {
+    const cachePromises = imageArray.map(imageUrl => cacheImage(imageUrl));
+    await Promise.all(cachePromises);
+};
+
 const CachedImage = ({source, isBackground, imagesToCache, children, ...otherProps}) => {
     const [imgURI, setImgURI] = useState('');
 
@@ -27,30 +50,9 @@ const CachedImage = ({source, isBackground, imagesToCache, children, ...otherPro
         loadImage(source.uri);
 
         if (imagesToCache) {
-            cacheImages(imagesToCache);
+            cacheImagesArray(imagesToCache);
         }
     }, [source.uri, imagesToCache]);
-
-    const generateFilesystemKey = async (remoteURI) => {
-        const hashed = await Crypto.digestStringAsync(
-            Crypto.CryptoDigestAlgorithm.SHA256,
-            remoteURI
-        );
-        return `${FileSystem.cacheDirectory}${hashed}`;
-    };
-
-    const cacheImages = async (imageArray) => {
-        const cachePromises = imageArray.map(async (imageUrl) => {
-            const filesystemURI = await generateFilesystemKey(imageUrl);
-            const metadata = await FileSystem.getInfoAsync(filesystemURI);
-
-            if (!metadata.exists) {
-                return FileSystem.downloadAsync(imageUrl, filesystemURI);
-            }
-        });
-
-        await Promise.all(cachePromises);
-    };
 
     const ImageComponent = isBackground ? ImageBackground : Image;
 
