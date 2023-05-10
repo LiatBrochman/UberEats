@@ -4,7 +4,7 @@
     "slug": "ubereatsuser",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/UberEatsCustomerLogo2.png",
+    "icon": "./assets/UberEatsCustomerLogo3.png",
     "userInterfaceStyle": "light",
     "scheme": "com.joey123ms.ubereatsuser",
     "splash": {
@@ -25,7 +25,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/UberEatsCustomerLogo2.png",
+        "foregroundImage": "./assets/UberEatsCustomerLogo3.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.joey123ms.ubereatsuser",
