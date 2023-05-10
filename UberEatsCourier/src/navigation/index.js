@@ -11,7 +11,7 @@ const Navigation = () => {
     return (
         <Stack.Navigator screenOptions={{headerShown: false}}>
             {dbCourier ? (
-                <Stack.Screen name="MainStack" component={MainStackNavigator} />
+                <Stack.Screen name="MainStack" component={MainStackNavigator}/>
             ) : (
                 <Stack.Screen name="Profile" component={ProfileScreen} />
             )}
@@ -24,8 +24,8 @@ const MainStack = createNativeStackNavigator();
 const MainStackNavigator = () => {
     return (
         <MainStack.Navigator>
-            <MainStack.Screen name="MapView" component={MapViewScreen} />
-            <MainStack.Screen name="Profile" component={ProfileScreen} />
+            <MainStack.Screen name="MapView" component={MapViewScreen} options={{headerShown: false}} />
+            <MainStack.Screen name="Profile" component={ProfileScreen}  />
         </MainStack.Navigator>
     )
 }

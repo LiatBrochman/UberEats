@@ -72,7 +72,7 @@ function MapViewScreen() {
         <GestureHandlerRootView style={styles.container}>
 
             <MapView
-                style={{...StyleSheet.absoluteFillObject, height: height * 0.95, width}}
+                style={{...StyleSheet.absoluteFillObject, height, width}}
                 ref={mapRef}
                 provider={PROVIDER_GOOGLE}
                 followUserLocation={true}

@@ -46,7 +46,7 @@ const Map = () => {
 
     return (<GestureHandlerRootView style={styles.container}>
                 <MapView
-                    style={{...StyleSheet.absoluteFillObject, height: height * 0.95, width}}
+                    style={{...StyleSheet.absoluteFillObject, height, width}}
                     provider={PROVIDER_GOOGLE}
                     followUserLocation={true}
                     showsUserLocation={true}

@@ -28,8 +28,8 @@ const RestaurantDetailsPage = () => {
                 renderItem={({item}) => <DishListItem dish={item}/>}
                 keyExtractor={(item) => item.name}
             />
-            <Ionicons onPress={() => navigation.goBack()} name="arrow-back-circle" size={45} color="white"
-                      style={styles.iconContainer}/>
+            {/*<Ionicons onPress={() => navigation.goBack()} name="arrow-back-circle" size={45} color="white"*/}
+            {/*          style={styles.iconContainer}/>*/}
 
             {basket && (
                 <Pressable onPress={() => navigation.navigate("Basket")} style={styles.button}>
