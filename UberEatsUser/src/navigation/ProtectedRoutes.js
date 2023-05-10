@@ -17,7 +17,7 @@ const ProtectedRoutes = () => {
                 <View>
                     <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
                 </View>
-                <View style={{paddingBottom:300}}></View>
+                <View style={{paddingBottom:200}}></View>
             </Authenticator>
         </View>
 

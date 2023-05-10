@@ -1,6 +1,6 @@
 import React from "react";
 import {StatusBar} from "expo-status-bar";
-import {Amplify } from "aws-amplify";
+import {Amplify} from "aws-amplify";
 import awsconfig from "./src/aws-exports";
 import {IconComponentProvider} from "@react-native-material/core";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
@@ -12,13 +12,20 @@ import OrderContextProvider from "./src/contexts/OrderContext";
 import CourierContextProvider from "./src/contexts/CourierContext";
 import ProtectedRoutes from "./src/navigation/ProtectedRoutes";
 import {I18nManager} from "react-native";
+import RNRestart from 'react-native-restart';
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 
-
 // Amplify.Logger.LOG_LEVEL = 'DEBUG';
-I18nManager.forceRTL(false);
-I18nManager.allowRTL(false);
+if (I18nManager.isRTL) {
+    I18nManager.forceRTL(false);
+    I18nManager.allowRTL(false);
+    RNRestart.Restart();
+}
+
+// // Amplify.Logger.LOG_LEVEL = 'DEBUG';
+// I18nManager.forceRTL(false);
+// I18nManager.allowRTL(true);
 
 
 const updatedConfig = {
