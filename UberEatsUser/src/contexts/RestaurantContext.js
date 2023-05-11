@@ -46,6 +46,7 @@ const RestaurantContextProvider = ({children}) => {
     }, [dbCustomer])
 
     useEffect(() => {
+        // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ restaurant ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(restaurant,null,4))
         if (!restaurant) return;
 
         subscription.restaurantDishes = DataStore.observeQuery(Dish, dish => dish.and(

@@ -19,48 +19,6 @@ const BasketContextProvider = ({children}) => {
     const [dish, setDish] = useState(null)
 
 
-    /**
-     set basket
-     */
-    useEffect(() => {
-        if (restaurant?.id && dbCustomer?.id)
-            DataStore.query(Basket, b => b.and(b => [
-                    b.restaurantID.eq(restaurant.id),
-                    b.customerID.eq(dbCustomer.id),
-                    b.isDeleted.eq(false)
-                ])
-            ).then(existingBasket => {
-                existingBasket?.length && setBasket(existingBasket[0])
-            })
-
-    }, [restaurant])
-
-    /**
-     set dishes (of basket)
-     set total price
-     set total basket quantity
-     */
-
-    useEffect(() => {
-        if (!basket) return;
-
-        subscription.basketDishes = DataStore.observeQuery(Dish, d => d.and(d => [
-                d.basketID.eq(basket.id),
-                d.isDeleted.eq(false)
-            ]
-        )).subscribe(({items, isSynced}) => {
-            if (isSynced) {
-                setBasketDishes(items)
-                setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
-                setTotalBasketQuantity(items.reduce((sum, d) => sum + d.quantity, 0))
-            }
-        })
-
-        // return subscription?.basketDishes?.unsubscribe()
-    }, [basket,restaurant])
-
-
-
     function reSubscribeToAllDishes(basket) {
         subscription?.basketDishes?.unsubscribe()
         subscribeToAllDishes(basket)
@@ -84,7 +42,7 @@ const BasketContextProvider = ({children}) => {
         })
     }
 
-    const addDishToBasket = async ({dish}) => {
+    const addDishToBasket = async (dish) => {
 
         /**
          1.GET THE EXISTING BASKET \ CREATE NEW BASKET
@@ -134,17 +92,17 @@ const BasketContextProvider = ({children}) => {
 
             case true:
                 DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
-                        updated.name= dish.name
-                        updated.price= dish.price
-                        updated.image= dish.image
-                        updated.description= dish.description
-                        updated.quantity= dish.quantity
-                        updated.restaurantID= dish.restaurantID
-                        updated.isActive= true
-                        updated.isDeleted= false
-                        updated.originalID= dish.id + ''
-                        updated.basketID= theBasket.id
-                        updated.orderID= 'null'
+                    updated.name= dish.name
+                    updated.price= dish.price
+                    updated.image= dish.image
+                    updated.description= dish.description
+                    updated.quantity= dish.quantity
+                    updated.restaurantID= dish.restaurantID
+                    updated.isActive= true
+                    updated.isDeleted= false
+                    updated.originalID= dish.id + ''
+                    updated.basketID= theBasket.id
+                    updated.orderID= 'null'
                     // updated.quantity = dish.quantity
                     // updated.isDeleted = false
                 }))
@@ -154,7 +112,7 @@ const BasketContextProvider = ({children}) => {
                          in order to make that happen, we need to make sure the new dish has been created in the DB.
                          the simplest way to make that happen is by waiting for the respond from the DataStore.
                          */
-                        dishAlreadyExists.isDeleted && reSubscribeToAllDishes(theBasket)
+                        // dishAlreadyExists.isDeleted===true && reSubscribeToAllDishes(theBasket)
                     })
                 break;
 
@@ -174,14 +132,14 @@ const BasketContextProvider = ({children}) => {
                     orderID: 'null',
                 }))
 
-                reSubscribeToAllDishes(theBasket)
+                // reSubscribeToAllDishes(theBasket)
 
                 break;
         }
 
     }
 
-    const removeDishFromBasket = async ({dish}) => {
+    const removeDishFromBasket = async (dish) => {
         /**
          * remove dish from basket = deleting it from our basket
          * in order to do that we set its property (isDeleted=true), remove it from our context , and re-subscribe all of our basket dishes again
@@ -194,7 +152,7 @@ const BasketContextProvider = ({children}) => {
             setDish(null)
             setTotalBasketQuantity(prevQuantity => prevQuantity - dish.quantity)
             // setQuantity(0)
-            reSubscribeToAllDishes(basket)
+            // reSubscribeToAllDishes(basket)
         })
     }
 
@@ -232,6 +190,41 @@ const BasketContextProvider = ({children}) => {
         setBasket(createdBasket)
         return createdBasket
     }
+
+    async function getBasketByRestaurantID(restaurantID){
+       return await DataStore.query(Basket, b => b.and(b => [
+            b.restaurantID.eq(restaurantID),
+            b.customerID.eq(dbCustomer.id),
+            b.isDeleted.eq(false)
+        ])).then(([basket])=> basket)
+           .catch(e=>console.error("getBasketByRestaurantID:",e))
+    }
+
+    function switchToAnotherBasket(restaurant){
+
+        getBasketByRestaurantID(restaurant.id).then(existingBasket => {
+                existingBasket?.length && setBasket(existingBasket[0])
+            })
+    }
+
+    /**
+     set dishes (of basket)
+     set total price
+     set total basket quantity
+     */
+
+    useEffect(() => {
+        if(!restaurant) return;
+
+        switchToAnotherBasket(restaurant)
+    }, [restaurant])
+
+
+    useEffect(()=>{
+        if (!basket) return;
+
+        reSubscribeToAllDishes(basket)
+    },[basket])
 
 
     return (<BasketContext.Provider

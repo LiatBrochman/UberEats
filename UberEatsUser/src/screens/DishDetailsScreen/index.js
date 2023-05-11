@@ -31,7 +31,7 @@ const DishDetailsScreen = () => {
 
 
     const onAddToBasket = async () => {
-        const clonedDish = {dish: {...restaurantDish, quantity: tempQuantity, basketID: basket?.id}}
+        const clonedDish = {...restaurantDish, quantity: tempQuantity, basketID: basket?.id}
         await addDishToBasket(clonedDish)
         navigation.goBack()
     }

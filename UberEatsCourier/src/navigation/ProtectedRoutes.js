@@ -9,20 +9,25 @@ const ProtectedRoutes = () => {
 
     const {googleSignin, isLoading, authUser} = useAuthContext()
     const [renderingScreen, setRenderingScreen] = useState(<></>)
-    const loadingScreen = <View style={[styles.container, styles.horizontal]}>
-        <ActivityIndicator size="large" color="#96CEB4"/></View>
-    const loginScreen = <View style={styles.container}>
+
+    const loadingScreen =
+        <View style={[styles.container, styles.horizontal]}>
+            <ActivityIndicator size="large" color="#96CEB4"/>
+        </View>
+
+    const loginScreen =
+        <View style={styles.container}>
             <Authenticator hideDefault={true}>
                 <SignIn/>
                 <View style={{justifyContent: "center"}}>
                     <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
                 </View>
-                <View style={{paddingBottom:200}}></View>
+                <View style={{paddingBottom: 200}}></View>
             </Authenticator>
         </View>
 
-    useEffect(() => {
 
+    useEffect(() => {
 
         isLoading ?
             setRenderingScreen(loadingScreen) :
@@ -35,25 +40,6 @@ const ProtectedRoutes = () => {
 
     return renderingScreen
 
-    // if (isLoading) {
-    //     return <View style={[styles.container, styles.horizontal]}>
-    //         <ActivityIndicator size="large" color="#96CEB4"/>
-    //     </View>
-    // }
-    //
-    // return (dbCourier
-    //
-    //         ? <RootNavigator/>
-    //
-    //         : <View style={styles.container}>
-    //             <Authenticator hideDefault={true}>
-    //                 <SignIn/>
-    //                 <View style={{ flex: 1, justifyContent: "center"}}>
-    //                     <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
-    //                 </View>
-    //             </Authenticator>
-    //         </View>
-    // )
 }
 export default ProtectedRoutes
 const styles = StyleSheet.create({

@@ -1,8 +1,10 @@
-import {Image, Text, View} from "react-native";
+import React from "react"
+import {Text, View} from "react-native";
 import styles from "./styles";
 import CachedImage from '../../myExternalLibrary/CachedImage';
 
-const RestaurantHeader = ({restaurant}) => {
+const RestaurantHeader = React.memo(({restaurant}) => {
+
     return (
         <View style={styles.page}>
             <CachedImage
@@ -23,6 +25,6 @@ const RestaurantHeader = ({restaurant}) => {
 
         </View>
     );
-};
+});
 
 export default RestaurantHeader;

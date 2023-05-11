@@ -21,7 +21,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.joey123ms.ubereatsuser",
-      "buildNumber": "13"
+      "buildNumber": "15"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,7 +29,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.joey123ms.ubereatsuser",
-      "versionCode": 13
+      "versionCode": 15
     },
     "extra": {
       "eas": {

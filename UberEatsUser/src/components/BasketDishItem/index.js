@@ -10,17 +10,17 @@ const BasketDishItem = ({dish}) => {
 
     const onMinus = async () => {
         if (dish.quantity > 1)
-            await addDishToBasket({dish: {...dish, quantity: dish.quantity - 1}})
+            await addDishToBasket( {...dish, quantity: dish.quantity - 1})
     }
 
     const onPlus = async () => {
-        await addDishToBasket({dish: {...dish, quantity: dish.quantity + 1}})
+        await addDishToBasket({...dish, quantity: dish.quantity + 1})
     }
 
     const onRemove = async () => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ removing dish ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dish, null, 4))
 
-        await removeDishFromBasket({dish})
+        await removeDishFromBasket(dish)
     }
 
     return (

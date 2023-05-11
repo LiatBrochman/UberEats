@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.joey123ms.ubereatscourier",
-      "buildNumber": "9"
+      "buildNumber": "11"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +28,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.joey123ms.ubereatscourier",
-      "versionCode": 9
+      "versionCode": 11
     },
     "web": {
       "favicon": "./assets/favicon.png"
