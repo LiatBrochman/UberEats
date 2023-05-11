@@ -271,7 +271,7 @@ function GenericDishEditor({props}) {
                     Submit
                 </Button>
 
-                <Button disabled={true} onClick={async () => {
+                <Button hidden={true} onClick={async () => {
 
                     dishes_assets_fixed.map(async i => {
                         props.type = "NEW"
