@@ -8,38 +8,60 @@ import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/global
 
 const AuthContext = createContext({});
 
+//todo: subscribeToCustomer should be declared somewhere else
+function subscribeToCustomer({setDbCustomer, setIsLoading, authUser}) {
+    subscription.customer = DataStore.observeQuery(Customer, c => c.sub.eq(authUser.attributes.sub))
+        .subscribe(({items, isSynced}) => {
+            if (!isSynced) return
+
+            if (items?.length) {
+                setDbCustomer(items[0])
+                setIsLoading(false)
+            } else {
+                console.log("no customer was found")
+                setIsLoading(false)
+            }
+        })
+}
+
 
 const AuthContextProvider = ({children}) => {
     // const isExpo = Constants.executionEnvironment === 'storeClient';
     // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ isExpo ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(isExpo, null, 4))
 
     const [authUser, setAuthUser] = useState(null)
-    const [dbCustomer, setDbCustomer] = useState(null)
     const [isLoading, setIsLoading] = useState(false)
+
+    //todo: dbCustomer should be initiated somewhere else
+    const [dbCustomer, setDbCustomer] = useState(null)
 
     const googleSignin = useCallback(() => {
 
         Auth.federatedSignIn({provider: "Google"}).then(() => {
             setIsLoading(true)
+            Auth.currentAuthenticatedUser().then(setAuthUser)
+        }).catch((e) => {
+            console.error('Error during federated sign-in:', e)
         })
-            .catch((e) => {
-                console.error('Error during federated sign-in:', e)
-            })
 
     }, [])
     const signOut = useCallback(async () => {
         await executeFunctionsSequentially([
+            () => setIsLoading(true),
             () => Auth.signOut({}),
+            cleanUp,
             () => setAuthUser(null),
-            () => DataStore.clear(),
-            () => DataStore.start(),
-            () => Updates.reloadAsync()
+            DataStore.clear,
+            DataStore.start,
+            Updates.reloadAsync
         ])
             .catch((e) => {
                 console.error('Error during federated sign-out:', e)
             })
+            .finally(() => {
+                setIsLoading(false)
+            })
     }, [])
-
     const performCleanup = useCallback(nextAppState => {
         if (nextAppState === 'inactive') {//todo :?? || nextAppState === 'background'
             // Iterate through the subscription object values
@@ -47,30 +69,15 @@ const AuthContextProvider = ({children}) => {
         }
     }, [subscription])
 
-    function subscribeToCustomer() {
-        subscription.customer = DataStore.observeQuery(Customer, c => c.sub.eq(authUser.attributes.sub))
-            .subscribe(({items, isSynced}) => {
-                if (!isSynced) return
-
-                if (items?.length) {
-                    setDbCustomer(items[0])
-                    setIsLoading(false)
-                } else {
-                    console.log("no customer was found")
-                    setIsLoading(false)
-                }
-            })
-    }
 
     useEffect(() => {
 
-        // subscription.hubListener =
         Hub.listen("auth", ({payload: {event}}) => {
             switch (event) {
 
                 case "signIn":
+                case "signUp":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
-                    //setIsLoading(true)
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)
                         .catch(() => console.log("Not signed in"))
@@ -78,7 +85,6 @@ const AuthContextProvider = ({children}) => {
 
                 case "signOut":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signOut ~~~~~~~~~~~~~~~~~~~~~ ")
-                    cleanUp()
                     break;
 
                 default:
@@ -103,20 +109,12 @@ const AuthContextProvider = ({children}) => {
 
     }, [])
 
+    //todo: move the whole useEffect together with the dbCustomer
     useEffect(() => {
 
-        authUser?.attributes?.sub ? subscribeToCustomer() : setDbCustomer(null)
+        authUser?.attributes?.sub ? subscribeToCustomer({setDbCustomer,setIsLoading,authUser}) : setDbCustomer(null)
 
     }, [authUser])
-
-    // useEffect(() => {
-    //     if (!dbCustomer) return;
-    //
-    //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ dbCustomer ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(dbCustomer,null,4))
-    //
-    //     setIsLoading(false)
-    //
-    // }, [dbCustomer])
 
 
     return (
@@ -125,10 +123,12 @@ const AuthContextProvider = ({children}) => {
                                       isLoading,
                                       setIsLoading,
                                       authUser,
-                                      dbCustomer,
-                                      setDbCustomer,
                                       googleSignin,
                                       signOut,
+
+                                    //todo: to be moved
+                                      dbCustomer,
+                                      setDbCustomer,
                                   }}>
 
             {children}

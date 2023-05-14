@@ -12,6 +12,7 @@ import ProtectedRoutes from "./src/navigation/ProtectedRoutes";
 import DirectionContextProvider from "./src/contexts/DirectionContext";
 import CourierContext from "./src/contexts/CourierContext";
 import * as AuthSession from "expo-auth-session";
+import {NewProtectedRoutes} from "./src/navigation/NewProtectedRoutes";
 
 // Amplify.Logger.LOG_LEVEL = 'DEBUG';
 if (I18nManager.isRTL) {
@@ -46,7 +47,7 @@ export default function App() {
                 <CourierContext>
                     <OrderContextProvider>
                         <DirectionContextProvider>
-                            <ProtectedRoutes/>
+                            <NewProtectedRoutes/>
                         </DirectionContextProvider>
                     </OrderContextProvider>
                 </CourierContext>

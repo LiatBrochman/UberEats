@@ -4,7 +4,6 @@ import {ActivityIndicator, Button, StyleSheet, View} from "react-native";
 import {useAuthContext} from "../contexts/AuthContext";
 import RootNavigator from "./index";
 
-
 const ProtectedRoutes = () => {
 
     const {googleSignin, isLoading, authUser} = useAuthContext()

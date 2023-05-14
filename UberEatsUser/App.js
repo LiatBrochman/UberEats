@@ -15,6 +15,8 @@ import {I18nManager} from "react-native";
 import RNRestart from 'react-native-restart';
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
+import {NewProtectedRoutes} from "./src/navigation/NewProtectedRoutes";
+
 
 // Amplify.Logger.LOG_LEVEL = 'DEBUG';
 if (I18nManager.isRTL) {
@@ -52,7 +54,7 @@ export default function App() {
                         <BasketContextProvider>
                             <OrderContextProvider>
                                 <CourierContextProvider>
-                                    <ProtectedRoutes/>
+                                    <NewProtectedRoutes/>
                                 </CourierContextProvider>
                             </OrderContextProvider>
                         </BasketContextProvider>

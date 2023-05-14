@@ -3,6 +3,7 @@ import {Auth, DataStore, Hub} from "aws-amplify";
 import {AppState} from 'react-native';
 import * as Updates from 'expo-updates';
 import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
+// import * as Constants from "constants";
 
 
 const AuthContext = createContext({});
@@ -19,22 +20,27 @@ const AuthContextProvider = ({children}) => {
 
         Auth.federatedSignIn({provider: "Google"}).then(() => {
             setIsLoading(true)
+            Auth.currentAuthenticatedUser().then(setAuthUser)
+        }).catch((e) => {
+            console.error('Error during federated sign-in:', e)
         })
-            .catch((e) => {
-                console.error('Error during federated sign-in:', e)
-            })
 
     }, [])
     const signOut = useCallback(async () => {
         await executeFunctionsSequentially([
+            () => setIsLoading(true),
             () => Auth.signOut({}),
+            cleanUp,
             () => setAuthUser(null),
-            () => DataStore.clear(),
-            () => DataStore.start(),
-            () => Updates.reloadAsync()
+            DataStore.clear,
+            DataStore.start,
+            Updates.reloadAsync
         ])
             .catch((e) => {
                 console.error('Error during federated sign-out:', e)
+            })
+            .finally(() => {
+                setIsLoading(false)
             })
     }, [])
     const performCleanup = useCallback(nextAppState => {
@@ -44,34 +50,31 @@ const AuthContextProvider = ({children}) => {
         }
     }, [subscription])
 
+
     useEffect(() => {
 
-        // subscription.hubListener =
         Hub.listen("auth", ({payload: {event}}) => {
             switch (event) {
 
                 case "signIn":
+                case "signUp":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
-                   //setIsLoading(true)
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)
                         .catch(() => console.log("Not signed in"))
                     break;
 
-
                 case "signOut":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signOut ~~~~~~~~~~~~~~~~~~~~~ ")
-                    // setAuthUser(null)
-                    // setIsLoading(false)
-                    cleanUp()
                     break;
-
 
                 default:
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ event ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(event, null, 4))
+
             }
         })
 
+        // !isExpo &&
         Auth.currentSession()
             .then(() => {
                 setIsLoading(true)

@@ -19,7 +19,7 @@ export function cleanUp() {
         // Check if the current object value has an "unsubscribe" method
         if (typeof subscription[key].unsubscribe === 'function') {
             // Call the "unsubscribe" method
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ unsubscribing from ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription[key], null, 4))
+            // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ unsubscribing from ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription[key], null, 4))
             subscription[key].unsubscribe()
         }
     }
