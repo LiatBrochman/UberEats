@@ -163,7 +163,7 @@ const AuthContextProvider = ({children}) => {
     const signOut = useCallback(async () => {
         await executeFunctionsSequentially([
             () => Auth.signOut({}),
-            () => cleanUp(),
+
             () => setAuthUser(null),
             () => DataStore.clear(),
             () => DataStore.start(),
