@@ -49,11 +49,11 @@ const AuthContextProvider = ({children}) => {
         await executeFunctionsSequentially([
             () => setIsLoading(true),
             () => Auth.signOut({}),
-            cleanUp,
+            () => cleanUp(),
             () => setAuthUser(null),
-            DataStore.clear,
-            DataStore.start,
-            Updates.reloadAsync
+            () => DataStore.clear(),
+            () => DataStore.start(),
+            () => Updates.reloadAsync()
         ])
             .catch((e) => {
                 console.error('Error during federated sign-out:', e)
