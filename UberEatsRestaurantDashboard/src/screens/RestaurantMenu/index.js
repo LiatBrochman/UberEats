@@ -5,7 +5,7 @@ import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
 import {CloseCircleOutlined,  EditOutlined} from "@ant-design/icons";
 import "./index.css"
-import Background from "../../assets/backgoround.jpg"
+
 
 const RestaurantMenu = () => {
 
