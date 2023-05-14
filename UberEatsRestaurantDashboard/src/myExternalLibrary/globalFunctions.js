@@ -20,7 +20,7 @@ export function cleanUp() {
         if (typeof subscription[key].unsubscribe === 'function') {
             // Call the "unsubscribe" method
             // console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ unsubscribing from ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(subscription[key], null, 4))
-            subscription[key].unsubscribe()
+            window.subscription[key].unsubscribe()
         }
     }
 }
