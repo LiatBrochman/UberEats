@@ -38,6 +38,7 @@ const AppMenu = () => {
             mode="horizontal"
             theme="light"
             items={items}
+            style={{width: "100%", display: "table", textAlign: "center", backgroundColor:"#F0F0F0"}}
             onClick={(menuItem) => navigate(menuItem.key)}
 
         />

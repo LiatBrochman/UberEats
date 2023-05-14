@@ -36,13 +36,15 @@ const OrderHistory = () => {
     ];
 
     return (
-        <Card title={"History Orders"} style={{margin: 20}}>
-            <Table
+        <div style={{height:"100vh"}}>
+        <Card title={"History Orders"} style={{margin: 20, opacity:"90%"}}>
+            { completedOrders.length ? <Table
                 dataSource={completedOrders}
                 columns={tableColumns}
                 rowKey="id"
-            />
+            /> :  <div style={{height:"10vh", fontSize: "30px", textAlign:"center", fontWeight: "bold"}}>Order history is empty </div>}
         </Card>
+        </div>
     );
 };
 

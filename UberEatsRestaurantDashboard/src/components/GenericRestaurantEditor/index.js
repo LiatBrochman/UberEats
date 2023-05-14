@@ -12,6 +12,7 @@ import S3ImagePicker from "../S3ImagePicker";
 import {restaurants_assets} from "../../assets/data/restaurants";
 
 
+
 function GenericRestaurantEditor({props}) {
 
     const {restaurant, setRestaurant} = useRestaurantContext()
@@ -170,7 +171,7 @@ function GenericRestaurantEditor({props}) {
 
     return (
         <div>
-            <Card title="Restaurant Details" style={{margin: 20}}>
+            <Card title="Restaurant Details" style={{margin: 20, opacity:"90%"}}>
                 <Form form={form} layout="vertical" wrapperCol={{span: 8}}
                       onFinish={onFinish}>
 

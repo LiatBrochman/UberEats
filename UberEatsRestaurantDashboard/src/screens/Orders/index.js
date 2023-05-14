@@ -4,6 +4,7 @@ import {useOrderContext} from "../../contexts/OrderContext";
 import "./index.css"
 
 
+
 const Orders = () => {
     const navigate = useNavigate()
     const {liveOrders, setOrder, ref } = useOrderContext()
@@ -61,8 +62,9 @@ const Orders = () => {
     ]
 
     return (
-        <Card title={'Orders'} style={{margin: 20}}>
-            <Table
+        <div style={{height:"100vh"}}>
+        <Card title={'Orders'} style={{margin: 20, opacity:"90%"}}>
+            { liveOrders.length ? <Table
                 dataSource={liveOrders}
                 columns={tableColumns}
                 rowKey="id"
@@ -75,8 +77,9 @@ const Orders = () => {
 
                     },
                 })}
-            />
+            />:  <div style={{height:"10vh", fontSize: "30px", textAlign:"center", fontWeight: "bold"}}>No available order</div> }
         </Card>
+        </div>
     )
 }
 

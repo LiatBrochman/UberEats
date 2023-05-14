@@ -5,7 +5,7 @@ import {DataStore} from "aws-amplify";
 import {Dish} from "../../models";
 import {CloseCircleOutlined,  EditOutlined} from "@ant-design/icons";
 import "./index.css"
-
+import Background from "../../assets/backgoround.jpg"
 
 const RestaurantMenu = () => {
 
@@ -39,7 +39,7 @@ const RestaurantMenu = () => {
             render: (_,dish) =>
             {
                 return <Link to={'edit'} state={dish}>
-                    <EditOutlined style={{color: "grey", backgroundColor: 'lightgray', padding:8, borderRadius:30, fontSize: '15px'}}/>
+                    <EditOutlined style={{color: "grey", backgroundColor: 'lightgrey', padding:8, borderRadius:30, fontSize: '15px'}}/>
                 </Link>
             }
         },
@@ -49,7 +49,7 @@ const RestaurantMenu = () => {
             dataIndex: 'id',
             render: (id) =>
                 <CloseCircleOutlined
-                    style={{color: "grey", backgroundColor: 'lightgray', padding:8, borderRadius:30, fontSize: '15px'}}
+                    style={{color: "grey", backgroundColor: 'lightgrey', padding:8, borderRadius:30, fontSize: '15px'}}
                     onClick={async () => await deleteRestaurantDish(id)}
                 />
         },
@@ -64,14 +64,14 @@ const RestaurantMenu = () => {
     )
 
     return (
-        <>
-            <Card title={"Menu"} style={{margin: 20}} extra={renderNewItemButton()}>
+        <div style={{height:"100vh"}}>
+            <Card title={"Menu"} style={{margin: 20, opacity:"90%"}} extra={renderNewItemButton()}>
                {restaurantDishes?.length && <Table
                     dataSource={restaurantDishes}
                     columns={tableColumns}
                     rowKey="id"/>}
             </Card>
-        </>
+        </div>
 
     )
 

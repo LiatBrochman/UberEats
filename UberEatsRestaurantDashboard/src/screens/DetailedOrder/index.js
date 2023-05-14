@@ -138,9 +138,9 @@ const DetailedOrder = () => {
     }
 
     return (
-        <>
+        <div style={{height:"100vh"}}>
             {order && customer && orderDishes && restaurant && order.status !== "COMPLETED" && order.status !== "DECLINED" &&
-            <Card title={`Order`} style={{margin: 20}}>
+            <Card title={`Order`} style={{margin: 20, opacity:"90%"}}>
                 <List bordered style={{border: "none"}} column={{lg: 1, md: 1, sm: 1}}>
                     <List.Item style={{border: "none"}}>
                         <div>
@@ -270,7 +270,7 @@ const DetailedOrder = () => {
 
             </Card>
             }
-        </>
+        </div>
     )
 }
 

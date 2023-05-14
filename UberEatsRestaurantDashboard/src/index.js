@@ -11,6 +11,7 @@ import {Amplify} from "aws-amplify";
 import awsconfig from './aws-exports';
 
 
+
 window.subscription = {};
 const isLocalEnvironment = process.env.REACT_APP_ENV === 'local';
 console.log("~~~~~~~~~~~~~~~~~~~~~ isLocalEnvironment ~~~~~~~~~~~~~~~~~~~~~ :", isLocalEnvironment)
