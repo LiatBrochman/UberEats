@@ -17,7 +17,7 @@ const ProtectedRoutes = () => {
                 <View>
                     <Button color="#96CEB4" title="Login with Google" onPress={() => googleSignin()}/>
                 </View>
-                <View style={{paddingBottom:200}}></View>
+                {/*<View style={{paddingBottom:70}}></View>*/}
             </Authenticator>
         </View>
 
@@ -39,10 +39,11 @@ export default ProtectedRoutes
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: 25,
+        // paddingTop: 10,
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
+        paddingBottom:30
     },
     horizontal: {
         flexDirection: 'row',
