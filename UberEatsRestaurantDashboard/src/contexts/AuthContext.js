@@ -1,6 +1,7 @@
-import {createContext, useContext, useEffect, useState} from "react";
+import {createContext, useCallback, useContext, useEffect, useState} from "react";
 import {Auth, DataStore, Hub} from "aws-amplify";
 import {Owner} from "../models";
+import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
 
 
 const AuthContext = createContext({})
@@ -159,13 +160,19 @@ const AuthContextProvider = ({children}) => {
     }
 
 
-    async function signOut() {
-        try {
-            Auth.signOut({global: true}).then(()=>setAuthUser(null))
-        } catch (error) {
-            console.log('Error signing out:', error)
-        }
-    }
+    const signOut = useCallback(async () => {
+        await executeFunctionsSequentially([
+            () => Auth.signOut({}),
+            () => cleanUp(),
+            () => setAuthUser(null),
+            () => DataStore.clear(),
+            () => DataStore.start(),
+            ()=> window.location.reload()
+        ])
+            .catch((e) => {
+                console.error('Error during federated sign-out:', e)
+            })
+    }, [])
 
 
     return (
