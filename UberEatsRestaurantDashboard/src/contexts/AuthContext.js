@@ -7,14 +7,49 @@ import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/global
 const AuthContext = createContext({})
 
 const AuthContextProvider = ({children}) => {
+
     const [authUser, setAuthUser] = useState(null)
     const [dbOwner, setDbOwner] = useState(null)
-    const sub = authUser?.attributes?.sub
 
+    const signOut = useCallback(() => {
+           executeFunctionsSequentially([
+            () => cleanUp(),
+            () => setAuthUser(null),
+            () => DataStore.clear(),
+            () => DataStore.start(),
+            ()=>{console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ finished clearing local storage ~~~~~~~~~~~~~~~~~~~~~ "); return 1},
+            () => Auth.signOut(),
+         ]).catch((e) => {
+                console.error('Error during federated sign-out:', e)
+            })
+    },[])
+
+    const createNewOwner = useCallback( () => {
+        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ creating new owner!! ~~~~~~~~~~~~~~~~~~~~~ ")
+             DataStore.save(new Owner({
+                sub: authUser.attributes.sub,
+                isDeleted: false,
+                email: authUser.attributes.email,
+            }))
+    }, [authUser])
+    const startSubscribingOwner = useCallback(() => {
+        if(!authUser) return;
+        window.subscription.owner = DataStore.observeQuery(Owner, o => o.sub.eq(authUser.attributes.sub))
+            .subscribe(({items, isSynced}) => {
+                if (isSynced) {
+                    if (items.length) {
+                        setDbOwner(items[0])
+                    } else {
+                        createNewOwner()
+                    }
+                }
+            })
+    }, [authUser])
 
 
     useEffect(() => {
-        const unsubscribe = Hub.listen('auth', (data) => {
+
+        Hub.listen('auth', (data) => {
 
             switch (data.payload.event) {
                 case 'signIn':
@@ -27,7 +62,6 @@ const AuthContextProvider = ({children}) => {
                     break;
                 case 'signOut':
                     console.log('user signed out')
-                    setAuthUser(null)
                     break;
                 case 'signIn_failure':
                     console.log('user sign in failed')
@@ -41,138 +75,16 @@ const AuthContextProvider = ({children}) => {
 
         Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
 
-        function cleanupSubscriptions(event) {
-            event.preventDefault()
-            Object.entries(window.subscription).forEach(([subName,unSubFunc]) => {
-                if (unSubFunc?.unsubscribe) {
-                    unSubFunc.unsubscribe()
-                    console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ Unsubscribed from :", subName)
-                }
-            })
-        }
-
-        window.addEventListener("beforeunload", cleanupSubscriptions);
-
-        return unsubscribe
 
     }, [])
 
-    function startSubscribingOwner() {
-        window.subscription.owner = DataStore.observeQuery(Owner, o => o.sub.eq(sub)).subscribe(({items, isSynced}) => {
-            if (isSynced) {
-                if (items.length) {
-                    setDbOwner(items[0])
-                } else {
-                    createNewOwner()
-                }
-            }
-        })
-    }
-
-    async function getOwner_fixed() {
-        startSubscribingOwner()
-    }
 
     useEffect(() => {
-        /**
-         * create owner \ get existing owner
-         */
+        if (! authUser?.attributes?.sub) return;
 
-        if (!sub) return
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ authUser ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(authUser?.attributes, null, 4))
+        startSubscribingOwner()
 
-        getOwner_fixed()
-
-        // getOwner().then(newOwner=>{
-        //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newOwner ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newOwner,null,4))
-        //     if(!newOwner){
-        //         setTimeout(()=>{
-        //             setDbOwner(newOwner)
-        //         },5000)
-        //     }else{
-        //         setDbOwner(newOwner)
-        //     }
-        //
-        // })
-
-        // return () => {
-        //     window?.subscription?.owner?.unsubscribe()
-        //     window.alert("unsubscribing from :", dbOwner?.name)
-        // }
-    }, [sub])
-
-
-    const getOwner = async (attempt = 3) => {
-
-        const existingOwner = await getExistingOwner()
-
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ existingOwner ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(existingOwner, null, 4))
-
-        if (existingOwner) return existingOwner
-
-        if (!existingOwner && attempt > 0) {
-            setTimeout(() => {
-                return getOwner(attempt - 1)
-            }, 1000)
-        }
-
-        if (attempt === 0 && !existingOwner) {
-            console.log("...........going to create a new owner........")
-            return await createNewOwner()
-        }
-    }
-
-    const getExistingOwner = async () => {
-        try {
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ trying to find owner with sub ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(sub, null, 4))
-
-            // const owners = await DataStore.query(Owner, o => o.sub.eq(sub), {sort: s => s.createdAt(SortDirection.ASCENDING)})
-            const owners = await DataStore.query(Owner, o => o.sub.eq(sub))
-            if (owners.length > 0) {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ found owners with the same sub ~~~~~~~~~~~~~~~~~~~~~ ", JSON.stringify(owners, null, 4))
-                return owners[0]
-            } else {
-                console.log("\n\n ------------ couldn't find owner ------------- ", JSON.stringify(owners, null, 4))
-                return null
-            }
-        } catch (e) {
-            console.error("..........error.........", e)
-        }
-    }
-
-    const createNewOwner = async () => {
-        console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ creating new owner!! ~~~~~~~~~~~~~~~~~~~~~ ")
-        try {
-            const newOwner = await DataStore.save(new Owner({
-                sub: sub,
-                isDeleted: false,
-                email: authUser.attributes.email,
-            }))
-
-
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ newOwner ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(newOwner, null, 4))
-
-            return newOwner
-
-        } catch (e) {
-            console.error("..........error.........", e)
-        }
-    }
-
-
-    const signOut = useCallback(async () => {
-        await executeFunctionsSequentially([
-            () => Auth.signOut({}),
-
-            () => setAuthUser(null),
-            () => DataStore.clear(),
-            () => DataStore.start(),
-            ()=> window.location.reload()
-        ])
-            .catch((e) => {
-                console.error('Error during federated sign-out:', e)
-            })
-    }, [])
+    }, [authUser])
 
 
     return (
@@ -180,7 +92,6 @@ const AuthContextProvider = ({children}) => {
             {
                 authUser,
                 dbOwner,
-                sub,
                 setDbOwner,
                 signOut
             }

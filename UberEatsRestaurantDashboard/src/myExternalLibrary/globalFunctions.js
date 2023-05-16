@@ -1,4 +1,15 @@
+export function cleanUp() {
 
+    //un-subscribe from all
+    for (const key in window.subscription) {
+        // Check if the current object value has an "unsubscribe" method
+        if (typeof window.subscription[key].unsubscribe === 'function') {
+            // Call the "unsubscribe" method
+            window.subscription[key].unsubscribe()
+        }
+    }
+    return true
+}
 
 export async function executeFunctionsSequentially(functions) {
     const results = [];
