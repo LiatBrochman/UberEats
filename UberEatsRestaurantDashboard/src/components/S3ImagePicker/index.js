@@ -14,7 +14,7 @@ const S3ImagePicker = ({ onSelect }) => {
     const fetchImages = async () => {
         try {
             const {results} = await Storage.list(`${dbOwner.email}`);
-            console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
+         //   console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ results ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(results,null,4))
             setImages(results);
         } catch (error) {
             console.error('Error fetching images:', error);

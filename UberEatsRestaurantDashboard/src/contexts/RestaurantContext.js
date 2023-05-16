@@ -30,7 +30,7 @@ const RestaurantContextProvider = ({children}) => {
     useEffect(() => {
         if (restaurantDishes.length > 0) return;
 
-        DataStore.observeQuery(Dish, d => d.and(d =>
+        window.subscription.orderDishes= DataStore.observeQuery(Dish, d => d.and(d =>
             [
                 d.restaurantID.eq(restaurant?.id),
                 d.originalID.eq("null"),
