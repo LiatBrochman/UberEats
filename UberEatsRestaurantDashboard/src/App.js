@@ -4,7 +4,7 @@ import {withAuthenticator} from '@aws-amplify/ui-react';
 import ProtectedRoutes from "./routes/ProtectedRoutes";
 import './App.css'
 import '@aws-amplify/ui-react/styles.css';
-import Background from "./assets/bg3.jpg";
+import Background from "./assets/bg5.jpg";
 
 const {Content} = Layout;
 
