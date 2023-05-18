@@ -1,3 +1,5 @@
 *.jar
 .idea/
-**/.idea/
+UberEatsCourier/.idea/
+UberEatsRestaurantDashboard/.idea/
+UberEatsUser/.idea/
