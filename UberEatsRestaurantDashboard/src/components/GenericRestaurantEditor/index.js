@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Card, Form, Input, InputNumber, Switch, Upload} from "antd";
+import {Button, Card, Col, Form, Input, InputNumber, Row, Switch, Upload} from "antd";
 import {DataStore, Storage} from "aws-amplify";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {useAuthContext} from "../../contexts/AuthContext";
@@ -157,7 +157,7 @@ function GenericRestaurantEditor({props}) {
     let address = props.type === "NEW" ? '' : restaurant?.location.address
     let isOpen = props.type === "NEW" ? true : restaurant?.isOpen
 
-    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto'}}/>
+    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto',  marginLeft: '10px'}}/>
 
     async function isImgUrl(url) {
         const img = new Image()
@@ -170,11 +170,12 @@ function GenericRestaurantEditor({props}) {
 
 
     return (
-        <div>
+        <div style={{height:"100vh"}}>
             <Card title="Restaurant Details" style={{margin: 20, opacity:"90%"}}>
-                <Form form={form} layout="vertical" wrapperCol={{span: 8}}
+                <Form form={form} layout="vertical" wrapperCol={{span: 14}}
                       onFinish={onFinish}>
-
+                    <Row gutter={16}>
+                        <Col xs={24} sm={24} md={12}>
                     <Form.Item name="name" label="Restaurant name" initialValue={name} required>
                         <Input className="res-input" placeholder="Enter restaurant name here"/>
                     </Form.Item>
@@ -203,6 +204,7 @@ function GenericRestaurantEditor({props}) {
                                     form.setFieldsValue({image: e.target.value})
                                 }}
                             />
+                            <br/>
                             <Upload
                                 accept="image/*"
                                 fileList={fileList}
@@ -217,7 +219,7 @@ function GenericRestaurantEditor({props}) {
                                     border: "2px solid #FFAD60",
                                     marginBottom: 5,
                                     marginTop: 5,
-                                    borderRadius: 10
+                                    borderRadius: 30
                                 }}>
                                     <UploadOutlined/> Click to Upload
                                 </button>
@@ -226,6 +228,9 @@ function GenericRestaurantEditor({props}) {
                         </>
                     </Form.Item>
 
+                        </Col>
+
+                        <Col xs={24} sm={24} md={12}>
                     <Form.Item name="deliveryFee" label="Restaurant delivery Fee" initialValue={deliveryFee}
                                rules={
                                    [{required: true,}, {
@@ -237,7 +242,6 @@ function GenericRestaurantEditor({props}) {
                                } required>
                         <Input className="res-input" placeholder="Enter restaurant delivery Fee here"/>
                     </Form.Item>
-
                     <Form.Item name="minDeliveryMinutes" label="Restaurant minimum Delivery Minutes"
                                initialValue={minDeliveryMinutes}
                                rules={
@@ -281,9 +285,9 @@ function GenericRestaurantEditor({props}) {
                     <Form.Item>
                         <Button className="res-button" type="primary" htmlType="submit">Submit</Button>
                     </Form.Item>
+                        </Col>
+                    </Row>
                 </Form>
-
-
                 <Button
                     onClick={signOut}
                     style={{

@@ -78,36 +78,39 @@ ant-input.ant-input-selected.res-input:hover {
 
   .res-input.ant-input {
     margin: 10px;
+      width: 50%;
+      height:40px;
       background-color: #f7f7f7;
-    border-bottom-color: lightgray;
-      border-top: none;
-      border-right: none;
-      border-left: none;
-      --antd-wave-shadow:none
+    border-color: lightgray;
+      /*border-radius:30px;*/
+      /*border-top: none;*/
+      /*border-right: none;*/
+      /*border-left: none;*/
+      /*--antd-wave-shadow: */
 
   }
-.res-input.ant-input {
-    margin: 10px;
-    background-color: white;
-    border-bottom-color: lightgray;
-    border-top: none;
-    border-right: none;
-    border-left: none;
-    --antd-wave-shadow:none
+/*.res-input.ant-input {*/
+/*    margin: 10px;*/
+/*    background-color: white;*/
+/*    border-bottom-color: lightgray;*/
+/*    border-top: none;*/
+/*    border-right: none;*/
+/*    border-left: none;*/
+/*    --antd-wave-shadow:none*/
 
-}
-.res-input.ant-input {
-    margin: 10px;
-    color:black !important;
-    background-color: white;
-    border-bottom-color: lightgray;
-    border-top: none;
-    border-right: none;
-    border-left: none;
-    --antd-wave-shadow-color: white;
-    --scroll-bar: 0
+/*}*/
+/*.res-input.ant-input {*/
+/*    margin: 10px;*/
+/*    color:black !important;*/
+/*    background-color: white;*/
+/*    border-bottom-color: lightgray;*/
+/*    border-top: none;*/
+/*    border-right: none;*/
+/*    border-left: none;*/
+/*    --antd-wave-shadow-color: white;*/
+/*    --scroll-bar: 0*/
 
-}
+/*}*/
 
 .res-input.ant-input-number.ant-input-number-in-form-item {
   margin: 10px;
@@ -129,44 +132,44 @@ ant-input.ant-input-selected.res-input:hover {
 }
 
 .ant-form-item-required::before{
-    color: gray !important;
+    color: black !important;
 }
 
 
 
 [title="Restaurant name"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 
 
 [title="Restaurant image"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 
 [title="Restaurant delivery Fee"] {
-   color: gray !important;
+   color: black !important;
    font-weight: 600 !important;
  }
 
 [title="Restaurant minimum Delivery Minutes"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 
 [title="Restaurant maximum Delivery Minutes"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 
 [title="Restaurant address"] {
-   color: gray !important;
+   color: black !important;
    font-weight: 600 !important;
  }
 
 [title="Restaurant is open"] {
-    color: gray !important;
+    color: black !important;
     font-weight: 600 !important;
   }
 

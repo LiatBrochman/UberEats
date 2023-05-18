@@ -19,14 +19,25 @@
 
 .dish-input.ant-input {
 
-  background-color: white;
+  /*background-color: white;*/
   /*padding: 10px;*/
   /*border-radius: 10px;*/
-  border-bottom-color: lightgray;
-  border-top: none;
-  border-right: none;
-  border-left: none;
-  --antd-wave-shadow:none
+  /*border-bottom-color: lightgray;*/
+  /*border-top: none;*/
+  /*border-right: none;*/
+  /*border-left: none;*/
+  /*--antd-wave-shadow:none*/
+
+  margin: 10px;
+  width: 50%;
+  height:40px;
+  background-color: #f7f7f7;
+  border-color: lightgray;
+  /*border-radius:30px;*/
+  /*border-top: none;*/
+  /*border-right: none;*/
+  /*border-left: none;*/
+  /*--antd-wave-shadow: */
 
 }
 .dish-input.ant-input:hover {
@@ -85,27 +96,27 @@
 
 
 [title="Dish name"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 
 [title="Dish image"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 
 [title="Dish description"] {
-  color: gray !important;
+  color: black !important;
    font-weight: 600 !important;
  }
 
 [title="Price ($)"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 
 [title="Dish is Active"] {
-  color: gray !important;
+  color: black !important;
   font-weight: 600 !important;
 }
 

@@ -132,7 +132,7 @@ function GenericDishEditor({props}) {
 
     }
 
-    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto'}}/>
+    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto', marginLeft: '10px'}}/>
 
     async function isImgUrl(url) {
         const img = new Image()
@@ -211,6 +211,7 @@ function GenericDishEditor({props}) {
                                 form.setFieldsValue({image: e.target.value})
                             }}
                         />
+                        <br/>
                         <Upload
 
                             accept="image/*"
@@ -226,7 +227,7 @@ function GenericDishEditor({props}) {
                                 border: "2px solid #FFAD60",
                                 marginBottom: 5,
                                 marginTop: 5,
-                                borderRadius: 10
+                                borderRadius: 30
                             }}>
                                 <UploadOutlined/> Click to Upload
                             </button>

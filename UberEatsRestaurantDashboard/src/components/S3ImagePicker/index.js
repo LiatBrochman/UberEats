@@ -41,7 +41,7 @@ const S3ImagePicker = ({ onSelect }) => {
 
     return (
         <Popover content={content} title="Select an Image" trigger="click">
-            <Button style={{backgroundColor:"#96CEB4", borderRadius:10}}>
+            <Button style={{backgroundColor:"#96CEB4", borderRadius:30}}>
                 Choose from S3
             </Button>
         </Popover>
