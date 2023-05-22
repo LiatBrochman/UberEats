@@ -1,70 +1,53 @@
-# Getting Started with Create React App
+# 🍽️ UberEatsRestaurantDashboard
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+UberEatsRestaurantDashboard is a comprehensive web application built with React.js that allows restaurant owners to manage their restaurant's details and operations on the UberEats platform. It provides a user-friendly interface to update restaurant details, manage the menu, track and update orders, and much more.
 
-## Available Scripts
+## 🚀 Features
+- 🏢 Update restaurant details (name, address, image, delivery fee, delivery time, etc.)
+- 🍴 Manage menu items with comprehensive details (price, description, image, etc.)
+- 📦 Maintain separate S3 storage for each restaurant
+- 📑 Access detailed lists of orders with real-time data updates
+- 📍 Track live info of couriers and customers 
+- 🔁 Accept or decline orders, with automatic updates to both courier and customer
+- 🔒 Secure authentication using Google OAuth and Cognito OAuth
 
-In the project directory, you can run:
+## ⚙️ Installation
+To use UberEatsRestaurantDashboard, make sure you have the following installed:
 
-### `npm start`
+- Node.js
+- npm (comes with Node.js)
+- A modern web browser (e.g. Chrome, Firefox)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+To install the app, follow these steps:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. Clone this repository to your local machine
+2. Navigate to the project directory and run `npm install` to install the necessary dependencies
+3. Run `npm start` to start the development server
+4. Open your web browser and visit `http://localhost:3000` to access the app
 
-### `npm test`
+## 🖥️ Usage
+Upon opening the application, you'll be asked to sign in using your Google or Cognito account. 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+You'll then have access to the dashboard where you can manage all aspects of your restaurant's operations. This includes updating restaurant details, managing the menu, accepting or declining orders, and tracking the live info of couriers and customers. 
 
-### `npm run build`
+When an order is accepted or declined, the status will automatically be updated for the relevant courier and customer. 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Please note that only the manager can update the order status. This is a critical step in order completion.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 📺 Demo
+For a live demo of the application, visit the following link: [UberEatsRestaurantDashboard Live Demo](https://timely-phoenix-06c7ef.netlify.app)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🆘 Support
+If you encounter any issues with the app, please contact our customer support team at `liatbrochman@gmail.com` or `shmuelyos@gmail.com`.
 
-### `npm run eject`
+## 🤝 Contributing
+We welcome contributions from the community. To contribute to the project, please follow these steps:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Fork the repository
+2. Create a new branch for your feature or bug fix
+3. Make your changes and commit them
+4. Push your changes to your forked repository
+5. Create a pull request
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 📜 License
+This project is licensed under the MIT License. See the LICENSE file for more details.
