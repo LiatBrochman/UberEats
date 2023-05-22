@@ -11,7 +11,7 @@ const {Content} = Layout;
 function App() {
 
     return (
-        <div style={{backgroundImage:`url(${Background})`, backgroundSize: "cover"}}>
+        <div style={{backgroundImage:`url(${Background})`, backgroundSize: "100% 100%"}}>
             <AppMenu/>
             <Content>
                 <ProtectedRoutes/>

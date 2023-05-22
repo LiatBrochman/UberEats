@@ -170,7 +170,7 @@ function GenericRestaurantEditor({props}) {
 
 
     return (
-        <div style={{height:"100vh"}}>
+<div className="container">
             <Card title="Restaurant Details" style={{margin: 20, opacity:"90%"}}>
                 <Form form={form} layout="vertical" wrapperCol={{span: 14}}
                       onFinish={onFinish}>
@@ -323,7 +323,7 @@ function GenericRestaurantEditor({props}) {
                 </Button>
 
             </Card>
-        </div>
+    </div>
     )
 
 }

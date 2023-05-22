@@ -144,7 +144,7 @@ function GenericDishEditor({props}) {
     }
 
     return (
-        <div style={{height:"100vh"}}>
+        <div className="container">
         <Card title={getTitle()} style={{margin: 20, opacity:"90%"}}>
 
             <Form form={form} layout="vertical" wrapperCol={{span: 8}}

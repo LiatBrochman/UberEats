@@ -16,7 +16,26 @@
   /*  border-radius: 10px;*/
   /*  !*border-color: gray;*!*/
   /*}*/
+.container {
+  /* Common styles for both mobile and desktop */
+}
 
+/* Media query for mobile devices */
+@media (max-width: 767px) {
+  .container {
+    /* Styles specific to mobile view */
+    height: 100%;
+    padding-bottom: 10px;
+  }
+}
+
+/* Media query for desktop devices */
+@media (min-width: 768px) {
+  .container {
+    /* Styles specific to desktop view */
+    height: 100vh;
+  }
+}
 .dish-input.ant-input {
 
   /*background-color: white;*/

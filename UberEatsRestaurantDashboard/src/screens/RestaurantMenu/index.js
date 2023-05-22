@@ -34,22 +34,22 @@ const RestaurantMenu = () => {
             render: (price) => `${price}$`
         },
         {
-            title: "Edit",
+            title: "",
             key: 'edit',
             render: (_,dish) =>
             {
                 return <Link to={'edit'} state={dish}>
-                    <EditOutlined style={{color: "grey", backgroundColor: 'lightgrey', padding:8, borderRadius:30, fontSize: '15px'}}/>
+                    <EditOutlined style={{color: "grey", backgroundColor: 'lightgrey', padding:6, borderRadius:30, fontSize: '11px'}}/>
                 </Link>
             }
         },
         {
-            title: "Delete",
+            title: "",
             key: 'delete',
             dataIndex: 'id',
             render: (id) =>
                 <CloseCircleOutlined
-                    style={{color: "grey", backgroundColor: 'lightgrey', padding:8, borderRadius:30, fontSize: '15px'}}
+                    style={{color: "grey", backgroundColor: 'lightgrey', padding:6, borderRadius:30, fontSize: '11px'}}
                     onClick={async () => await deleteRestaurantDish(id)}
                 />
         },

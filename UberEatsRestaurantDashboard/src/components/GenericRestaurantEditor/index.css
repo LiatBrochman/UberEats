@@ -1,3 +1,24 @@
+.container {
+    /* Common styles for both mobile and desktop */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 767px) {
+    .container {
+        /* Styles specific to mobile view */
+        height: 100%;
+    }
+}
+
+/* Media query for desktop devices */
+@media (min-width: 768px) {
+    .container {
+        /* Styles specific to desktop view */
+        height: 100vh;
+        padding-bottom: 10px;
+    }
+}
+
 .ant-input.res-input:focus {
     box-shadow:none;
     border-color: #D9534F !important;
