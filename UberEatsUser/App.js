@@ -10,7 +10,6 @@ import RestaurantContextProvider from "./src/contexts/RestaurantContext";
 import BasketContextProvider from "./src/contexts/BasketContext";
 import OrderContextProvider from "./src/contexts/OrderContext";
 import CourierContextProvider from "./src/contexts/CourierContext";
-import ProtectedRoutes from "./src/navigation/ProtectedRoutes";
 import {I18nManager} from "react-native";
 import RNRestart from 'react-native-restart';
 import * as WebBrowser from "expo-web-browser";

@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {ActivityIndicator, Image, Pressable, StyleSheet, Text, View,} from "react-native";
+import {ActivityIndicator, Pressable, StyleSheet, Text, View,} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
@@ -8,10 +8,9 @@ import CachedImage from '../../myExternalLibrary/CachedImage';
 
 const DishDetailsScreen = () => {
 
-    const navigation = useNavigation();
-    const route = useRoute();
-    const id = route.params?.id;
-
+    const navigation = useNavigation()
+    const route = useRoute()
+    const id = route.params?.id
     const {addDishToBasket, basket , basketDishes} = useBasketContext({basketDishes:[]})
     const {restaurantDishes} = useRestaurantContext({restaurantDishes:[]})
     const [restaurantDish, setRestaurantDish] = useState(null)

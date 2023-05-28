@@ -1,7 +1,7 @@
 import {createContext, useContext, useEffect, useState} from "react";
 import {useOrderContext} from "./OrderContext";
 import {DataStore} from "aws-amplify";
-import {Courier, Order} from "../models";
+import {Courier} from "../models";
 
 
 const CourierContext = createContext({})

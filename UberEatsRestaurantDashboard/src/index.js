@@ -9,7 +9,7 @@ import OrderContextProvider from "./contexts/OrderContext";
 import RestaurantContextProvider from "./contexts/RestaurantContext";
 import {Amplify} from "aws-amplify";
 import awsconfig from './aws-exports';
-
+// new Image().src = require("./assets/loading.gif")
 
 
 window.subscription = {};
@@ -27,6 +27,7 @@ awsconfig.oauth.redirectSignOut = isLocalEnvironment
 Amplify.configure({...awsconfig, Analytics: {disabled: true}});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
 
 root.render(
     <HashRouter>

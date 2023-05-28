@@ -13,13 +13,18 @@ const RestaurantContextProvider = ({children}) => {
     const [restaurant, setRestaurant] = useState(null)
     const [finishedFetching, setFinishedFetching] = useState(false)
 
+
     useEffect(() => {
         if (!dbOwner) return;
 
         window.subscription.restaurant = DataStore.observeQuery(Restaurant, r => r.ownerID.eq(dbOwner.id))
             .subscribe(({items, isSynced}) => {
+
+                if (items.length) {
+                    setRestaurant(items[0])
+                    new Image().src = items[0].image
+                }
                 if (isSynced) {
-                    items.length && setRestaurant(items[0])
                     setFinishedFetching(true)
                 }
             })
@@ -30,16 +35,19 @@ const RestaurantContextProvider = ({children}) => {
     useEffect(() => {
         if (restaurantDishes.length > 0) return;
 
-        window.subscription.orderDishes= DataStore.observeQuery(Dish, d => d.and(d =>
+        window.subscription.orderDishes = DataStore.observeQuery(Dish, d => d.and(d =>
             [
                 d.restaurantID.eq(restaurant?.id),
                 d.originalID.eq("null"),
                 d.isDeleted.eq(false)
             ]
         )).subscribe(({items, isSynced}) => {
-            if (isSynced) {
+            // if (isSynced) {
+            if (items.length) {
                 setRestaurantDishes(items)
+                items.forEach(({image})=> new Image().src = image)
             }
+            // }
         })
 
     }, [restaurant])

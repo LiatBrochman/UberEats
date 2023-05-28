@@ -1,5 +1,5 @@
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import {Image, Text, View} from "react-native";
+import {Text, View} from "react-native";
 import styles from "./styles";
 import CachedImage from '../../myExternalLibrary/CachedImage';
 

@@ -3,6 +3,7 @@ import {Auth, DataStore, Hub} from "aws-amplify";
 import {AppState} from 'react-native';
 import * as Updates from 'expo-updates';
 import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
+import {cacheAllImages} from "../myExternalLibrary/CachedImage";
 // import * as Constants from "constants";
 
 
@@ -59,6 +60,7 @@ const AuthContextProvider = ({children}) => {
                 case "signIn":
                 case "signUp":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
+                    cacheAllImages()
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)
                         .catch(() => console.log("Not signed in"))

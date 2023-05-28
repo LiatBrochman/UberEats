@@ -1,10 +1,10 @@
-import {Image, Pressable, Text, View} from "react-native";
+import {Pressable, Text, View} from "react-native";
 import {Entypo} from "@expo/vector-icons";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {DataStore} from "aws-amplify";
 import {Customer, Restaurant} from "../../models";
 import {useEffect, useState} from "react";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from "../../myExternalLibrary/CachedImage"
 
 
 const OrderItem = ({order}) => {

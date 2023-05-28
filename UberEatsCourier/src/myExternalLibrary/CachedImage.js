@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Image, ImageBackground, View} from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Crypto from 'expo-crypto';
-import {getAllDishes, getAllRestaurants} from "./getFunctions";
+import {getAllRestaurants} from "./getFunctions";
 
 
 const generateFilesystemKey = async (remoteURI) => {
@@ -28,9 +28,8 @@ export const cacheImagesArray = async (imageArray) => {
 };
 
 export const cacheAllImages = async () => {
-    const [restaurants, dishes] = await Promise.all([getAllRestaurants(), getAllDishes()]);
-
-    await Promise.all([...restaurants, ...dishes].map(({image}) => cacheImage(image)));
+    const restaurants = await getAllRestaurants();
+    await Promise.all([...restaurants].map(({image}) => cacheImage(image)));
 };
 
 

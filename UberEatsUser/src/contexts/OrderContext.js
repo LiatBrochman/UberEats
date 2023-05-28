@@ -4,7 +4,7 @@ import {Dish, Order} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {useBasketContext} from "./BasketContext";
 import {useRestaurantContext} from "./RestaurantContext";
-import { Alert } from 'react-native';
+import {Alert} from 'react-native';
 
 const OrderContext = createContext({})
 

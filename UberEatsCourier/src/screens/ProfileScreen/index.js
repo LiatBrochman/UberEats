@@ -1,15 +1,14 @@
-import {Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
+import {Button, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import React, {useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
-import {Amplify, DataStore} from "aws-amplify";
+import {DataStore} from "aws-amplify";
 import {Courier, TransportationModes} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
-import {useOrderContext} from "../../contexts/OrderContext";
 import {getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
 import {useCourierContext} from "../../contexts/CourierContext";
-import CachedImage from 'react-native-expo-cached-image';
+import CachedImage from "../../myExternalLibrary/CachedImage"
 
 
 const Profile = () => {

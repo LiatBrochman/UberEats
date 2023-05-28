@@ -1,14 +1,36 @@
 import {useRestaurantContext} from "../contexts/RestaurantContext";
 import AppRoutes from "./AppRoutes";
 import NewRestaurant from "../screens/NewRestaurant";
-import {Image} from "@aws-amplify/ui-react";
 import {useAuthContext} from "../contexts/AuthContext";
+// import {Img} from "react-image";
+// import loading from "../assets/loading.gif"
+import ReactLoading from "react-loading";
+import "./index.css"
 
 const ProtectedRoutes = () => {
 
     const {dbOwner} = useAuthContext({dbOwner: null})
     const {finishedFetching, restaurant} = useRestaurantContext({finishedFetching: false, restaurant: null})
-    const loadingScreen = <Image style={{display: "block", marginLeft: "auto", marginRight: "auto"}} src={"https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"}/>
+    const loadingScreen =
+        <div className="loader-container">
+            <ReactLoading
+                type={"bars"}
+                color={"#96CEB4"}
+                height={100}
+                width={150}
+            />
+        </div>
+        // <div style={{
+        //     display: 'flex',
+        //     justifyContent: 'center',
+        //     alignItems: 'center',
+        //     height: '100vh'
+        // }}>
+        //     <Img src={
+        //         loading
+        //     }
+        //          alt="" style={{ maxWidth: '100%', height: 'auto' }} />
+        // </div>
 
 
     if (!dbOwner) return loadingScreen
@@ -27,3 +49,4 @@ const ProtectedRoutes = () => {
 
 }
 export default ProtectedRoutes
+

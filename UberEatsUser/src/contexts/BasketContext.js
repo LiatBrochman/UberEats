@@ -4,7 +4,6 @@ import {Basket, Dish} from "../models";
 import {useAuthContext} from "./AuthContext";
 import {useRestaurantContext} from "./RestaurantContext";
 
-
 const BasketContext = createContext({})
 
 const BasketContextProvider = ({children}) => {
@@ -33,7 +32,7 @@ const BasketContextProvider = ({children}) => {
         )).subscribe(({items, isSynced}) => {
 
             if (isSynced) {
-                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setBasketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
+            //     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ setBasketDishes ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(items,null,4))
 
                 setBasketDishes(items)
                 setTotalPrice(Number(items.reduce((sum, dish) => sum + (dish.quantity * dish.price), restaurant.deliveryFee).toFixed(2)))
@@ -91,7 +90,7 @@ const BasketContextProvider = ({children}) => {
         switch (!!dishAlreadyExists) {
 
             case true:
-                DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
+                await DataStore.save(Dish.copyOf(dishAlreadyExists, updated => {
                     updated.name= dish.name
                     updated.price= dish.price
                     updated.image= dish.image
@@ -106,14 +105,6 @@ const BasketContextProvider = ({children}) => {
                     // updated.quantity = dish.quantity
                     // updated.isDeleted = false
                 }))
-                    .then(() => {
-                        /**
-                         * if the dish was deleted, we must add it to our subscription list (as mentioned before).
-                         in order to make that happen, we need to make sure the new dish has been created in the DB.
-                         the simplest way to make that happen is by waiting for the respond from the DataStore.
-                         */
-                        // dishAlreadyExists.isDeleted===true && reSubscribeToAllDishes(theBasket)
-                    })
                 break;
 
 
@@ -137,6 +128,10 @@ const BasketContextProvider = ({children}) => {
                 break;
         }
 
+    }
+
+    async function updateDishQuantity({dish, quantity}){
+       await DataStore.save(Dish.copyOf(dish, updated => {updated.quantity = quantity}))
     }
 
     const removeDishFromBasket = async (dish) => {
@@ -232,6 +227,7 @@ const BasketContextProvider = ({children}) => {
                 addDishToBasket,
                 removeDishFromBasket,
                 findExistingBasket,
+                updateDishQuantity,
 
                 basket,
                 setBasket,

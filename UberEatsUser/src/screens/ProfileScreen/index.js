@@ -1,4 +1,4 @@
-import {Alert, Button, Image, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
+import {Alert, Button, Pressable, StyleSheet, Text, TextInput, View} from "react-native";
 import React, {useEffect, useState} from "react";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {DataStore} from "aws-amplify";

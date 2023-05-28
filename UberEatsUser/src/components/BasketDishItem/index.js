@@ -1,20 +1,26 @@
-import {Image, StyleSheet, Text, View} from "react-native";
+import {StyleSheet, Text, View} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
 import CachedImage from '../../myExternalLibrary/CachedImage';
-
+// import _ from 'lodash';
 
 const BasketDishItem = ({dish}) => {
-    const {removeDishFromBasket, addDishToBasket} = useBasketContext()
-
+    const {removeDishFromBasket, addDishToBasket,updateDishQuantity} = useBasketContext()
+    // const debouncedAddDishToBasket = _.debounce(addDishToBasket, 500)
 
     const onMinus = async () => {
         if (dish.quantity > 1)
-            await addDishToBasket( {...dish, quantity: dish.quantity - 1})
+            await updateDishQuantity( {dish, quantity: dish.quantity - 1})
+
+        // await addDishToBasket( {...dish, quantity: dish.quantity - 1})
+            // await debouncedAddDishToBasket( {...dish, quantity: dish.quantity - 1})
     }
 
     const onPlus = async () => {
-        await addDishToBasket({...dish, quantity: dish.quantity + 1})
+        await updateDishQuantity({dish, quantity:dish.quantity + 1})
+
+        // await addDishToBasket({...dish, quantity:dish.quantity + 1})
+        // await debouncedAddDishToBasket({...dish, quantity:dish.quantity + 1})
     }
 
     const onRemove = async () => {

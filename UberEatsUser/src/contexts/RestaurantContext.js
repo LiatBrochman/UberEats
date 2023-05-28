@@ -56,7 +56,8 @@ const RestaurantContextProvider = ({children}) => {
                     dish.originalID.eq("null")
                 ]
         )).subscribe(({items, isSynced}) => {
-            isSynced && setRestaurantDishes(items)
+            // isSynced && setRestaurantDishes(items)
+            setRestaurantDishes(items)
         })
         // return subscription?.restaurantDishes?.unsubscribe()
 

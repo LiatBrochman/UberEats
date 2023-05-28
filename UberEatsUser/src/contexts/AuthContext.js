@@ -4,6 +4,7 @@ import {AppState} from 'react-native';
 import {Customer} from "../models";
 import * as Updates from 'expo-updates';
 import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
+import {cacheAllImages} from "../myExternalLibrary/CachedImage";
 // import * as Constants from "constants";
 
 const AuthContext = createContext({});
@@ -78,6 +79,7 @@ const AuthContextProvider = ({children}) => {
                 case "signIn":
                 case "signUp":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
+                    cacheAllImages()
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)
                         .catch(() => console.log("Not signed in"))

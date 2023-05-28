@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import {StyleSheet, useWindowDimensions} from "react-native";
-import {MyDirections, MyDirections_fixed} from "../../components/MyDirections";
+import {MyDirections_fixed} from "../../components/MyDirections";
 import {Ionicons} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
 import {useOrderContext} from "../../contexts/OrderContext";
