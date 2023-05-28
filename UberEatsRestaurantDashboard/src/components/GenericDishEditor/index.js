@@ -9,6 +9,7 @@ import {useNavigate} from 'react-router-dom';
 import './index.css';
 import {dishes_assets_fixed} from "../../assets/data/restaurants";
 import {useAuthContext} from "../../contexts/AuthContext";
+import {Img} from "react-image";
 
 
 function GenericDishEditor({props}) {
@@ -132,7 +133,14 @@ function GenericDishEditor({props}) {
 
     }
 
-    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto', marginLeft: '10px'}}/>
+    // const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto', marginLeft: '10px'}}/>
+    const renderingImage = (
+        <Img
+            src={image}
+            alt=""
+            style={{ maxWidth: '50%', height: 'auto', marginLeft: '10px' }}
+        />
+    );
 
     async function isImgUrl(url) {
         const img = new Image()

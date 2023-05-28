@@ -10,6 +10,7 @@ import './index.css';
 import {UploadOutlined} from "@ant-design/icons";
 import S3ImagePicker from "../S3ImagePicker";
 import {restaurants_assets} from "../../assets/data/restaurants";
+import {Img} from "react-image";
 
 
 
@@ -157,7 +158,14 @@ function GenericRestaurantEditor({props}) {
     let address = props.type === "NEW" ? '' : restaurant?.location.address
     let isOpen = props.type === "NEW" ? true : restaurant?.isOpen
 
-    const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto',  marginLeft: '10px'}}/>
+    // const renderingImage = <img src={image} alt={""} style={{maxWidth: '50%', height: 'auto',  marginLeft: '10px'}}/>
+    const renderingImage = (
+        <Img
+            src={image}
+            alt=""
+            style={{ maxWidth: '50%', height: 'auto', marginLeft: '10px' }}
+        />
+    );
 
     async function isImgUrl(url) {
         const img = new Image()

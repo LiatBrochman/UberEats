@@ -20,8 +20,8 @@ const awsmobile = {
             "profile",
             "aws.cognito.signin.user.admin"
         ],
-        "redirectSignIn": "http://localhost:3000,https://timely-phoenix-06c7ef.netlify.app,https://auth.expo.io/@joey123ms/UberEats,ubereatsuser://,ubereats://",
-        "redirectSignOut": "http://localhost:3000,https://timely-phoenix-06c7ef.netlify.app,ubereats://,ubereatsuser://",
+        "redirectSignIn": "com.joey123ms.ubereatsuser://signInRedirect",
+        "redirectSignOut": "com.joey123ms.ubereatsuser://signOutRedirect",
         "responseType": "code"
     },
     "federationTarget": "COGNITO_USER_POOLS",

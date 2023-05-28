@@ -62,6 +62,6 @@
     "hostedUIProviderMeta": "[{\"ProviderName\":\"Google\",\"authorize_scopes\":\"openid profile\",\"AttributeMapping\":{\"username\":\"sub\"}}]",
     "authProviders": [],
     "thirdPartyAuth": false,
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"http://localhost:3000\",\"https://timely-phoenix-06c7ef.netlify.app\",\"https://auth.expo.io/@joey123ms/UberEats\",\"ubereatsuser://\",\"ubereats://\"],\"LogoutURLs\":[\"http://localhost:3000\",\"https://timely-phoenix-06c7ef.netlify.app\",\"ubereats://\",\"ubereatsuser://\"]}"
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"com.joey123ms.ubereatsuser://signInRedirect\"],\"LogoutURLs\":[\"com.joey123ms.ubereatsuser://signOutRedirect\"]}"
   }
 }
