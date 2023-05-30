@@ -46,8 +46,8 @@ const OrderItem = ({order}) => {
         >
             {restaurant?.image &&
             <CachedImage
-                cacheKey={restaurant.id}
                 source={{uri: restaurant.image}}
+                cacheKey={restaurant.image.substring(restaurant.image.lastIndexOf('/') + 1)}
                 style={{
                     width: "25%",
                     height: "100%",

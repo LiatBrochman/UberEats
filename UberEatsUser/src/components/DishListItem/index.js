@@ -18,7 +18,7 @@ const DishListItem = ({dish}) => {
             {dish?.image &&
             <CachedImage
                 source={{uri: dish.image}}
-                cacheKey={dish.id}
+                cacheKey={dish.image.substring(dish.image.lastIndexOf('/') + 1)}
                 style={styles.image}
             />}
             <View style={{flex: 1, marginLeft: 10}}>

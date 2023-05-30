@@ -8,3 +8,5 @@ export async function getAllRestaurants() {
 export async function getAllDishes() {
     return await DataStore.query(Dish, d => d.and(d=> [d.originalID.eq("null"),d.isDeleted.eq(false)]))
 }
+
+

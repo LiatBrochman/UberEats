@@ -56,7 +56,7 @@ const DishDetailsScreen = () => {
             {restaurantDish?.image &&
             <CachedImage
                 source={{uri: restaurantDish.image}}
-                cacheKey={restaurantDish.id}
+                cacheKey={restaurantDish.image.substring(restaurantDish.image.lastIndexOf('/') + 1)}
                 style={styles.image}
             />}
 

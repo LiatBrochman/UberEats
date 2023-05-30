@@ -36,7 +36,7 @@ const BasketDishItem = ({dish}) => {
                 {dish?.image &&
                 <CachedImage
                     source={{uri: dish.image}}
-                    cacheKey={dish.id}
+                    cacheKey={dish.image.substring(dish.image.lastIndexOf('/') + 1)}
                     style={styles.image}
                 />}
                 <Text style={styles.dishName}>{dish?.name}</Text>

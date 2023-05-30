@@ -51,7 +51,7 @@ const OrderListItem = ({order}) => {
             {restaurant?.image &&
             <CachedImage
                 source={{uri: restaurant.image}}
-                cacheKey={restaurant.id}
+                cacheKey={restaurant.image.substring(restaurant.image.lastIndexOf('/') + 1)}
                 style={styles.image}
             />}
             <View>
