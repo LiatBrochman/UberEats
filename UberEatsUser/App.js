@@ -15,6 +15,7 @@ import RNRestart from 'react-native-restart';
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
 import {NewProtectedRoutes} from "./src/navigation/NewProtectedRoutes";
+import {runOnInit} from "./src/myExternalLibrary/runOnInit";
 
 
 // Amplify.Logger.LOG_LEVEL = 'DEBUG';
@@ -43,6 +44,7 @@ const updatedConfig = {
 Amplify.configure(updatedConfig);
 global.subscription = {};
 WebBrowser.maybeCompleteAuthSession();
+runOnInit("user")
 
 export default function App() {
     return (

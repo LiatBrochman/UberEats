@@ -5,7 +5,7 @@ import {DataStore} from "aws-amplify";
 import {Restaurant} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import CachedImage from '../../myExternalLibrary/CachedImage';
+import CachedImage from 'expo-cached-image';
 
 
 const getDate = ({order}) => {
@@ -48,10 +48,12 @@ const OrderListItem = ({order}) => {
                 navigation.navigate("Order", {id: order.id})
             }}
             style={styles.container}>
+            {restaurant?.image &&
             <CachedImage
-                source={{uri: restaurant?.image}}
+                source={{uri: restaurant.image}}
+                cacheKey={restaurant.id}
                 style={styles.image}
-            />
+            />}
             <View>
                 <Text style={styles.name}>{restaurant?.name}</Text>
                 <Text style={styles.price}>{order?.totalQuantity} items &#8226; ${order?.totalPrice}</Text>

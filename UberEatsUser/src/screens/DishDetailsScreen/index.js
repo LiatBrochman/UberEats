@@ -4,26 +4,26 @@ import {AntDesign} from "@expo/vector-icons";
 import {useNavigation, useRoute} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
-import CachedImage from '../../myExternalLibrary/CachedImage';
+import CachedImage from 'expo-cached-image';
 
 const DishDetailsScreen = () => {
 
     const navigation = useNavigation()
     const route = useRoute()
     const id = route.params?.id
-    const {addDishToBasket, basket , basketDishes} = useBasketContext({basketDishes:[]})
-    const {restaurantDishes} = useRestaurantContext({restaurantDishes:[]})
+    const {addDishToBasket, basket, basketDishes} = useBasketContext({basketDishes: []})
+    const {restaurantDishes} = useRestaurantContext({restaurantDishes: []})
     const [restaurantDish, setRestaurantDish] = useState(null)
     const [tempQuantity, setTempQuantity] = useState(1)
 
 
     useEffect(() => {
-        if(restaurantDishes.length === 0) return;
+        if (restaurantDishes.length === 0) return;
         setRestaurantDish(restaurantDishes.find(d => d.id === id))
 
 
-        if(basketDishes.length===0) return;
-        const existingDish = basketDishes.find(d=> d.originalID === id)
+        if (basketDishes.length === 0) return;
+        const existingDish = basketDishes.find(d => d.originalID === id)
         existingDish && setTempQuantity(existingDish.quantity)
 
     }, [restaurantDishes])
@@ -53,7 +53,12 @@ const DishDetailsScreen = () => {
     return (
         <View style={styles.page}>
 
-            <CachedImage source={{uri: restaurantDish?.image}} style={styles.image}/>
+            {restaurantDish?.image &&
+            <CachedImage
+                source={{uri: restaurantDish.image}}
+                cacheKey={restaurantDish.id}
+                style={styles.image}
+            />}
 
 
             <Text style={styles.name}>{restaurantDish?.name}</Text>

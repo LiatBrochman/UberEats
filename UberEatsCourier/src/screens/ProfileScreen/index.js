@@ -8,7 +8,8 @@ import {useNavigation} from "@react-navigation/native";
 import {FontAwesome5, MaterialIcons} from "@expo/vector-icons";
 import {getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
 import {useCourierContext} from "../../contexts/CourierContext";
-import CachedImage from "../../myExternalLibrary/CachedImage"
+// import CachedImage from "../../myExternalLibrary/CachedImage"
+import CachedImage from 'expo-cached-image';
 
 
 const Profile = () => {
@@ -27,7 +28,7 @@ const Profile = () => {
             let location = {lat: 0, lng: 0};
 
             if (dbCourier) {
-             location = {
+                location = {
                     lat: parseFloat(dbCourier.location.lat),
                     lng: parseFloat(dbCourier.location.lng),
                 };
@@ -42,16 +43,16 @@ const Profile = () => {
                 draft = {
                     ...draft,
                     email: authUser.attributes.email,
-                    destinations:[],
-                    timeToArrive:[],
+                    destinations: [],
+                    timeToArrive: [],
                     isDeleted: false,
                     isActive: true,
                     location,
-                    sub:authUser.attributes.sub
+                    sub: authUser.attributes.sub
                 };
                 await createCourier(draft);
             }
-            navigation.navigate("MainStack", { screen: "MapView" })
+            navigation.navigate("MainStack", {screen: "MapView"})
         } catch (error) {
             console.error(error);
         }
@@ -89,9 +90,8 @@ const Profile = () => {
         <View style={{backgroundColor: "white", flex: 1}}>
             <Text style={styles.title}>Profile</Text>
             <CachedImage
-                source={{
-                    uri: "https://images.unsplash.com/photo-1595509552179-488a7a58e818?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=545&q=80"
-                }}
+                source={{uri: "https://images.unsplash.com/photo-1595509552179-488a7a58e818?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=545&q=80"}}
+                cacheKey={'CouriersHomePage.jpeg'}
                 style={styles.image}
             />
             <SafeAreaView>
@@ -133,7 +133,8 @@ const Profile = () => {
                 <Pressable onPress={onSave} style={styles.buttonSave}>
                     <Text style={styles.buttonText}>Save</Text>
                 </Pressable>
-                <Pressable onPress={() => navigation.navigate("MainStack", { screen: "MapView" })} style={styles.buttonReturn}>
+                <Pressable onPress={() => navigation.navigate("MainStack", {screen: "MapView"})}
+                           style={styles.buttonReturn}>
                     <Text style={styles.buttonText}>return without save</Text>
                 </Pressable>
                 <Text
@@ -141,7 +142,7 @@ const Profile = () => {
                     style={{textAlign: "center", color: 'black', margin: 10}}>
                     Sign out
                 </Text>
-                {process.env.NODE_ENV!=="production" &&
+                {process.env.NODE_ENV !== "production" &&
                 <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
                 } title="Amplify.DataStore.clear()"/>}
 

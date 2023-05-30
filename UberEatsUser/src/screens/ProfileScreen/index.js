@@ -6,7 +6,7 @@ import {Customer} from '../../models'
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigation} from "@react-navigation/native";
 import {getAddressByCoords, getCoordsByAddress, getCurrentPosition} from "../../myExternalLibrary/LocationFunctions";
-import CachedImage from '../../myExternalLibrary/CachedImage';
+import CachedImage from 'expo-cached-image';
 
 
 const Profile = () => {
@@ -85,7 +85,7 @@ const Profile = () => {
                      * if address is empty
                      */
                     case false:
-                            console.error('no address has been inserted')
+                        console.error('no address has been inserted')
 
                         break;
                 }
@@ -140,9 +140,8 @@ const Profile = () => {
             <SafeAreaView>
                 <Text style={styles.title}>Profile</Text>
                 <CachedImage
-                    source={{
-                        uri: "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2052&q=80"
-                    }}
+                    source={{uri: "https://images.unsplash.com/photo-1487700160041-babef9c3cb55?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2052&q=80"}}
+                    cacheKey={'UsersHomePage.jpeg'}
                     style={styles.image}
                 />
                 <TextInput
@@ -158,19 +157,20 @@ const Profile = () => {
                     style={styles.input}
                 />
             </SafeAreaView>
-            <Pressable onPress={async () => setAddress(await getAddressByCoords( await getCurrentPosition()))} style={styles.buttonGetMyLocation} title="Get My Location">
+            <Pressable onPress={async () => setAddress(await getAddressByCoords(await getCurrentPosition()))}
+                       style={styles.buttonGetMyLocation} title="Get My Location">
                 <Text style={styles.buttonText}>Get My Location</Text>
             </Pressable>
             <Pressable onPress={onSave} style={styles.buttonSave} title="Save">
-            <Text style={styles.buttonText}>Save</Text>
-        </Pressable>
+                <Text style={styles.buttonText}>Save</Text>
+            </Pressable>
             <Text
                 onPress={signOut}
                 style={{textAlign: "center", color: 'black', margin: 10}}>
                 Sign out
             </Text>
 
-            {process.env.NODE_ENV!=="production" &&
+            {process.env.NODE_ENV !== "production" &&
             <Button onPress={async () => await DataStore.clear().then(async () => await DataStore.start())
             } title="Amplify.DataStore.clear()"/>}
 

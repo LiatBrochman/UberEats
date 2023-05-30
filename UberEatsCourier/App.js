@@ -11,6 +11,7 @@ import DirectionContextProvider from "./src/contexts/DirectionContext";
 import CourierContext from "./src/contexts/CourierContext";
 import * as AuthSession from "expo-auth-session";
 import {NewProtectedRoutes} from "./src/navigation/NewProtectedRoutes";
+import {runOnInit} from "./src/myExternalLibrary/runOnInit";
 
 // Amplify.Logger.LOG_LEVEL = 'DEBUG';
 if (I18nManager.isRTL) {
@@ -36,6 +37,7 @@ Amplify.configure(updatedConfig);
 
 global.subscription = {};
 WebBrowser.maybeCompleteAuthSession();
+runOnInit("courier")
 
 export default function App() {
 

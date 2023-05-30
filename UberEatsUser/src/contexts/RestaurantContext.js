@@ -28,11 +28,6 @@ const RestaurantContextProvider = ({children}) => {
         initDishesImages()
     }
 
-    // function genericCacheImages(AWS_Records) {
-    //     return <CachedImage cacheImages={[...AWS_Records.map(record => record.image)]}/>
-    // }
-
-
     useEffect(() => {
         if (!dbCustomer || subscription.hasOwnProperty("restaurants")) return;
 

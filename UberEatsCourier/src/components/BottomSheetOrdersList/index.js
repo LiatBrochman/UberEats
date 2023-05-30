@@ -12,7 +12,7 @@ export const BottomSheetOrdersList = () => {
 
 
     return (
-        <BottomSheet isVisible={true} ref={bottomSheetRef} snapPoints={snapPoints}>
+        <BottomSheet isVisible={ordersToCollect.length} ref={bottomSheetRef} snapPoints={snapPoints}>
             <View style={{alignItems: 'center', marginBottom: 30}}>
                 <Text style={{
                     fontSize: 20, fontWeight: '600', letterSpacing: 0.5, paddingBottom: 5

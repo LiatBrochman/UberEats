@@ -3,7 +3,8 @@ import {Auth, DataStore, Hub} from "aws-amplify";
 import {AppState} from 'react-native';
 import * as Updates from 'expo-updates';
 import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
-import {cacheAllImages} from "../myExternalLibrary/CachedImage";
+import {getAllRestaurants} from "../myExternalLibrary/getFunctions";
+import {CacheManager} from 'expo-cached-image'
 // import * as Constants from "constants";
 
 
@@ -60,7 +61,6 @@ const AuthContextProvider = ({children}) => {
                 case "signIn":
                 case "signUp":
                     console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ signIn ~~~~~~~~~~~~~~~~~~~~~ ")
-                    cacheAllImages()
                     Auth.currentAuthenticatedUser()
                         .then(setAuthUser)
                         .catch(() => console.log("Not signed in"))
@@ -92,6 +92,14 @@ const AuthContextProvider = ({children}) => {
 
     }, [])
 
+    // useEffect(() => {
+    //     authUser &&
+    //     getAllRestaurants().then(restaurants => restaurants.forEach(r => CacheManager.downloadAsync({
+    //         uri: `${r.image}`,
+    //         key: `${r.id}`
+    //     })))
+    //
+    // }, [authUser])
 
     return (
         <AuthContext.Provider value=

@@ -1,7 +1,7 @@
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
-import CachedImage from '../../myExternalLibrary/CachedImage';
+import CachedImage from 'expo-cached-image';
 
 
 const DishListItem = ({dish}) => {
@@ -15,7 +15,12 @@ const DishListItem = ({dish}) => {
                 navigation.navigate("Dish", {id: dish.id})
             }}
             style={styles.container}>
-            {dish.image && (<CachedImage source={{uri: dish.image}} style={styles.image}/>)}
+            {dish?.image &&
+            <CachedImage
+                source={{uri: dish.image}}
+                cacheKey={dish.id}
+                style={styles.image}
+            />}
             <View style={{flex: 1, marginLeft: 10}}>
                 <Text style={styles.name}>{dish.name}</Text>
                 <Text style={styles.description} numberOfLines={2}>{dish.description}</Text>
