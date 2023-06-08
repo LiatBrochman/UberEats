@@ -4,6 +4,7 @@ import {DataStore, Storage} from "aws-amplify";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {useAuthContext} from "../../contexts/AuthContext";
 import {useNavigate} from "react-router-dom";
+import Autocomplete from "react-google-autocomplete";
 import Geocode from "react-geocode";
 import {Restaurant} from "../../models";
 import './index.css';
@@ -11,7 +12,6 @@ import {UploadOutlined} from "@ant-design/icons";
 import S3ImagePicker from "../S3ImagePicker";
 import {restaurants_assets} from "../../assets/data/restaurants";
 import {Img} from "react-image";
-
 
 
 function GenericRestaurantEditor({props}) {
@@ -140,6 +140,9 @@ function GenericRestaurantEditor({props}) {
                         }
                     }
                 })
+                .catch(e => {
+                    console.error("cannot find address:", address, "\nreason:", e)
+                })
 
         } catch (e) {
             console.error("error on GenericRestaurantEditor")
@@ -163,7 +166,7 @@ function GenericRestaurantEditor({props}) {
         <Img
             src={image}
             alt=""
-            style={{ maxWidth: '50%', height: 'auto', marginLeft: '10px' }}
+            style={{maxWidth: '50%', height: 'auto', marginLeft: '10px'}}
         />
     );
 
@@ -178,121 +181,135 @@ function GenericRestaurantEditor({props}) {
 
 
     return (
-<div className="container">
-            <Card title="Restaurant Details" style={{margin: 20, opacity:"90%"}}>
+        <div className="container">
+            <Card title="Restaurant Details" style={{margin: 20, opacity: "90%"}}>
                 <Form form={form} layout="vertical" wrapperCol={{span: 14}}
                       onFinish={onFinish}>
                     <Row gutter={16}>
                         <Col xs={24} sm={24} md={12}>
-                    <Form.Item name="name" label="Restaurant name" initialValue={name} required>
-                        <Input className="res-input" placeholder="Enter restaurant name here"/>
-                    </Form.Item>
+                            <Form.Item name="name" label="Restaurant name" initialValue={name} required>
+                                <Input className="res-input" placeholder="Enter restaurant name here"/>
+                            </Form.Item>
 
-                    <Form.Item label="Restaurant image"
-                               name="image"
-                               initialValue={image}
-                               rules={[
-                                   {required: true, message: 'Please select an image or enter a URL.'},
-                                   {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
-                                   {
-                                       validator: async (_) =>
-                                           await isImgUrl(image)
-                                               ? Promise.resolve() :
-                                               Promise.reject(new Error('invalid image URL!!'))
-                                   },
-                               ]}>
-                        <>
-                            {renderingImage}
-                            <Input
-                                className="res-input"
-                                placeholder="Enter image url here"
-                                value={image}
-                                onChange={(e) => {
-                                    setImage(e.target.value)
-                                    form.setFieldsValue({image: e.target.value})
-                                }}
-                            />
-                            <br/>
-                            <Upload
-                                accept="image/*"
-                                fileList={fileList}
-                                customRequest={customRequest}
-                                onChange={handleChange}
-                                onRemove={() => {
-                                    setImage('');
-                                    setFileList([]);
-                                }}>
-                                <button type="button" style={{
-                                    backgroundColor: "#FFAD60",
-                                    border: "2px solid #FFAD60",
-                                    marginBottom: 5,
-                                    marginTop: 5,
-                                    borderRadius: 30
-                                }}>
-                                    <UploadOutlined/> Click to Upload
-                                </button>
-                            </Upload>
-                            <S3ImagePicker onSelect={handleImageSelect}/>
-                        </>
-                    </Form.Item>
+                            <Form.Item label="Restaurant image"
+                                       name="image"
+                                       initialValue={image}
+                                       rules={[
+                                           {required: true, message: 'Please select an image or enter a URL.'},
+                                           {type: 'string', min: 1, message: 'Please enter a valid image URL.'},
+                                           {
+                                               validator: async (_) =>
+                                                   await isImgUrl(image)
+                                                       ? Promise.resolve() :
+                                                       Promise.reject(new Error('invalid image URL!!'))
+                                           },
+                                       ]}>
+                                <>
+                                    {renderingImage}
+                                    <Input
+                                        className="res-input"
+                                        placeholder="Enter image url here"
+                                        value={image}
+                                        onChange={(e) => {
+                                            setImage(e.target.value)
+                                            form.setFieldsValue({image: e.target.value})
+                                        }}
+                                    />
+                                    <br/>
+                                    <Upload
+                                        accept="image/*"
+                                        fileList={fileList}
+                                        customRequest={customRequest}
+                                        onChange={handleChange}
+                                        onRemove={() => {
+                                            setImage('');
+                                            setFileList([]);
+                                        }}>
+                                        <button type="button" style={{
+                                            backgroundColor: "#FFAD60",
+                                            border: "2px solid #FFAD60",
+                                            marginBottom: 5,
+                                            marginTop: 5,
+                                            borderRadius: 30
+                                        }}>
+                                            <UploadOutlined/> Click to Upload
+                                        </button>
+                                    </Upload>
+                                    <S3ImagePicker onSelect={handleImageSelect}/>
+                                </>
+                            </Form.Item>
 
                         </Col>
 
                         <Col xs={24} sm={24} md={12}>
-                    <Form.Item name="deliveryFee" label="Restaurant delivery Fee" initialValue={deliveryFee}
-                               rules={
-                                   [{required: true,}, {
-                                       validator: (_, value) =>
-                                           Number(value) > 0
-                                               ? Promise.resolve() :
-                                               Promise.reject(new Error('deliveryFee must be greater than 0'))
-                                   }]
-                               } required>
-                        <Input className="res-input" placeholder="Enter restaurant delivery Fee here"/>
-                    </Form.Item>
-                    <Form.Item name="minDeliveryMinutes" label="Restaurant minimum Delivery Minutes"
-                               initialValue={minDeliveryMinutes}
-                               rules={
-                                   [{required: true,}, {
-                                       validator: (_, value) =>
-                                           Number(value) >= 30
-                                               ? Promise.resolve() :
-                                               Promise.reject(new Error('minDeliveryMinutes must be greater than 30'))
-                                   }]
-                               } required
-                    >
-                        <InputNumber className="res-input"/>
-                    </Form.Item>
+                            <Form.Item name="deliveryFee" label="Restaurant delivery Fee" initialValue={deliveryFee}
+                                       rules={
+                                           [{required: true,}, {
+                                               validator: (_, value) =>
+                                                   Number(value) > 0
+                                                       ? Promise.resolve() :
+                                                       Promise.reject(new Error('deliveryFee must be greater than 0'))
+                                           }]
+                                       } required>
+                                <Input className="res-input" placeholder="Enter restaurant delivery Fee here"/>
+                            </Form.Item>
+                            <Form.Item name="minDeliveryMinutes" label="Restaurant minimum Delivery Minutes"
+                                       initialValue={minDeliveryMinutes}
+                                       rules={
+                                           [{required: true,}, {
+                                               validator: (_, value) =>
+                                                   Number(value) >= 30
+                                                       ? Promise.resolve() :
+                                                       Promise.reject(new Error('minDeliveryMinutes must be greater than 30'))
+                                           }]
+                                       } required
+                            >
+                                <InputNumber className="res-input"/>
+                            </Form.Item>
 
-                    <Form.Item name="maxDeliveryMinutes" label="Restaurant maximum Delivery Minutes"
-                               initialValue={maxDeliveryMinutes}
-                               rules={
-                                   [{required: true}, {
-                                       validator: (_, value) =>
-                                           Number(value) >= 30
-                                               ? Promise.resolve() :
-                                               Promise.reject(new Error('maxDeliveryMinutes must be greater than 30'))
+                            <Form.Item name="maxDeliveryMinutes" label="Restaurant maximum Delivery Minutes"
+                                       initialValue={maxDeliveryMinutes}
+                                       rules={
+                                           [{required: true}, {
+                                               validator: (_, value) =>
+                                                   Number(value) >= 30
+                                                       ? Promise.resolve() :
+                                                       Promise.reject(new Error('maxDeliveryMinutes must be greater than 30'))
 
-                                   }]
+                                           }]
 
-                               } required>
-                        <InputNumber className="res-input"/>
-                    </Form.Item>
+                                       } required>
+                                <InputNumber className="res-input"/>
+                            </Form.Item>
 
-                    <Form.Item name="address" label="Restaurant address" initialValue={address} required>
-                        <Input className="res-input" placeholder="Enter restaurant address here"/>
-                    </Form.Item>
+                            <Form.Item name="address" label="Restaurant address" initialValue={address} rules={[
+                                {required: true, message: 'Please enter a restaurant address'}]}>
 
-                    <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked" initialValue={!!isOpen}
-                               required>
-                        <Switch defaultChecked={!!isOpen} className="res-switch"
-                        />
-                    </Form.Item>
+                                    <Autocomplete
+                                        className="ant-input res-input"
+                                        apiKey={process.env.REACT_APP_API_KEY}
+                                        options={{
+                                            types: ["geocode", "establishment"],
+                                        }}
+                                        onPlaceSelected={(place) => {
+                                            console.log(place)
+                                        }}
+                                    />
+
+                            </Form.Item>
 
 
-                    <Form.Item>
-                        <Button className="res-button" type="primary" htmlType="submit">Submit</Button>
-                    </Form.Item>
+                            <Form.Item name="isOpen" label="Restaurant is open" valuePropName="checked"
+                                       initialValue={!!isOpen}
+                                       required>
+                                <Switch defaultChecked={!!isOpen} className="res-switch"
+                                />
+                            </Form.Item>
+
+
+                            <Form.Item>
+                                <Button className="res-button" type="primary" htmlType="submit">Submit</Button>
+                            </Form.Item>
                         </Col>
                     </Row>
                 </Form>
@@ -330,8 +347,12 @@ function GenericRestaurantEditor({props}) {
                     TEST
                 </Button>
 
+                <Button hidden={process.env.REACT_APP_ENV !== 'local'} onClick={() => navigate("/delete-account")}>
+                    Delete Account
+                </Button>
+
             </Card>
-    </div>
+        </div>
     )
 
 }

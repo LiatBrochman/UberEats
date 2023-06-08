@@ -32,7 +32,12 @@ const AppMenu = () => {
             key: "edit-restaurant",
             label: 'Edit Restaurant',
             icon: <UserOutlined/>
-        }
+        },
+        // {
+        //     key: "delete-account",
+        //     label: 'Settings',
+        //     icon: <UserOutlined/>
+        // }
     ]
 
     const SmallMenuItems = [

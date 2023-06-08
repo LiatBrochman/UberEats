@@ -20,18 +20,6 @@ const ProtectedRoutes = () => {
                 width={150}
             />
         </div>
-        // <div style={{
-        //     display: 'flex',
-        //     justifyContent: 'center',
-        //     alignItems: 'center',
-        //     height: '100vh'
-        // }}>
-        //     <Img src={
-        //         loading
-        //     }
-        //          alt="" style={{ maxWidth: '100%', height: 'auto' }} />
-        // </div>
-
 
     if (!dbOwner) return loadingScreen
 

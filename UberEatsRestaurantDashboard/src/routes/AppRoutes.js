@@ -7,6 +7,7 @@ import EditMenuItem from "../components/EditMenuItem";
 import NewRestaurant from "../screens/NewRestaurant";
 import { Route, Routes } from "react-router-dom";
 import EditRestaurant from "../screens/EditRestaurant";
+import DeleteAccountPage from "../screens/DeleteAccountPage";
 
 const AppRoutes = () => {
     return (
@@ -20,6 +21,8 @@ const AppRoutes = () => {
             <Route path="menu/edit" element={<EditMenuItem />} />
             <Route path="order-history" element={<OrderHistory />} />
             <Route path="edit-restaurant" element={<EditRestaurant />} />
+            <Route path="delete-account" element={<DeleteAccountPage />} />
+
         </Routes>
     );
 };
