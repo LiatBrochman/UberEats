@@ -10,7 +10,7 @@ import RestaurantContextProvider from "./contexts/RestaurantContext";
 import {Amplify} from "aws-amplify";
 import awsconfig from './aws-exports';
 
-
+console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ window.location.hash ~~~~~~~~~~~~~~~~~~~~~ :", JSON.stringify(window.location.hash,null,4))
 window.location.hash === "#/delete-account" && localStorage.setItem('postAuthPath','/delete-account')
 window.subscription = {};
 const isLocalEnvironment = process.env.REACT_APP_ENV === 'local';
