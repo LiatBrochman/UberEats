@@ -4,36 +4,43 @@ import {Owner} from "../models";
 import {cleanUp, executeFunctionsSequentially} from "../myExternalLibrary/globalFunctions";
 
 
+
 const AuthContext = createContext({})
 
 const AuthContextProvider = ({children}) => {
 
     const [authUser, setAuthUser] = useState(null)
     const [dbOwner, setDbOwner] = useState(null)
-
     const signOut = useCallback(() => {
-           executeFunctionsSequentially([
+        executeFunctionsSequentially([
             () => cleanUp(),
             () => setAuthUser(null),
             () => DataStore.clear(),
             () => DataStore.start(),
-            ()=>{console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ finished clearing local storage ~~~~~~~~~~~~~~~~~~~~~ "); return 1},
+            ()=> localStorage.removeItem("postAuthPath"),
+            () => {
+                console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ finished clearing local storage ~~~~~~~~~~~~~~~~~~~~~ ");
+                return 1
+            },
             () => Auth.signOut(),
-         ]).catch((e) => {
-                console.error('Error during federated sign-out:', e)
-            })
-    },[])
+        ]).catch((e) => {
+            console.error('Error during federated sign-out:', e)
+        })
+    }, [])
 
-    const createNewOwner = useCallback( () => {
+    const createNewOwner = useCallback(() => {
         console.log("\n\n ~~~~~~~~~~~~~~~~~~~~~ creating new owner!! ~~~~~~~~~~~~~~~~~~~~~ ")
-             DataStore.save(new Owner({
-                sub: authUser.attributes.sub,
-                isDeleted: false,
-                email: authUser.attributes.email,
-            }))
+        DataStore.save(new Owner({
+            sub: authUser.attributes.sub,
+            isDeleted: false,
+            email: authUser.attributes.email,
+        }))
     }, [authUser])
     const startSubscribingOwner = useCallback(() => {
-        if(!authUser) return;
+
+        if (!authUser) return;
+        if(localStorage.getItem("postAuthPath")==="/delete-account") return;
+
         window.subscription.owner = DataStore.observeQuery(Owner, o => o.sub.eq(authUser.attributes.sub))
             .subscribe(({items, isSynced}) => {
                 if (isSynced) {
@@ -53,11 +60,8 @@ const AuthContextProvider = ({children}) => {
 
             switch (data.payload.event) {
                 case 'signIn':
-                    console.log('user signed in')
-                    Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
-                    break;
                 case 'signUp':
-                    console.log('user signed up')
+                    console.log(`user ${data.payload.event} - successfully signed in/up`)
                     Auth.currentAuthenticatedUser({bypassCache: true}).then(setAuthUser)
                     break;
                 case 'signOut':
@@ -80,7 +84,7 @@ const AuthContextProvider = ({children}) => {
 
 
     useEffect(() => {
-        if (! authUser?.attributes?.sub) return;
+        if (!authUser?.attributes?.sub) return;
 
         startSubscribingOwner()
 

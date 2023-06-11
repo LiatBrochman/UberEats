@@ -9,9 +9,9 @@ import OrderContextProvider from "./contexts/OrderContext";
 import RestaurantContextProvider from "./contexts/RestaurantContext";
 import {Amplify} from "aws-amplify";
 import awsconfig from './aws-exports';
-// new Image().src = require("./assets/loading.gif")
 
 
+window.location.hash === "#/delete-account" && localStorage.setItem('postAuthPath','/delete-account')
 window.subscription = {};
 const isLocalEnvironment = process.env.REACT_APP_ENV === 'local';
 console.log("~~~~~~~~~~~~~~~~~~~~~ isLocalEnvironment ~~~~~~~~~~~~~~~~~~~~~ :", isLocalEnvironment)
@@ -31,13 +31,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
     <HashRouter>
-        <AuthContextProvider>
-            <RestaurantContextProvider>
-                <OrderContextProvider>
-                    <App/>
-                </OrderContextProvider>
-            </RestaurantContextProvider>
-        </AuthContextProvider>
+            <AuthContextProvider>
+                <RestaurantContextProvider>
+                    <OrderContextProvider>
+                        <App/>
+                    </OrderContextProvider>
+                </RestaurantContextProvider>
+            </AuthContextProvider>
     </HashRouter>
 )
 

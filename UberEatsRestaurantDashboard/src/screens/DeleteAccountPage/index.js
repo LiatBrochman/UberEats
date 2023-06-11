@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import {Auth, DataStore} from 'aws-amplify';
+import React, {useState} from 'react';
+import {Auth} from 'aws-amplify';
 import {useAuthContext} from "../../contexts/AuthContext";
+import {Button} from "antd";
 
 const DeleteAccountPage = () => {
-    const [result, setResult] = useState(null);
-    const {signOut:afterDelete}=useAuthContext()
+    const [result, setResult] = useState(null)
+    const {signOut} = useAuthContext()
 
     const handleDelete = async () => {
         try {
@@ -13,10 +14,9 @@ const DeleteAccountPage = () => {
             setResult("Your account has been successfully deleted.");
         } catch (error) {
             setResult(`Error: ${error.message}`);
-        }
-        finally {
-             // DataStore.clear().then(() => DataStore.start())
-            afterDelete()
+        } finally {
+            // DataStore.clear().then(() => DataStore.start())
+            signOut()
         }
     };
 
@@ -26,12 +26,21 @@ const DeleteAccountPage = () => {
     };
 
     return (
-        <div style={{height:"100vh", textAlign:"center"}}>
+        <div style={{height: "100vh", textAlign: "center"}}>
             <h1>Delete Account</h1>
             <p>By clicking the button below, your account and all associated data will be permanently deleted.</p>
             <button onClick={confirmDelete}>Delete My Account</button>
             {result && <p>{result}</p>}
+            <Button
+                onClick={signOut}
+                style={{
+                    textAlign: "center", color: 'gray', backgroundColor: "white"
+                    , fontWeight: 500, border: 'none'
+                }}>
+                Cancel
+            </Button>
         </div>
+
     );
 };
 
