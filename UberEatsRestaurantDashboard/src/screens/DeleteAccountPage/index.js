@@ -26,7 +26,7 @@ const DeleteAccountPage = () => {
     };
 
     return (
-        <div>
+        <div style={{height:"100vh", textAlign:"center"}}>
             <h1>Delete Account</h1>
             <p>By clicking the button below, your account and all associated data will be permanently deleted.</p>
             <button onClick={confirmDelete}>Delete My Account</button>
