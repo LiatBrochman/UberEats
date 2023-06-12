@@ -66,10 +66,10 @@ const RestaurantMenu = () => {
     return (
         <div style={{height:"100vh"}}>
             <Card title={"Menu"} style={{margin: 20, opacity:"90%"}} extra={renderNewItemButton()}>
-               {restaurantDishes?.length && <Table
+               {restaurantDishes?.length ? <Table
                     dataSource={restaurantDishes}
                     columns={tableColumns}
-                    rowKey="id"/>}
+                    rowKey="id"/> :  <div style={{height:"10vh", fontSize: "30px", textAlign:"center", fontWeight: "bold"}}> Menu is empty </div>}
             </Card>
         </div>
 

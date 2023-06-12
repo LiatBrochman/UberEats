@@ -27,15 +27,20 @@ const DeleteAccountPage = () => {
 
     return (
         <div style={{height: "100vh", textAlign: "center"}}>
-            <h1>Delete Account</h1>
+            <h1 style={{paddingTop:50}}>Delete Account</h1>
             <p>By clicking the button below, your account and all associated data will be permanently deleted.</p>
-            <button onClick={confirmDelete}>Delete My Account</button>
+            <Button
+                style={{
+                    textAlign: "center", color: 'gray', backgroundColor: "white",
+                    fontWeight: 500, border: 'none', margin:5,
+                }}
+                onClick={confirmDelete}>Delete My Account</Button>
             {result && <p>{result}</p>}
             <Button
                 onClick={signOut}
                 style={{
-                    textAlign: "center", color: 'gray', backgroundColor: "white"
-                    , fontWeight: 500, border: 'none'
+                    textAlign: "center", color: 'gray', backgroundColor: "white",
+                    fontWeight: 500, border: 'none', margin:5,
                 }}>
                 Cancel
             </Button>
