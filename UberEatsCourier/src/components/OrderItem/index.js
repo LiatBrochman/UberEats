@@ -7,6 +7,7 @@ import {useEffect, useState} from "react";
 // import CachedImage from "../../myExternalLibrary/CachedImage"
 // import CachedImage from "react-native-expo-cached-image"
 import CachedImage from 'expo-cached-image';
+import {FIRST_USERNAME_INDEX} from "../../../../UberEatsUser/src/myExternalLibrary/runOnInit";
 
 
 const OrderItem = ({order}) => {
@@ -47,7 +48,7 @@ const OrderItem = ({order}) => {
             {restaurant?.image &&
             <CachedImage
                 source={{uri: restaurant.image}}
-                cacheKey={restaurant.image.substring(restaurant.image.lastIndexOf('/') + 1)}
+                cacheKey={restaurant.image.substring(FIRST_USERNAME_INDEX)}
                 style={{
                     width: "25%",
                     height: "100%",

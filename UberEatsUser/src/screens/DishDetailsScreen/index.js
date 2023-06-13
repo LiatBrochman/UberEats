@@ -5,6 +5,7 @@ import {useNavigation, useRoute} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import CachedImage from 'expo-cached-image';
+import {FIRST_USERNAME_INDEX} from "../../myExternalLibrary/runOnInit";
 
 const DishDetailsScreen = () => {
 
@@ -56,7 +57,7 @@ const DishDetailsScreen = () => {
             {restaurantDish?.image &&
             <CachedImage
                 source={{uri: restaurantDish.image}}
-                cacheKey={restaurantDish.image.substring(restaurantDish.image.lastIndexOf('/') + 1)}
+                cacheKey={restaurantDish.image.substring(FIRST_USERNAME_INDEX)}
                 style={styles.image}
             />}
 

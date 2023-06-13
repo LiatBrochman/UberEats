@@ -2,6 +2,7 @@ import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import {Text, View} from "react-native";
 import styles from "./styles";
 import CachedImage from 'expo-cached-image';
+import {FIRST_USERNAME_INDEX} from "../../myExternalLibrary/runOnInit";
 
 const getDaysAgo = ({order}) => {
     if (order && order?.createdAt) {
@@ -19,7 +20,7 @@ const Header = ({order}) => {
                 {restaurant?.image &&
                 <CachedImage
                     source={{uri: restaurant.image}}
-                    cacheKey={restaurant.image.substring(restaurant.image.lastIndexOf('/') + 1)}
+                    cacheKey={restaurant.image.substring(FIRST_USERNAME_INDEX)}
                     style={styles.image}
                 />}
 

@@ -2,6 +2,7 @@ import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import {useBasketContext} from "../../contexts/BasketContext";
 import CachedImage from 'expo-cached-image';
+import {FIRST_USERNAME_INDEX} from "../../myExternalLibrary/runOnInit";
 
 
 const DishListItem = ({dish}) => {
@@ -18,7 +19,7 @@ const DishListItem = ({dish}) => {
             {dish?.image &&
             <CachedImage
                 source={{uri: dish.image}}
-                cacheKey={dish.image.substring(dish.image.lastIndexOf('/') + 1)}
+                cacheKey={dish.image.substring(FIRST_USERNAME_INDEX)}
                 style={styles.image}
             />}
             <View style={{flex: 1, marginLeft: 10}}>

@@ -2,6 +2,7 @@ import {StyleSheet, Text, View} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import {useBasketContext} from "../../contexts/BasketContext";
 import CachedImage from 'expo-cached-image';
+import {FIRST_USERNAME_INDEX} from "../../myExternalLibrary/runOnInit";
 // import _ from 'lodash';
 
 const BasketDishItem = ({dish}) => {
@@ -36,7 +37,7 @@ const BasketDishItem = ({dish}) => {
                 {dish?.image &&
                 <CachedImage
                     source={{uri: dish.image}}
-                    cacheKey={dish.image.substring(dish.image.lastIndexOf('/') + 1)}
+                    cacheKey={dish.image.substring(FIRST_USERNAME_INDEX)}
                     style={styles.image}
                 />}
                 <Text style={styles.dishName}>{dish?.name}</Text>

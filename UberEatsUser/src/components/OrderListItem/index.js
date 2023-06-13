@@ -6,6 +6,7 @@ import {Restaurant} from "../../models";
 import {useOrderContext} from "../../contexts/OrderContext";
 import {useRestaurantContext} from "../../contexts/RestaurantContext";
 import CachedImage from 'expo-cached-image';
+import {FIRST_USERNAME_INDEX} from "../../myExternalLibrary/runOnInit";
 
 
 const getDate = ({order}) => {
@@ -51,7 +52,7 @@ const OrderListItem = ({order}) => {
             {restaurant?.image &&
             <CachedImage
                 source={{uri: restaurant.image}}
-                cacheKey={restaurant.image.substring(restaurant.image.lastIndexOf('/') + 1)}
+                cacheKey={restaurant.image.substring(FIRST_USERNAME_INDEX)}
                 style={styles.image}
             />}
             <View>
