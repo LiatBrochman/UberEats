@@ -12,6 +12,7 @@
   <li>📍 Save multiple delivery addresses</li>
   <li>📜 View order history and reorder from past orders</li>
 </ul>
+
 <img src="https://github.com/LiatBrochman/UberEats/assets/92271841/6aa1cfa4-c3fb-4876-b62b-dea561d962cc" width="200">
 <img src="https://github.com/LiatBrochman/UberEats/assets/92271841/6abe12e2-299f-494f-8f57-e9471ee4ddb9" width="200">
 <img src="https://github.com/LiatBrochman/UberEats/assets/92271841/d8a9f043-6ba8-485a-bb42-4bd9008904b8" width="200">
