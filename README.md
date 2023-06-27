@@ -20,6 +20,5 @@ DynamoDB, GraphQL, WebSockets(Pub/Sub), AWS Lambda, Google OAuth 2.0, Google Map
 Ant Design, Expo, ContextAPI, Using both Cache & LocalStorage libraries for better UX, Push Notifications, Social media
 login.
 
+https://github.com/LiatBrochman/UberEats/assets/92271841/8886178d-10a7-4e93-a77a-1d27c70b1d2d
 
-## more details: TBA
-https://www.youtube.com/watch?v=rxun34Pz2gs
