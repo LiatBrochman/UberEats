@@ -6,13 +6,11 @@
 
 <ul>
   <li>🍴 Browse nearby restaurants</li>
-  <li>🔍 Search for restaurants by name or cuisine type</li>
   <li>🌟 View restaurant details including ratings, reviews, and menu</li>
   <li>🛒 Add items to cart and place orders</li>
   <li>🚚 Track order status and delivery time</li>
   <li>📍 Save multiple delivery addresses</li>
   <li>📜 View order history and reorder from past orders</li>
-  <li>📞 Contact customer support</li>
 </ul>
 
 <h2>⚙️ Installation</h2>
