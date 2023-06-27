@@ -5,8 +5,9 @@ import {useAuthContext} from "../contexts/AuthContext";
 import ReactLoading from "react-loading";
 import "./index.css"
 
-const ProtectedRoutes = () => {
 
+const ProtectedRoutes = ({hideMenu}) => {
+    hideMenu.value = false
     const {dbOwner} = useAuthContext({dbOwner: null})
     const {finishedFetching, restaurant} = useRestaurantContext({finishedFetching: false, restaurant: null})
     const loadingScreen =
@@ -21,14 +22,14 @@ const ProtectedRoutes = () => {
 
     if (!dbOwner) return loadingScreen
 
-        switch (finishedFetching) {
+    switch (finishedFetching) {
 
-            case true://enter existing restaurant or create a new one
-                return restaurant ? <AppRoutes/> : <NewRestaurant/>
+        case true://enter existing restaurant or create a new one
+            return restaurant ? <AppRoutes/> : <NewRestaurant/>
 
-            case false:
-                return loadingScreen
-        }
+        case false:
+            return loadingScreen
+    }
 }
 export default ProtectedRoutes
 

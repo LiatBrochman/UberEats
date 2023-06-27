@@ -7,10 +7,9 @@ import {
     UserOutlined
 } from '@ant-design/icons'
 import "./index.css"
-import DeleteAccountPage from "../../screens/DeleteAccountPage";
 
 
-const AppMenu = () => {
+const AppMenu = ({hideMenu}) => {
 
     const navigate = useNavigate()
     const LargeMenuItems = [
@@ -64,7 +63,7 @@ const AppMenu = () => {
     >
         <Col xs={24} md={0}>
 
-            {<DeleteAccountPage /> ? "": <Menu
+            { hideMenu.value===true ? "": <Menu
                 defaultSelectedKeys={['1']}
                 defaultOpenKeys={['sub1']}
                 mode={"horizontal"}
@@ -76,7 +75,7 @@ const AppMenu = () => {
             />}
         </Col>
         <Col xs={0} md={24}>
-            {<DeleteAccountPage /> ? "": <Menu
+            { hideMenu.value===true ? "": <Menu
                 defaultSelectedKeys={['1']}
                 defaultOpenKeys={['sub1']}
                 mode={"horizontal"}

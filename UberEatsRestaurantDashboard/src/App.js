@@ -8,9 +8,10 @@ import {Layout} from "antd";
 import Background from "./assets/bg5.jpg";
 import '@aws-amplify/ui-react/styles.css';
 import './App.css'
-
+import {useSignal} from "@preact/signals-react";
 
 function App() {
+    const hideMenu = useSignal(false)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -18,17 +19,18 @@ function App() {
 
         if (localStorage.getItem("postAuthPath") === "/delete-account") {
             navigate("/delete-account")
+            hideMenu.value=true
             // localStorage.removeItem("postAuthPath")
         }
     }, [])
 
     return (
         <div style={{backgroundImage: `url(${Background})`, backgroundSize: "100% 100%"}}>
-            <AppMenu/>
+            <AppMenu hideMenu={hideMenu}/>
             <Layout.Content>
                 <Routes>
-                    <Route path="/delete-account" element={<DeleteAccountPage/>}/>
-                    <Route path="/*" element={<ProtectedRoutes/>}/>
+                    <Route path="/delete-account" element={<DeleteAccountPage hideMenu={hideMenu}/>}/>
+                    <Route path="/*" element={<ProtectedRoutes hideMenu={hideMenu}/>}/>
                 </Routes>
             </Layout.Content>
         </div>
