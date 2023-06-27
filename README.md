@@ -12,13 +12,13 @@
 
 ## About The Project
 
-The UberEats project is a food delivery application developed 
-for customers, couriers, and owners. 
+Explore, order, and track meals from local restaurants, ensure seamless deliveries as a courier, and
+manage the culinary operation as a restaurant manager.
 
-The app utilizes React Native (Expo) and Google Maps API for live data syncing by subscribing to location update events and canvas rerendering. 
-
-AWS Amplify was employed for auto backend development, 
-auto-building the schema (GraphQL), data storage management (DynamoDB), auto-generating smart fetching mechanism (DataStore), including auto-local storage maintenance, hosting and deploying the app, and more.
+The app utilizes tools and libraries such as AWS Amplify, AWS Cognito user/fed pools, AWS Policy and Roles (IAM),
+DynamoDB, GraphQL, WebSockets(Pub/Sub), AWS Lambda, Google OAuth 2.0, Google Maps & Directions, Material UI,
+Ant Design, Expo, ContextAPI, Using both Cache & LocalStorage libraries for better UX, Push Notifications, Social media
+login.
 
 
 ## more details: TBA
