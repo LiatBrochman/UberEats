@@ -11,6 +11,11 @@
   <li>🔋 Save battery life by stopping Pub/Sub when the app is inactive</li>
   <li>🔄 Automatically retrieve information about ongoing orders when reopening the app</li>
 </ul>
+
+<img src="https://github.com/LiatBrochman/UberEats/assets/92271841/f1cc44bb-9a3f-42a6-b394-2a88b3fa1f4d" width="200">
+<img src="https://github.com/LiatBrochman/UberEats/assets/92271841/269eb421-e388-456b-b723-7ba250a1170d" width="200">
+<img src="https://github.com/LiatBrochman/UberEats/assets/92271841/87a39340-62dd-4a21-89cd-facbe0b73294" width="200">
+
 <h2>⚙️ Installation</h2>
 <p>To use UberEatsCourier, you will need to have the following installed:</p>
 <ul>
