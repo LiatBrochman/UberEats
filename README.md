@@ -43,5 +43,7 @@ The project extensively uses a variety of modern technologies and libraries:
 </p>
 
 ###### by Liat Brochman & Joseph Shmuel
-https://github.com/LiatBrochman/UberEats/assets/92271841/8886178d-10a7-4e93-a77a-1d27c70b1d2d
+https://github.com/LiatBrochman/UberEats/assets/92271841/5a067719-0234-4f86-a2f6-86672338c2d1
+
+
 
