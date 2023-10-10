@@ -32,18 +32,6 @@ The project extensively uses a variety of modern technologies and libraries:
 - **Push Notifications**: To keep users informed about their order status and updates.
 - **Social Media Login**: Users can log in using their social media accounts for a more streamlined sign-in process.
 
-## :link: Links to Demos:
-<p>
-  <a href="https://play.google.com/store/apps/details?id=com.joey123ms.ubereatsuser">🍔 UberEatsUser (Customer)</a>
-  <br/>
-  <a href="https://play.google.com/store/apps/details?id=com.joey123ms.ubereatscourier">🚴 UberEatsCourier (Courier)</a>
-  <br/>
-  <a href="https://timely-phoenix-06c7ef.netlify.app">🍽️ UberEatsRestaurantDashboard (Restaurant Owner)</a>
-  <br/>
-</p>
-
-###### by Liat Brochman & Joseph Shmuel
-https://github.com/LiatBrochman/UberEats/assets/92271841/5a067719-0234-4f86-a2f6-86672338c2d1
 
 
 
